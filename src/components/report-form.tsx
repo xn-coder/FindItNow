@@ -27,6 +27,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { sendEmail } from "@/lib/email";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
@@ -79,7 +80,7 @@ export function ReportForm({ itemType }: ReportFormProps) {
         const imageFile = values.image[0];
         const imageUrl = await toBase64(imageFile);
 
-        await addDoc(collection(db, "items"), {
+        const docRef = await addDoc(collection(db, "items"), {
             type: itemType,
             name: values.name,
             category: values.category,
@@ -98,6 +99,43 @@ export function ReportForm({ itemType }: ReportFormProps) {
             description: `Your ${itemType} item report has been successfully submitted.`,
             variant: "default",
         });
+
+        // Send confirmation email
+        try {
+            const subject = `Your ${itemType.charAt(0).toUpperCase() + itemType.slice(1)} Item Report Confirmation`;
+            const message = `
+              Hello,
+
+              This is a confirmation that your report for the following item has been submitted:
+
+              Item Name: ${values.name}
+              Category: ${values.category}
+              Location: ${values.location}
+              Date: ${format(values.date, "PPP")}
+
+              You can view your submission here: ${window.location.origin}/browse?item=${docRef.id}
+
+              Thank you for using FindItNow.
+            `;
+            
+            await sendEmail({
+              to_email: values.contact,
+              subject,
+              message,
+            });
+             toast({
+              title: "Confirmation Email Sent",
+              description: "A confirmation email has been sent to your address.",
+            });
+        } catch (emailError) {
+             console.error("Failed to send confirmation email:", emailError);
+             toast({
+                title: "Email Sending Failed",
+                description: "Your report was submitted, but we failed to send a confirmation email.",
+                variant: "destructive",
+            });
+        }
+
         form.reset();
     } catch (error) {
         console.error("Error adding document: ", error);
@@ -244,7 +282,7 @@ export function ReportForm({ itemType }: ReportFormProps) {
                       <Input type="email" placeholder="your.email@example.com" {...field} />
                     </FormControl>
                     <FormDescription>
-                      We will use this email to notify you about potential matches.
+                      We will use this email to notify you about your submission.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
