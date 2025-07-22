@@ -3,10 +3,11 @@ import emailjs from '@emailjs/browser';
 const SERVICE_ID = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || '';
 const TEMPLATE_ID = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || '';
 const PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || '';
+const EMAILJS_ENABLED = process.env.NEXT_PUBLIC_EMAILJS_ENABLED !== 'false';
 
-if (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY) {
+if (EMAILJS_ENABLED && (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY)) {
   console.warn(
-    'EmailJS environment variables are not set. Email functionality will be disabled.'
+    'EmailJS is enabled, but environment variables are not fully set. Email functionality will be disabled.'
   );
 }
 
@@ -18,9 +19,17 @@ export type EmailTemplateParams = {
 };
 
 export const sendEmail = async (templateParams: EmailTemplateParams): Promise<void> => {
+  if (!EMAILJS_ENABLED) {
+    console.log('Email sending is disabled. Skipping email send.');
+    // Log the email content for debugging purposes during development
+    console.log('Email content:', templateParams);
+    return;
+  }
+  
   if (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY) {
     console.error('Cannot send email: EmailJS credentials are not configured in .env');
-    // Silently fail in production if not configured
+    // Silently fail in production if not configured, but throw in dev?
+    // For now, just log error and return.
     return;
   }
   
