@@ -11,9 +11,10 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { loginUser } from "@/lib/actions";
 import { useRouter } from "next/navigation";
+import { AuthContext, AuthUser } from "@/context/auth-context";
 
 
 const loginSchema = z.object({
@@ -25,6 +26,7 @@ export default function LoginPage() {
   const { toast } = useToast();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const { login } = useContext(AuthContext);
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -37,12 +39,13 @@ export default function LoginPage() {
   async function onSubmit(values: z.infer<typeof loginSchema>) {
     setIsLoading(true);
     try {
-      await loginUser(values);
+      const user = await loginUser(values);
+      login(user as AuthUser);
       toast({
         title: "Login Successful",
         description: "Welcome back!",
       });
-      router.push("/"); // Redirect to a dashboard or home page
+      router.push("/account"); 
     } catch (error: any) {
       toast({
         variant: "destructive",

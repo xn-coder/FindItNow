@@ -24,12 +24,15 @@ import { CalendarIcon, Loader2 } from "lucide-react";
 import { itemCategories } from "@/lib/data";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { sendEmail } from "@/lib/email";
 import { getUserByEmail, createUser } from "@/lib/actions";
 import { OtpDialog } from "./otp-dialog";
+import { AuthContext, AuthUser } from "@/context/auth-context";
+import { useRouter } from "next/navigation";
+
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
@@ -70,6 +73,8 @@ export function ReportForm({ itemType }: ReportFormProps) {
   const [otp, setOtp] = useState("");
   const [userExists, setUserExists] = useState<boolean | null>(null);
   const [formValues, setFormValues] = useState<FormValues | null>(null);
+  const { login } = useContext(AuthContext);
+  const router = useRouter();
 
   const { toast } = useToast();
   const form = useForm<FormValues>({
@@ -131,23 +136,24 @@ export function ReportForm({ itemType }: ReportFormProps) {
     }
 
     try {
-        let userResponse = await getUserByEmail(formValues.contact);
-        let userId = userResponse?.id;
+        let user: AuthUser | null = await getUserByEmail(formValues.contact) as AuthUser | null;
+        let userId = user?.id;
 
         if (!userExists && password) {
             // Create new user
             const newUser = await createUser({ email: formValues.contact, password });
             userId = newUser.id;
+            user = { id: newUser.id, email: formValues.contact };
         } else if (!userExists && !password) {
             toast({ title: "Password Required", description: "Please set a password for your new account.", variant: "destructive" });
             setIsLoading(false);
             return;
         }
 
-        if (!userId) {
-            throw new Error("Could not verify user.");
+        if (!userId || !user) {
+            throw new Error("Could not verify or create user.");
         }
-
+        
         const imageFile = formValues.image[0];
         const imageUrl = await toBase64(imageFile);
 
@@ -178,8 +184,11 @@ export function ReportForm({ itemType }: ReportFormProps) {
           message: `Hello,\n\nThis is a confirmation that your report for the following item has been submitted:\n\nItem Name: ${formValues.name}\nCategory: ${formValues.category}\nLocation: ${formValues.location}\nDate: ${format(formValues.date, "PPP")}\n\nYou can view your submission here: ${window.location.origin}/browse?item=${docRef.id}\n\nThank you for using FindItNow.`,
         });
 
+        login(user); // Log the user in
+        
         form.reset();
         setIsOtpOpen(false);
+        router.push("/account"); // Redirect to account page
 
     } catch (error) {
         console.error("Error adding document: ", error);

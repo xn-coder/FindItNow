@@ -2,9 +2,12 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { MapPin, Menu, Sparkles, Sprout } from "lucide-react";
+import { MapPin, Menu, Sprout, User, LogOut } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { AuthContext } from "@/context/auth-context";
+import { useRouter } from "next/navigation";
+
 
 const allNavLinks = [
   { href: "/browse", label: "Browse", icon: MapPin },
@@ -18,6 +21,13 @@ const navLinks = process.env.NEXT_PUBLIC_MAP_ENABLED === 'false'
 
 export default function Header() {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user, logout } = useContext(AuthContext);
+  const router = useRouter();
+
+  const handleLogout = () => {
+    logout();
+    router.push('/');
+  }
 
   return (
     <header className="bg-card/80 backdrop-blur-lg sticky top-0 z-50 border-b">
@@ -34,6 +44,11 @@ export default function Header() {
               {link.label}
             </Link>
           ))}
+          {user && (
+             <Link href="/account" className="text-sm font-medium text-foreground/70 transition-colors hover:text-primary">
+                My Account
+            </Link>
+          )}
         </nav>
 
         <div className="hidden md:flex items-center gap-2">
@@ -43,9 +58,15 @@ export default function Header() {
           <Button asChild size="sm">
             <Link href="/report-lost">Report Lost</Link>
           </Button>
-          <Button asChild variant="ghost" size="sm">
-            <Link href="/login">Login</Link>
-          </Button>
+          {user ? (
+             <Button variant="ghost" size="sm" onClick={handleLogout}>
+                Logout
+            </Button>
+          ) : (
+            <Button asChild variant="ghost" size="sm">
+                <Link href="/login">Login</Link>
+            </Button>
+          )}
         </div>
 
         {/* Mobile Navigation */}
@@ -74,6 +95,12 @@ export default function Header() {
                       {link.label}
                     </Link>
                   ))}
+                  {user && (
+                     <Link href="/account" className="flex items-center gap-3 rounded-md p-2 text-base font-medium hover:bg-muted" onClick={() => setMobileMenuOpen(false)}>
+                      <User className="h-5 w-5 text-primary" />
+                      My Account
+                    </Link>
+                  )}
                 </nav>
                 <div className="mt-8 flex flex-col gap-2">
                   <Button asChild>
@@ -82,9 +109,16 @@ export default function Header() {
                   <Button asChild variant="outline">
                     <Link href="/report-found" onClick={() => setMobileMenuOpen(false)}>Report Found Item</Link>
                   </Button>
-                  <Button asChild variant="ghost" className="mt-4">
-                    <Link href="/login" onClick={() => setMobileMenuOpen(false)}>Login / Sign Up</Link>
-                  </Button>
+                  {user ? (
+                    <Button variant="ghost" className="mt-4 flex items-center gap-3" onClick={() => { handleLogout(); setMobileMenuOpen(false); }}>
+                       <LogOut className="h-5 w-5" />
+                       Logout
+                    </Button>
+                  ) : (
+                    <Button asChild variant="ghost" className="mt-4">
+                        <Link href="/login" onClick={() => setMobileMenuOpen(false)}>Login / Sign Up</Link>
+                    </Button>
+                  )}
                 </div>
               </div>
             </SheetContent>
