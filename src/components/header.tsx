@@ -6,10 +6,15 @@ import { MapPin, Menu, Sparkles, Sprout } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useState } from "react";
 
-const navLinks = [
+const allNavLinks = [
   { href: "/browse", label: "Browse", icon: MapPin },
   { href: "/map", label: "Map View", icon: MapPin },
 ];
+
+const navLinks = process.env.NEXT_PUBLIC_MAP_ENABLED === 'false' 
+  ? allNavLinks.filter(link => link.href !== '/map')
+  : allNavLinks;
+
 
 export default function Header() {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);

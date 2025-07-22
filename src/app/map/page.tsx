@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, MapOff } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 function ItemMarker({ item, onSelect }: { item: Item, onSelect: (item: Item) => void }) {
@@ -79,7 +79,20 @@ function MapView() {
 
 
 export default function MapPage() {
+  const isMapEnabled = process.env.NEXT_PUBLIC_MAP_ENABLED !== 'false';
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+
+  if (!isMapEnabled) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full text-center">
+        <MapOff className="h-16 w-16 text-muted-foreground" />
+        <h1 className="text-2xl font-bold mt-4">Map Feature Disabled</h1>
+        <p className="text-muted-foreground mt-2">
+          The map functionality is currently turned off by the administrator.
+        </p>
+      </div>
+    );
+  }
 
   if (!apiKey) {
     return (
