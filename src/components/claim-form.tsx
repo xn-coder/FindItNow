@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -11,12 +12,13 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
+import { db } from '@/lib/firebase';
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 const claimFormSchema = z.object({
   fullName: z.string().min(2, 'Full name is required.'),
   email: z.string().email('Please enter a valid email address.'),
   proof: z.string().min(20, 'Please provide a detailed description as proof of ownership (at least 20 characters).'),
-  attachment: z.any().optional(),
 });
 
 type ClaimFormProps = {
@@ -38,17 +40,33 @@ export function ClaimForm({ item }: ClaimFormProps) {
 
   async function onSubmit(values: z.infer<typeof claimFormSchema>) {
     setIsLoading(true);
-    // Here you would typically handle the form submission,
-    // e.g., send an email or store the claim in a database.
-    console.log('Claim submitted for item:', item.id, values);
-    await new Promise(resolve => setTimeout(resolve, 1500));
     
-    setIsLoading(false);
-    toast({
-      title: 'Claim Submitted!',
-      description: "We've received your claim and will review it shortly. You'll be notified via email.",
-    });
-    form.reset();
+    try {
+        await addDoc(collection(db, "claims"), {
+            itemId: item.id,
+            itemOwnerId: item.userId,
+            fullName: values.fullName,
+            email: values.email,
+            proof: values.proof,
+            submittedAt: serverTimestamp(),
+        });
+
+        toast({
+            title: 'Claim Submitted!',
+            description: "We've received your claim and the item reporter has been notified. They will contact you if your claim is verified.",
+        });
+        form.reset();
+
+    } catch (error) {
+         console.error("Error submitting claim: ", error);
+         toast({
+            variant: "destructive",
+            title: 'Submission Failed',
+            description: "There was an error submitting your claim. Please try again.",
+        });
+    } finally {
+        setIsLoading(false);
+    }
   }
 
   return (
@@ -73,7 +91,7 @@ export function ClaimForm({ item }: ClaimFormProps) {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email Address</FormLabel>
+                <FormLabel>Your Contact Email</FormLabel>
                 <FormControl>
                   <Input type="email" placeholder="you@example.com" {...field} />
                 </FormControl>
@@ -94,19 +112,6 @@ export function ClaimForm({ item }: ClaimFormProps) {
                   placeholder="Describe something unique about the item that only the owner would know (e.g., a specific scratch, the contents of the wallet, a photo on the device's lock screen)."
                   {...field}
                 />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="attachment"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Upload Photo/Receipt (Optional)</FormLabel>
-              <FormControl>
-                 <Input type="file" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

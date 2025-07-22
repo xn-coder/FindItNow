@@ -1,8 +1,9 @@
+
 "use client";
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { MapPin, Menu, Sprout, User, LogOut } from "lucide-react";
+import { MapPin, Menu, Sprout, User, LogOut, Inbox } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useState, useContext } from "react";
 import { AuthContext } from "@/context/auth-context";
@@ -45,9 +46,14 @@ export default function Header() {
             </Link>
           ))}
           {user && (
+            <>
              <Link href="/account" className="text-sm font-medium text-foreground/70 transition-colors hover:text-primary">
                 My Account
             </Link>
+             <Link href="/enquiries" className="text-sm font-medium text-foreground/70 transition-colors hover:text-primary">
+                Enquiries
+            </Link>
+            </>
           )}
         </nav>
 
@@ -96,10 +102,16 @@ export default function Header() {
                     </Link>
                   ))}
                   {user && (
+                    <>
                      <Link href="/account" className="flex items-center gap-3 rounded-md p-2 text-base font-medium hover:bg-muted" onClick={() => setMobileMenuOpen(false)}>
                       <User className="h-5 w-5 text-primary" />
                       My Account
                     </Link>
+                     <Link href="/enquiries" className="flex items-center gap-3 rounded-md p-2 text-base font-medium hover:bg-muted" onClick={() => setMobileMenuOpen(false)}>
+                      <Inbox className="h-5 w-5 text-primary" />
+                      Enquiries
+                    </Link>
+                    </>
                   )}
                 </nav>
                 <div className="mt-8 flex flex-col gap-2">

@@ -1,3 +1,4 @@
+
 import { Timestamp } from "firebase/firestore";
 
 export type Item = {
@@ -14,4 +15,15 @@ export type Item = {
   lat: number;
   lng: number;
   createdAt?: Timestamp;
+  userId?: string;
+};
+
+export type Claim = {
+  id: string;
+  itemId: string;
+  itemOwnerId: string;
+  fullName: string;
+  email: string;
+  proof: string;
+  submittedAt: Timestamp;
 };

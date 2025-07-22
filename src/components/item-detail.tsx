@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -81,7 +82,7 @@ export function ItemDetail({ item }: ItemDetailProps) {
                     <CardHeader className="text-center">
                         <CardTitle className="text-2xl font-headline">Have you found this item?</CardTitle>
                         <CardDescription>
-                            If you have found this item, please contact the owner to arrange its return.
+                           If you have found this item, please contact the owner to arrange its return. The reporter's contact email is provided below.
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="text-center">
