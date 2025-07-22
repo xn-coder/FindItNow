@@ -30,7 +30,6 @@ const formSchema = z.object({
   name: z.string().min(3, "Item name must be at least 3 characters.").max(50),
   category: z.string({ required_error: "Please select a category." }),
   description: z.string().min(10, "Description must be at least 10 characters.").max(500),
-  distinguishingMarks: z.string().optional(),
   location: z.string().min(3, "Location must be at least 3 characters.").max(100),
   date: z.date({ required_error: "A date is required." }),
   contact: z.string().email("Please enter a valid email address."),
@@ -50,7 +49,6 @@ export function ReportForm({ itemType }: ReportFormProps) {
       name: "",
       category: "",
       description: "",
-      distinguishingMarks: "",
       location: "",
       contact: "",
       imageUrl: "",
@@ -131,23 +129,6 @@ export function ReportForm({ itemType }: ReportFormProps) {
                   <FormControl>
                     <Textarea placeholder="Provide a detailed description of the item." {...field} />
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="distinguishingMarks"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Distinguishing Marks (for AI Matching)</FormLabel>
-                  <FormControl>
-                    <Textarea placeholder="e.g., Small scratch on the corner, specific sticker, unique color pattern." {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    This helps our AI find the most accurate matches for you.
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
