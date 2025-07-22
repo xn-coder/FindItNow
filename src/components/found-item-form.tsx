@@ -14,6 +14,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { sendEmail } from '@/lib/email';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { db } from '@/lib/firebase';
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 const foundItemFormSchema = z.object({
   finderName: z.string().min(2, 'Your name is required.'),
@@ -42,6 +44,7 @@ export function FoundItemForm({ item }: FoundItemFormProps) {
     setIsLoading(true);
     
     try {
+        // Send email to the item owner
         await sendEmail({
             to_email: item.contact,
             subject: `Someone may have found your item: "${item.name}"`,
@@ -59,9 +62,20 @@ export function FoundItemForm({ item }: FoundItemFormProps) {
             `,
         });
 
+        // Save the enquiry to the 'claims' collection
+        await addDoc(collection(db, "claims"), {
+            itemId: item.id,
+            itemOwnerId: item.userId,
+            fullName: values.finderName,
+            email: values.finderEmail,
+            proof: values.message, // Re-using the 'proof' field for the message
+            submittedAt: serverTimestamp(),
+            type: 'message' // Differentiate from a claim
+        });
+
         toast({
             title: 'Message Sent!',
-            description: "We've sent your message to the item's owner. They will contact you shortly if it's a match.",
+            description: "We've sent your message to the item's owner and logged your enquiry. They will contact you shortly if it's a match.",
         });
         form.reset();
 

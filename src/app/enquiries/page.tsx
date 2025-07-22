@@ -5,19 +5,19 @@ import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "@/context/auth-context";
 import { useRouter } from "next/navigation";
 import { db } from "@/lib/firebase";
-import { collection, getDocs, query, where, orderBy, doc, getDoc } from "firebase/firestore";
+import { collection, getDocs, query, where, orderBy, doc, getDoc, Timestamp } from "firebase/firestore";
 import type { Claim, Item } from "@/lib/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
-import { Inbox, Mail, MessageSquare, Package } from "lucide-react";
+import { Inbox, Mail, MessageSquare, Package, User } from "lucide-react";
 
 export default function EnquiriesPage() {
     const { user, loading: authLoading } = useContext(AuthContext);
     const router = useRouter();
-    const [claims, setClaims] = useState<Claim[]>([]);
-    const [loadingClaims, setLoadingClaims] = useState(true);
-    const [claimedItems, setClaimedItems] = useState<Record<string, Item>>({});
+    const [enquiries, setEnquiries] = useState<Claim[]>([]);
+    const [loadingEnquiries, setLoadingEnquiries] = useState(true);
+    const [relatedItems, setRelatedItems] = useState<Record<string, Item>>({});
 
     useEffect(() => {
         if (!authLoading && !user) {
@@ -27,32 +27,50 @@ export default function EnquiriesPage() {
 
     useEffect(() => {
         if (user) {
-            const fetchClaims = async () => {
-                setLoadingClaims(true);
+            const fetchEnquiries = async () => {
+                setLoadingEnquiries(true);
+                // Fetch all claims/messages where the current user is the item owner
                 const q = query(
                     collection(db, "claims"), 
                     where("itemOwnerId", "==", user.id),
                     orderBy("submittedAt", "desc")
                 );
                 const querySnapshot = await getDocs(q);
-                const claimsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Claim));
+                const enquiriesData = querySnapshot.docs.map(doc => {
+                    const data = doc.data();
+                    return { 
+                        id: doc.id, 
+                        ...data,
+                        submittedAt: data.submittedAt instanceof Timestamp ? data.submittedAt.toDate() : new Date(data.submittedAt)
+                    } as Claim
+                });
                 
-                const itemIds = [...new Set(claimsData.map(claim => claim.itemId))];
+                // Get the unique item IDs from the enquiries
+                const itemIds = [...new Set(enquiriesData.map(enquiry => enquiry.itemId))];
                 const items: Record<string, Item> = {};
 
+                // Fetch the details for each unique item
                 for (const itemId of itemIds) {
-                    const docRef = doc(db, "items", itemId);
-                    const docSnap = await getDoc(docRef);
-                    if (docSnap.exists()) {
-                        items[itemId] = { id: docSnap.id, ...docSnap.data() } as Item;
+                    if (itemId) {
+                        const docRef = doc(db, "items", itemId);
+                        const docSnap = await getDoc(docRef);
+                        if (docSnap.exists()) {
+                            const itemData = docSnap.data();
+                            items[itemId] = { 
+                                id: docSnap.id, 
+                                ...itemData,
+                                date: itemData.date instanceof Timestamp ? itemData.date.toDate() : new Date(itemData.date),
+                                createdAt: itemData.createdAt instanceof Timestamp ? itemData.createdAt.toDate() : new Date(itemData.createdAt),
+                             } as Item;
+                        }
                     }
                 }
 
-                setClaimedItems(items);
-                setClaims(claimsData);
-                setLoadingClaims(false);
+                setRelatedItems(items);
+                setEnquiries(enquiriesData);
+                setLoadingEnquiries(false);
             };
-            fetchClaims();
+            fetchEnquiries();
         }
     }, [user]);
 
@@ -80,6 +98,27 @@ export default function EnquiriesPage() {
         );
     }
 
+    const getEnquiryTitle = (itemType?: 'lost' | 'found') => {
+        if (itemType === 'lost') {
+            return 'Message from Finder';
+        }
+        return 'Claim of Ownership';
+    };
+    
+    const getEnquiryProofLabel = (itemType?: 'lost' | 'found') => {
+        if (itemType === 'lost') {
+            return 'Finder\'s Message:';
+        }
+        return 'Proof of Ownership:';
+    }
+
+    const getEnquirerLabel = (itemType?: 'lost' | 'found') => {
+        if (itemType === 'lost') {
+            return "Finder's Details";
+        }
+        return "Claimant's Details";
+    }
+
     return (
         <div className="space-y-8">
             <Card>
@@ -89,12 +128,12 @@ export default function EnquiriesPage() {
                         My Enquiries
                     </CardTitle>
                     <CardDescription>
-                        Here are the claims submitted for items you've reported.
+                        Here are the claims and messages submitted for items you've reported.
                     </CardDescription>
                 </CardHeader>
             </Card>
 
-            {loadingClaims ? (
+            {loadingEnquiries ? (
                  <div className="space-y-4">
                     {Array.from({ length: 3 }).map((_, i) => (
                         <Card key={i}>
@@ -111,32 +150,44 @@ export default function EnquiriesPage() {
                         </Card>
                     ))}
                 </div>
-            ) : claims.length > 0 ? (
+            ) : enquiries.length > 0 ? (
                 <div className="space-y-6">
-                    {claims.map((claim) => {
-                        const item = claimedItems[claim.itemId];
+                    {enquiries.map((enquiry) => {
+                        const item = relatedItems[enquiry.itemId];
                         if (!item) return null;
+                        const enquiryDate = enquiry.submittedAt instanceof Timestamp ? enquiry.submittedAt.toDate() : enquiry.submittedAt;
                         return (
-                            <Card key={claim.id} className="overflow-hidden">
-                                <CardHeader className="bg-muted/50 p-4 border-b">
+                            <Card key={enquiry.id} className="overflow-hidden">
+                                <CardHeader className="bg-muted/50 p-4 border-b flex-row items-center justify-between">
                                     <div className="flex items-center gap-3">
                                         <Package className="h-5 w-5 text-primary"/>
                                         <h3 className="font-semibold text-lg">{item.name}</h3>
-                                        <span className="text-sm text-muted-foreground">(Item you reported)</span>
+                                        <span className="text-sm text-muted-foreground">(Item you reported as {item.type})</span>
                                     </div>
+                                     <span className="text-sm text-muted-foreground">
+                                        {enquiryDate.toLocaleDateString()}
+                                    </span>
                                 </CardHeader>
-                                <CardContent className="p-6">
+                                <CardContent className="p-6 grid md:grid-cols-2 gap-6">
                                     <div className="space-y-4">
-                                        <div className="flex items-center gap-3">
-                                            <Mail className="h-5 w-5 text-muted-foreground"/>
-                                            <p><span className="font-semibold">Claimant's Email:</span> {claim.email}</p>
-                                        </div>
+                                         <h4 className="font-semibold text-lg">{getEnquiryTitle(item.type)}</h4>
                                          <div className="flex items-start gap-3">
                                             <MessageSquare className="h-5 w-5 text-muted-foreground mt-1"/>
                                             <div>
-                                                <p className="font-semibold">Proof of Ownership:</p>
-                                                <p className="text-muted-foreground bg-slate-50 p-3 rounded-md mt-1 border">{claim.proof}</p>
+                                                <p className="font-semibold">{getEnquiryProofLabel(item.type)}</p>
+                                                <p className="text-muted-foreground bg-slate-50 p-3 rounded-md mt-1 border">{enquiry.proof}</p>
                                             </div>
+                                        </div>
+                                    </div>
+                                     <div className="space-y-4 bg-slate-50 p-4 rounded-lg border">
+                                         <h4 className="font-semibold text-lg">{getEnquirerLabel(item.type)}</h4>
+                                        <div className="flex items-center gap-3">
+                                            <User className="h-5 w-5 text-muted-foreground"/>
+                                            <p><span className="font-semibold">Name:</span> {enquiry.fullName}</p>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <Mail className="h-5 w-5 text-muted-foreground"/>
+                                            <p><span className="font-semibold">Email:</span> {enquiry.email}</p>
                                         </div>
                                     </div>
                                 </CardContent>
@@ -147,9 +198,10 @@ export default function EnquiriesPage() {
             ) : (
                 <div className="text-center py-16 bg-card rounded-lg border">
                     <p className="text-xl font-medium">No enquiries yet.</p>
-                    <p className="text-muted-foreground mt-2">When someone claims one of your found items, you'll see it here.</p>
+                    <p className="text-muted-foreground mt-2">When someone claims your found item or messages you about a lost one, you'll see it here.</p>
                 </div>
             )}
         </div>
     );
 }
+
