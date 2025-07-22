@@ -28,6 +28,7 @@ import { useState } from "react";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { sendEmail } from "@/lib/email";
+import { getUserByEmail } from "@/lib/actions";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
@@ -77,6 +78,28 @@ export function ReportForm({ itemType }: ReportFormProps) {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     try {
+        // Step 1: Check if user exists
+        const userExists = await getUserByEmail(values.contact);
+        
+        // This is where the OTP flow will begin.
+        // For now, we'll just show a toast message.
+        if (userExists) {
+            toast({
+                title: "Login to complete",
+                description: "This email is already registered. We've sent a login link to your email.",
+            });
+            // In a real app, you would trigger an OTP email here.
+            // and likely not proceed with item creation until verified.
+        } else {
+             toast({
+                title: "Create account to complete",
+                description: "This email is not registered. We've sent a registration link to your email to set a password.",
+            });
+             // In a real app, you would trigger an OTP/registration email here
+             // and guide the user to a password creation page after verification.
+        }
+
+
         const imageFile = values.image[0];
         const imageUrl = await toBase64(imageFile);
 
@@ -92,8 +115,11 @@ export function ReportForm({ itemType }: ReportFormProps) {
             createdAt: serverTimestamp(),
             // A real app would get lat/lng from the location, hardcoding for now
             lat: 40.7580,
-            lng: -73.9855
+            lng: -73.9855,
+             // In a real app, you would associate this with a user ID after authentication
+            userId: userExists ? userExists.id : 'anonymous'
         });
+
         toast({
             title: "Report Submitted!",
             description: `Your ${itemType} item report has been successfully submitted.`,
@@ -282,7 +308,7 @@ export function ReportForm({ itemType }: ReportFormProps) {
                       <Input type="email" placeholder="your.email@example.com" {...field} />
                     </FormControl>
                     <FormDescription>
-                      We will use this email to notify you about your submission.
+                      This email will be used for notifications and to log in to your account.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
