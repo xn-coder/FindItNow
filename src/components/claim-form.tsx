@@ -49,6 +49,8 @@ export function ClaimForm({ item }: ClaimFormProps) {
             email: values.email,
             proof: values.proof,
             submittedAt: serverTimestamp(),
+            status: 'open',
+            type: 'claim',
         });
 
         toast({

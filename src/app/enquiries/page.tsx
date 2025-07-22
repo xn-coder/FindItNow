@@ -1,16 +1,17 @@
 
 "use client";
 
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useTransition } from "react";
 import { AuthContext } from "@/context/auth-context";
 import { useRouter } from "next/navigation";
 import { db } from "@/lib/firebase";
-import { collection, getDocs, query, where, orderBy, doc, getDoc, Timestamp } from "firebase/firestore";
+import { collection, getDocs, query, where, orderBy, doc, getDoc, Timestamp, updateDoc } from "firebase/firestore";
 import type { Claim, Item } from "@/lib/types";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Separator } from "@/components/ui/separator";
-import { Inbox, Mail, MessageSquare, Package, User, MapPin, Calendar } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import { Inbox, Mail, MessageSquare, Package, User, MapPin, Calendar, CheckCircle2, Loader2, Circle } from "lucide-react";
 
 export default function EnquiriesPage() {
     const { user, loading: authLoading } = useContext(AuthContext);
@@ -18,6 +19,8 @@ export default function EnquiriesPage() {
     const [enquiries, setEnquiries] = useState<Claim[]>([]);
     const [loadingEnquiries, setLoadingEnquiries] = useState(true);
     const [relatedItems, setRelatedItems] = useState<Record<string, Item>>({});
+    const [isPending, startTransition] = useTransition();
+    const { toast } = useToast();
 
     useEffect(() => {
         if (!authLoading && !user) {
@@ -25,55 +28,77 @@ export default function EnquiriesPage() {
         }
     }, [user, authLoading, router]);
 
-    useEffect(() => {
+    const fetchEnquiries = async () => {
         if (user) {
-            const fetchEnquiries = async () => {
-                setLoadingEnquiries(true);
-                // Fetch all claims/messages where the current user is the item owner
-                const q = query(
-                    collection(db, "claims"), 
-                    where("itemOwnerId", "==", user.id),
-                    orderBy("submittedAt", "desc")
-                );
-                const querySnapshot = await getDocs(q);
-                const enquiriesData = querySnapshot.docs.map(doc => {
-                    const data = doc.data();
-                    return { 
-                        id: doc.id, 
-                        ...data,
-                        submittedAt: data.submittedAt instanceof Timestamp ? data.submittedAt.toDate() : new Date(data.submittedAt),
-                        date: data.date instanceof Timestamp ? data.date.toDate() : data.date ? new Date(data.date) : undefined,
-                    } as Claim
-                });
-                
-                // Get the unique item IDs from the enquiries
-                const itemIds = [...new Set(enquiriesData.map(enquiry => enquiry.itemId))];
-                const items: Record<string, Item> = {};
+            setLoadingEnquiries(true);
+            const q = query(
+                collection(db, "claims"), 
+                where("itemOwnerId", "==", user.id),
+                orderBy("submittedAt", "desc")
+            );
+            const querySnapshot = await getDocs(q);
+            const enquiriesData = querySnapshot.docs.map(doc => {
+                const data = doc.data();
+                return { 
+                    id: doc.id, 
+                    ...data,
+                    submittedAt: data.submittedAt instanceof Timestamp ? data.submittedAt.toDate() : new Date(data.submittedAt),
+                    date: data.date instanceof Timestamp ? data.date.toDate() : data.date ? new Date(data.date) : undefined,
+                } as Claim
+            });
+            
+            const itemIds = [...new Set(enquiriesData.map(enquiry => enquiry.itemId))];
+            const items: Record<string, Item> = {};
 
-                // Fetch the details for each unique item
-                for (const itemId of itemIds) {
-                    if (itemId) {
-                        const docRef = doc(db, "items", itemId);
-                        const docSnap = await getDoc(docRef);
-                        if (docSnap.exists()) {
-                            const itemData = docSnap.data();
-                            items[itemId] = { 
-                                id: docSnap.id, 
-                                ...itemData,
-                                date: itemData.date instanceof Timestamp ? itemData.date.toDate() : new Date(itemData.date),
-                                createdAt: itemData.createdAt instanceof Timestamp ? itemData.createdAt.toDate() : new Date(itemData.createdAt),
-                             } as Item;
-                        }
+            for (const itemId of itemIds) {
+                if (itemId) {
+                    const docRef = doc(db, "items", itemId);
+                    const docSnap = await getDoc(docRef);
+                    if (docSnap.exists()) {
+                        const itemData = docSnap.data();
+                        items[itemId] = { 
+                            id: docSnap.id, 
+                            ...itemData,
+                            date: itemData.date instanceof Timestamp ? itemData.date.toDate() : new Date(itemData.date),
+                            createdAt: itemData.createdAt instanceof Timestamp ? itemData.createdAt.toDate() : new Date(itemData.createdAt),
+                         } as Item;
                     }
                 }
+            }
 
-                setRelatedItems(items);
-                setEnquiries(enquiriesData);
-                setLoadingEnquiries(false);
-            };
-            fetchEnquiries();
+            setRelatedItems(items);
+            setEnquiries(enquiriesData);
+            setLoadingEnquiries(false);
         }
+    };
+
+    useEffect(() => {
+        fetchEnquiries();
     }, [user]);
+
+    const handleMarkAsResolved = (claimId: string) => {
+        startTransition(async () => {
+            try {
+                const claimRef = doc(db, "claims", claimId);
+                await updateDoc(claimRef, {
+                    status: 'resolved'
+                });
+                toast({
+                    title: "Enquiry Resolved",
+                    description: "You've marked this enquiry as resolved.",
+                });
+                // Refresh the list
+                fetchEnquiries();
+            } catch (error) {
+                console.error("Error resolving enquiry: ", error);
+                toast({
+                    variant: "destructive",
+                    title: "Error",
+                    description: "Could not update the enquiry. Please try again.",
+                });
+            }
+        });
+    }
 
     if (authLoading || !user) {
         return (
@@ -158,9 +183,10 @@ export default function EnquiriesPage() {
                         if (!item) return null;
                         const enquiryDate = enquiry.submittedAt instanceof Timestamp ? enquiry.submittedAt.toDate() : new Date(enquiry.submittedAt);
                         const foundDate = enquiry.date ? (enquiry.date instanceof Timestamp ? enquiry.date.toDate() : new Date(enquiry.date)) : null;
+                        const isResolved = enquiry.status === 'resolved';
 
                         return (
-                            <Card key={enquiry.id} className="overflow-hidden">
+                            <Card key={enquiry.id} className={`overflow-hidden transition-opacity ${isResolved ? 'opacity-60 bg-muted/40' : ''}`}>
                                 <CardHeader className="bg-muted/50 p-4 border-b flex-row items-center justify-between">
                                     <div className="flex items-center gap-3">
                                         <Package className="h-5 w-5 text-primary"/>
@@ -212,6 +238,23 @@ export default function EnquiriesPage() {
                                         </div>
                                     </div>
                                 </CardContent>
+                                <CardFooter className="bg-muted/50 p-4 border-t flex items-center justify-end">
+                                    {isResolved ? (
+                                        <div className="flex items-center gap-2 text-sm font-medium text-green-600">
+                                            <CheckCircle2 className="h-5 w-5" />
+                                            Resolved
+                                        </div>
+                                    ) : (
+                                        <Button 
+                                            size="sm"
+                                            onClick={() => handleMarkAsResolved(enquiry.id)}
+                                            disabled={isPending}
+                                        >
+                                            {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle2 className="mr-2 h-4 w-4"/>}
+                                            Mark as Resolved
+                                        </Button>
+                                    )}
+                                </CardFooter>
                             </Card>
                         )
                     })}

@@ -51,27 +51,30 @@ export function FoundItemForm({ item }: FoundItemFormProps) {
     setIsLoading(true);
     
     try {
-        // Send email to the item owner
-        await sendEmail({
-            to_email: item.contact,
-            subject: `Someone may have found your item: "${item.name}"`,
-            message: `
-              A person has reported finding your item. Here are their details:
-              <br><br>
-              <b>Finder's Name:</b> ${values.finderName}
-              <br>
-              <b>Finder's Email:</b> ${values.finderEmail}
-              <br>
-              <b>Found Location:</b> ${values.location}
-              <br>
-              <b>Found Date:</b> ${format(values.date, "PPP")}
-              <br><br>
-              <b>Message:</b>
-              <p>${values.message}</p>
-              <br>
-              Please reply to ${values.finderEmail} to coordinate the return.
-            `,
-        });
+        const emailJsEnabled = process.env.NEXT_PUBLIC_EMAILJS_ENABLED !== 'false';
+        if (emailJsEnabled) {
+          await sendEmail({
+              to_email: item.contact,
+              subject: `Someone may have found your item: "${item.name}"`,
+              message: `
+                A person has reported finding your item. Here are their details:
+                <br><br>
+                <b>Finder's Name:</b> ${values.finderName}
+                <br>
+                <b>Finder's Email:</b> ${values.finderEmail}
+                <br>
+                <b>Found Location:</b> ${values.location}
+                <br>
+                <b>Found Date:</b> ${format(values.date, "PPP")}
+                <br><br>
+                <b>Message:</b>
+                <p>${values.message}</p>
+                <br>
+                Please reply to ${values.finderEmail} to coordinate the return.
+              `,
+          });
+        }
+
 
         // Save the enquiry to the 'claims' collection
         await addDoc(collection(db, "claims"), {
@@ -83,7 +86,8 @@ export function FoundItemForm({ item }: FoundItemFormProps) {
             location: values.location,
             date: values.date,
             submittedAt: serverTimestamp(),
-            type: 'message' // Differentiate from a claim
+            type: 'message', // Differentiate from a claim
+            status: 'open'
         });
 
         toast({

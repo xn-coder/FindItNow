@@ -100,20 +100,29 @@ export function ReportForm({ itemType }: ReportFormProps) {
         setUserExists(!!user);
         setFormValues(values);
 
-        const generatedOtp = generateOtp();
-        setOtp(generatedOtp);
-        
-        await sendEmail({
+        const emailJsEnabled = process.env.NEXT_PUBLIC_EMAILJS_ENABLED !== 'false';
+        let generatedOtp;
+
+        if (emailJsEnabled) {
+          generatedOtp = generateOtp();
+          await sendEmail({
             to_email: values.contact,
             subject: "Your FindItNow Verification Code",
             message: `Your one-time password is: ${generatedOtp}`,
-        });
+          });
+           toast({
+              title: "Verification Required",
+              description: "We've sent a one-time password to your email.",
+          });
+        } else {
+          generatedOtp = "123456";
+           toast({
+              title: "Verification Required (Dev Mode)",
+              description: "Enter the default OTP to proceed.",
+          });
+        }
         
-        toast({
-            title: "Verification Required",
-            description: "We've sent a one-time password to your email.",
-        });
-
+        setOtp(generatedOtp);
         setIsOtpOpen(true);
 
     } catch (error) {
@@ -179,11 +188,15 @@ export function ReportForm({ itemType }: ReportFormProps) {
             variant: "default",
         });
 
-        await sendEmail({
-          to_email: formValues.contact,
-          subject: `Your ${itemType.charAt(0).toUpperCase() + itemType.slice(1)} Item Report Confirmation`,
-          message: `Hello,\n\nThis is a confirmation that your report for the following item has been submitted:\n\nItem Name: ${formValues.name}\nCategory: ${formValues.category}\nLocation: ${formValues.location}\nDate: ${format(formValues.date, "PPP")}\n\nYou can view your submission here: ${window.location.origin}/browse?item=${docRef.id}\n\nThank you for using FindItNow.`,
-        });
+        const emailJsEnabled = process.env.NEXT_PUBLIC_EMAILJS_ENABLED !== 'false';
+        if(emailJsEnabled) {
+          await sendEmail({
+            to_email: formValues.contact,
+            subject: `Your ${itemType.charAt(0).toUpperCase() + itemType.slice(1)} Item Report Confirmation`,
+            message: `Hello,\n\nThis is a confirmation that your report for the following item has been submitted:\n\nItem Name: ${formValues.name}\nCategory: ${formValues.category}\nLocation: ${formValues.location}\nDate: ${format(formValues.date, "PPP")}\n\nYou can view your submission here: ${window.location.origin}/browse?item=${docRef.id}\n\nThank you for using FindItNow.`,
+          });
+        }
+
 
         login(user); // Log the user in
         

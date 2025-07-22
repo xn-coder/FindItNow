@@ -28,4 +28,6 @@ export type Claim = {
   submittedAt: Timestamp;
   location?: string;
   date?: Timestamp;
+  status: 'open' | 'resolved';
+  type?: 'message' | 'claim';
 };
