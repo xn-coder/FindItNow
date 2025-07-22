@@ -1,14 +1,44 @@
+
+'use client';
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { FilePlus, LocateFixed, Search, Sparkles } from 'lucide-react';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
-import { mockItems } from '@/lib/data';
-
-const recentlyFoundItems = mockItems.filter(item => item.type === 'found').slice(0, 3);
+import type { Item } from '@/lib/types';
+import { useEffect, useState } from 'react';
+import { collection, getDocs, limit, orderBy, query, where } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import { Timestamp } from 'firebase/firestore';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function Home() {
+  const [recentlyFoundItems, setRecentlyFoundItems] = useState<Item[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchRecentItems = async () => {
+      setLoading(true);
+      const q = query(
+        collection(db, "items"), 
+        where("type", "==", "found"), 
+        orderBy("createdAt", "desc"), 
+        limit(3)
+      );
+      const querySnapshot = await getDocs(q);
+      const itemsData = querySnapshot.docs.map(doc => {
+         const data = doc.data();
+         const date = data.date instanceof Timestamp ? data.date.toDate() : new Date(data.date);
+         return { id: doc.id, ...data, date } as Item;
+      });
+      setRecentlyFoundItems(itemsData);
+      setLoading(false);
+    }
+    fetchRecentItems();
+  }, []);
+
   return (
     <div className="space-y-20">
       <section className="relative text-center py-20 md:py-32 overflow-hidden rounded-xl bg-card border">
@@ -69,30 +99,48 @@ export default function Home() {
         <h2 className="text-3xl font-bold text-center font-headline">Recently Found Items</h2>
         <p className="text-center mt-2 text-muted-foreground">Check out what our community has found recently.</p>
         <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {recentlyFoundItems.map((item) => (
-            <Card key={item.id} className="overflow-hidden group border-2 border-transparent hover:border-primary/50 hover:shadow-2xl transition-all duration-300">
-              <div className="relative h-56 w-full">
-                <Image
-                  src={item.imageUrl}
-                  alt={item.name}
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  style={{objectFit: 'cover'}}
-                  className="transition-transform duration-500 group-hover:scale-110"
-                  data-ai-hint="lost found item"
-                />
-              </div>
-              <CardContent className="p-4">
-                <Badge variant="secondary" className="mb-2">{item.category}</Badge>
-                <h3 className="font-semibold font-headline text-lg">{item.name}</h3>
-                <p className="text-sm text-muted-foreground mt-1">{item.location}</p>
-                <p className="text-sm text-muted-foreground">{item.date.toLocaleDateString()}</p>
-                <Button asChild variant="link" className="p-0 mt-4 text-base">
-                  <Link href={`/browse?item=${item.id}`}>View Details <Search className="ml-2 h-4 w-4" /></Link>
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+          {loading ? (
+             Array.from({ length: 3 }).map((_, i) => (
+              <Card key={i} className="overflow-hidden group border-2 border-transparent">
+                <Skeleton className="h-56 w-full" />
+                <CardContent className="p-4 space-y-2">
+                  <Skeleton className="h-4 w-1/3" />
+                  <Skeleton className="h-6 w-3/4" />
+                  <Skeleton className="h-4 w-1/2" />
+                  <Skeleton className="h-4 w-1/3" />
+                  <Skeleton className="h-8 w-1/2 mt-4" />
+                </CardContent>
+              </Card>
+            ))
+          ) : (
+            recentlyFoundItems.map((item) => {
+              const date = item.date instanceof Timestamp ? item.date.toDate() : item.date;
+              return (
+                <Card key={item.id} className="overflow-hidden group border-2 border-transparent hover:border-primary/50 hover:shadow-2xl transition-all duration-300">
+                  <div className="relative h-56 w-full">
+                    <Image
+                      src={item.imageUrl}
+                      alt={item.name}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      style={{objectFit: 'cover'}}
+                      className="transition-transform duration-500 group-hover:scale-110"
+                      data-ai-hint="lost found item"
+                    />
+                  </div>
+                  <CardContent className="p-4">
+                    <Badge variant="secondary" className="mb-2">{item.category}</Badge>
+                    <h3 className="font-semibold font-headline text-lg">{item.name}</h3>
+                    <p className="text-sm text-muted-foreground mt-1">{item.location}</p>
+                    <p className="text-sm text-muted-foreground">{date.toLocaleDateString()}</p>
+                    <Button asChild variant="link" className="p-0 mt-4 text-base">
+                      <Link href={`/browse?item=${item.id}`}>View Details <Search className="ml-2 h-4 w-4" /></Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              )
+            })
+          )}
         </div>
         <div className="text-center mt-12">
           <Button asChild size="lg" variant="outline">

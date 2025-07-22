@@ -7,12 +7,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { Calendar, MapPin, Sparkles } from "lucide-react";
 import { ClaimForm } from "./claim-form";
+import { Timestamp } from "firebase/firestore";
 
 type ItemDetailProps = {
     item: Item;
 };
 
 export function ItemDetail({ item }: ItemDetailProps) {
+    const date = item.date instanceof Timestamp ? item.date.toDate() : item.date;
+    
     return (
         <div className="max-w-4xl mx-auto">
             <div className="grid md:grid-cols-2 gap-8 md:gap-12">
@@ -48,7 +51,7 @@ export function ItemDetail({ item }: ItemDetailProps) {
                         </div>
                         <div className="flex items-center gap-3">
                             <Calendar className="h-5 w-5 text-primary" />
-                            <span>{item.type === 'lost' ? 'Lost on' : 'Found on'} <strong>{item.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</strong></span>
+                            <span>{item.type === 'lost' ? 'Lost on' : 'Found on'} <strong>{date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</strong></span>
                         </div>
                     </div>
 

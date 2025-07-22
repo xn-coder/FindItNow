@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase/firestore";
+
 export type Item = {
   id: string;
   type: 'lost' | 'found';
@@ -6,9 +8,10 @@ export type Item = {
   description: string;
   distinguishingMarks?: string;
   location: string;
-  date: Date;
+  date: Date | Timestamp;
   imageUrl: string;
   contact: string;
   lat: number;
   lng: number;
+  createdAt?: Timestamp;
 };

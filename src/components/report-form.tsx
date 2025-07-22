@@ -25,6 +25,8 @@ import { itemCategories } from "@/lib/data";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
+import { db } from "@/lib/firebase";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 const formSchema = z.object({
   name: z.string().min(3, "Item name must be at least 3 characters.").max(50),
@@ -51,22 +53,37 @@ export function ReportForm({ itemType }: ReportFormProps) {
       description: "",
       location: "",
       contact: "",
-      imageUrl: "",
+      imageUrl: "https://placehold.co/600x400",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    console.log({ itemType, ...values });
-    setIsLoading(false);
-    toast({
-      title: "Report Submitted!",
-      description: `Your ${itemType} item report has been successfully submitted.`,
-      variant: "default",
-    });
-    form.reset();
+    try {
+        await addDoc(collection(db, "items"), {
+            type: itemType,
+            ...values,
+            createdAt: serverTimestamp(),
+            // A real app would get lat/lng from the location, hardcoding for now
+            lat: 40.7580,
+            lng: -73.9855
+        });
+        toast({
+            title: "Report Submitted!",
+            description: `Your ${itemType} item report has been successfully submitted.`,
+            variant: "default",
+        });
+        form.reset();
+    } catch (error) {
+        console.error("Error adding document: ", error);
+        toast({
+            title: "Submission Failed",
+            description: "There was an error submitting your report. Please try again.",
+            variant: "destructive",
+        });
+    } finally {
+        setIsLoading(false);
+    }
   }
 
   const title = itemType === "lost" ? "Report a Lost Item" : "Report a Found Item";
@@ -203,6 +220,22 @@ export function ReportForm({ itemType }: ReportFormProps) {
                     </FormControl>
                     <FormDescription>
                       We will use this email to notify you about potential matches.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+               <FormField
+                control={form.control}
+                name="imageUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Image URL</FormLabel>
+                    <FormControl>
+                      <Input placeholder="https://example.com/image.png" {...field} />
+                    </FormControl>
+                     <FormDescription>
+                      Optionally, provide a URL for an image of the item. Use a placeholder service like placehold.co.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>

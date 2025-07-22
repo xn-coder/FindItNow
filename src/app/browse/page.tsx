@@ -1,23 +1,46 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ItemCard } from '@/components/item-card';
 import { ItemDetail } from '@/components/item-detail';
-import { mockItems, itemCategories } from '@/lib/data';
+import { itemCategories } from '@/lib/data';
 import type { Item } from '@/lib/types';
 import { ListFilter, Search } from 'lucide-react';
+import { db } from '@/lib/firebase';
+import { collection, getDocs, doc, getDoc } from "firebase/firestore";
+import { Timestamp } from "firebase/firestore";
+import { Skeleton } from '@/components/ui/skeleton';
 
 function ItemBrowser() {
+  const [items, setItems] = useState<Item[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [category, setCategory] = useState('all');
   const [itemType, setItemType] = useState('all');
 
+  useEffect(() => {
+    const fetchItems = async () => {
+      setLoading(true);
+      const querySnapshot = await getDocs(collection(db, "items"));
+      const itemsData = querySnapshot.docs.map(doc => {
+        const data = doc.data();
+        // Convert Firestore Timestamp to JS Date
+        const date = data.date instanceof Timestamp ? data.date.toDate() : new Date(data.date);
+        return { id: doc.id, ...data, date } as Item;
+      });
+      setItems(itemsData);
+      setLoading(false);
+    };
+
+    fetchItems();
+  }, []);
+
   const filteredItems = useMemo(() => {
-    return mockItems.filter((item) => {
+    return items.filter((item) => {
       const matchesSearch =
         item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -28,7 +51,7 @@ function ItemBrowser() {
 
       return matchesSearch && matchesCategory && matchesType;
     });
-  }, [searchTerm, category, itemType]);
+  }, [items, searchTerm, category, itemType]);
 
   return (
     <div className="space-y-8">
@@ -78,8 +101,26 @@ function ItemBrowser() {
             </Select>
         </div>
       </div>
-
-      {filteredItems.length > 0 ? (
+      
+      {loading ? (
+         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <Card key={i} className="flex flex-col h-full overflow-hidden">
+                <Skeleton className="h-48 w-full" />
+                <CardContent className="p-4 flex-grow space-y-2">
+                  <Skeleton className="h-4 w-1/4" />
+                  <Skeleton className="h-6 w-3/4" />
+                  <Skeleton className="h-4 w-1/2" />
+                  <Skeleton className="h-4 w-1/3" />
+                </CardContent>
+                <Separator />
+                <CardFooter className="p-4">
+                  <Skeleton className="h-8 w-full" />
+                </CardFooter>
+              </Card>
+            ))}
+        </div>
+      ) : filteredItems.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredItems.map((item: Item) => (
             <ItemCard key={item.id} item={item} />
@@ -99,16 +140,32 @@ export default function BrowsePage() {
   const searchParams = useSearchParams();
   const itemId = searchParams.get('item');
   const [item, setItem] = useState<Item | null | undefined>(null);
+  const [loading, setLoading] = useState(true);
 
-  useState(() => {
+  useEffect(() => {
+    const fetchItem = async () => {
+      if (itemId) {
+        setLoading(true);
+        const docRef = doc(db, "items", itemId);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          const date = data.date instanceof Timestamp ? data.date.toDate() : new Date(data.date);
+          setItem({ id: docSnap.id, ...data, date } as Item);
+        } else {
+          setItem(undefined); // Not found
+        }
+        setLoading(false);
+      }
+    };
     if (itemId) {
-      const foundItem = mockItems.find(i => i.id === itemId);
-      setItem(foundItem);
+      fetchItem();
     }
-  });
+  }, [itemId]);
 
   if (itemId) {
-    if (item === null) {
+    if (loading || item === null) {
       // Still loading
       return <div>Loading...</div>;
     }
