@@ -79,19 +79,32 @@ export default function EnquiriesPage() {
         }
     }, [user]);
 
-    const handleMarkAsResolved = (claimId: string) => {
+    const handleMarkAsResolved = (claim: Claim) => {
         startTransition(async () => {
             try {
-                const claimRef = doc(db, "claims", claimId);
+                // Update the claim status
+                const claimRef = doc(db, "claims", claim.id);
                 await updateDoc(claimRef, {
                     status: 'resolved'
                 });
+                
+                // Update the item status
+                const itemRef = doc(db, "items", claim.itemId);
+                await updateDoc(itemRef, {
+                    status: 'resolved',
+                    claimantInfo: {
+                        fullName: claim.fullName,
+                        email: claim.email,
+                    }
+                });
+
                 toast({
                     title: "Enquiry Resolved",
                     description: "You've marked this enquiry as resolved.",
                 });
+                
                 // Refresh the list by removing the resolved item from state
-                setEnquiries(prev => prev.filter(e => e.id !== claimId));
+                setEnquiries(prev => prev.filter(e => e.id !== claim.id));
             } catch (error) {
                 console.error("Error resolving enquiry: ", error);
                 toast({
@@ -243,7 +256,7 @@ export default function EnquiriesPage() {
                                 <CardFooter className="bg-muted/50 p-4 border-t flex items-center justify-end">
                                     <Button
                                         size="sm"
-                                        onClick={() => handleMarkAsResolved(enquiry.id)}
+                                        onClick={() => handleMarkAsResolved(enquiry)}
                                         disabled={isPending}
                                     >
                                         {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle2 className="mr-2 h-4 w-4"/>}

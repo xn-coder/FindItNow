@@ -11,7 +11,7 @@ import { itemCategories } from '@/lib/data';
 import type { Item } from '@/lib/types';
 import { ListFilter, Search } from 'lucide-react';
 import { db } from '@/lib/firebase';
-import { collection, getDocs, doc, getDoc } from "firebase/firestore";
+import { collection, getDocs, doc, getDoc, query, where } from "firebase/firestore";
 import { Timestamp } from "firebase/firestore";
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,7 +28,11 @@ function ItemBrowser() {
   useEffect(() => {
     const fetchItems = async () => {
       setLoading(true);
-      const querySnapshot = await getDocs(collection(db, "items"));
+       const q = query(
+        collection(db, "items"), 
+        where("status", "==", "open")
+      );
+      const querySnapshot = await getDocs(q);
       const itemsData = querySnapshot.docs.map(doc => {
         const data = doc.data();
         // Convert Firestore Timestamp to JS Date

@@ -179,7 +179,8 @@ export function ReportForm({ itemType }: ReportFormProps) {
             createdAt: serverTimestamp(),
             lat: 40.7580,
             lng: -73.9855,
-            userId: userId
+            userId: userId,
+            status: 'open', // New items are always open
         });
 
         toast({

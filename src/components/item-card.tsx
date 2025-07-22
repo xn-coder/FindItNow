@@ -28,11 +28,11 @@ export function ItemCard({ item }: ItemCardProps) {
             className="group-hover:scale-110 transition-transform duration-500"
             data-ai-hint="lost found item"
           />
-          <Badge
+           <Badge
             className="absolute top-3 right-3"
-            variant={item.type === 'lost' ? 'destructive' : 'default'}
+            variant={item.status === 'resolved' ? 'secondary' : item.type === 'lost' ? 'destructive' : 'default'}
           >
-            {item.type.charAt(0).toUpperCase() + item.type.slice(1)}
+            {item.status === 'resolved' ? 'Resolved' : item.type.charAt(0).toUpperCase() + item.type.slice(1)}
           </Badge>
         </div>
       </CardHeader>

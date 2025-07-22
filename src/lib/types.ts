@@ -1,6 +1,11 @@
 
 import { Timestamp } from "firebase/firestore";
 
+export type ClaimantInfo = {
+  fullName: string;
+  email: string;
+};
+
 export type Item = {
   id: string;
   type: 'lost' | 'found';
@@ -16,6 +21,8 @@ export type Item = {
   lng: number;
   createdAt?: Timestamp;
   userId?: string;
+  status?: 'open' | 'resolved';
+  claimantInfo?: ClaimantInfo;
 };
 
 export type Claim = {

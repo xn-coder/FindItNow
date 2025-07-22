@@ -6,7 +6,7 @@ import type { Item } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Calendar, MapPin, Sparkles } from "lucide-react";
+import { Calendar, Check, Mail, MapPin, Sparkles, User } from "lucide-react";
 import { ClaimForm } from "./claim-form";
 import { Timestamp } from "firebase/firestore";
 import { FoundItemForm } from "./found-item-form";
@@ -35,7 +35,7 @@ export function ItemDetail({ item }: ItemDetailProps) {
                             className="absolute top-4 right-4 text-sm py-1 px-3"
                             variant={item.type === 'lost' ? 'destructive' : 'default'}
                          >
-                            {item.type.charAt(0).toUpperCase() + item.type.slice(1)} Item
+                            {item.status === 'resolved' ? 'Resolved' : item.type.charAt(0).toUpperCase() + item.type.slice(1)} Item
                         </Badge>
                     </div>
                 </div>
@@ -63,23 +63,58 @@ export function ItemDetail({ item }: ItemDetailProps) {
 
             <Separator className="my-8 md:my-12" />
 
-            {item.type === 'found' && (
-                 <Card className="border-2 border-primary/50 shadow-lg">
+            {item.status === 'resolved' ? (
+                 <Card className="border-2 border-green-500/50 shadow-lg">
                     <CardHeader className="text-center">
-                        <Sparkles className="mx-auto h-8 w-8 text-primary mb-2" />
-                        <CardTitle className="text-2xl font-headline">Is This Your Item?</CardTitle>
+                        <Check className="mx-auto h-8 w-8 text-green-500 mb-2" />
+                        <CardTitle className="text-2xl font-headline text-green-600">Item Resolved</CardTitle>
                         <CardDescription className="max-w-md mx-auto">
-                            To claim this item, please provide some proof of ownership. This helps us ensure it gets back to the right person.
+                            This item has been successfully returned to its owner.
                         </CardDescription>
                     </CardHeader>
+                    {item.claimantInfo && (
                     <CardContent>
-                        <ClaimForm item={item} />
+                        <div className="max-w-md mx-auto bg-green-50/50 border border-green-200 p-4 rounded-lg space-y-3">
+                             <h4 className="font-semibold text-lg text-center">Claimant Information</h4>
+                             <div className="flex items-center gap-3">
+                                <User className="h-5 w-5 text-muted-foreground"/>
+                                <div>
+                                    <p className="font-semibold">Name:</p>
+                                    <p className="text-muted-foreground">{item.claimantInfo.fullName}</p>
+                                </div>
+                            </div>
+                             <div className="flex items-center gap-3">
+                                <Mail className="h-5 w-5 text-muted-foreground"/>
+                                <div>
+                                    <p className="font-semibold">Email:</p>
+                                    <p className="text-muted-foreground">{item.claimantInfo.email}</p>
+                                </div>
+                            </div>
+                        </div>
                     </CardContent>
+                    )}
                 </Card>
-            )}
+            ) : (
+                <>
+                    {item.type === 'found' && (
+                        <Card className="border-2 border-primary/50 shadow-lg">
+                            <CardHeader className="text-center">
+                                <Sparkles className="mx-auto h-8 w-8 text-primary mb-2" />
+                                <CardTitle className="text-2xl font-headline">Is This Your Item?</CardTitle>
+                                <CardDescription className="max-w-md mx-auto">
+                                    To claim this item, please provide some proof of ownership. This helps us ensure it gets back to the right person.
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <ClaimForm item={item} />
+                            </CardContent>
+                        </Card>
+                    )}
 
-             {item.type === 'lost' && (
-                 <FoundItemForm item={item} />
+                    {item.type === 'lost' && (
+                        <FoundItemForm item={item} />
+                    )}
+                </>
             )}
         </div>
     );
