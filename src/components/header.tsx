@@ -9,7 +9,6 @@ import { useState } from "react";
 const navLinks = [
   { href: "/browse", label: "Browse", icon: MapPin },
   { href: "/map", label: "Map View", icon: MapPin },
-  { href: "/smart-matches", label: "Smart Matches", icon: Sparkles },
 ];
 
 export default function Header() {

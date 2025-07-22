@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { FilePlus, LocateFixed, Search, Sparkles } from 'lucide-react';
+import { FilePlus, LocateFixed, Search } from 'lucide-react';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import { mockItems } from '@/lib/data';
@@ -30,8 +30,8 @@ export default function Home() {
 
       <section id="how-it-works" className="py-12">
         <h2 className="text-3xl font-bold text-center font-headline">How It Works</h2>
-        <p className="text-center mt-2 text-foreground/70">A simple, three-step process to reunite you with your belongings.</p>
-        <div className="mt-12 grid md:grid-cols-3 gap-8 text-center">
+        <p className="text-center mt-2 text-foreground/70">A simple, two-step process to reunite you with your belongings.</p>
+        <div className="mt-12 grid md:grid-cols-2 gap-8 text-center">
           <Card className="transform hover:scale-105 transition-transform duration-300">
             <CardHeader>
               <div className="mx-auto bg-primary/10 p-3 rounded-full w-fit">
@@ -46,20 +46,9 @@ export default function Home() {
           <Card className="transform hover:scale-105 transition-transform duration-300">
             <CardHeader>
               <div className="mx-auto bg-primary/10 p-3 rounded-full w-fit">
-                <Sparkles className="h-8 w-8 text-primary" />
-              </div>
-              <CardTitle className="mt-4">2. AI Smart Match</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-foreground/80">Our AI gets to work, instantly searching for potential matches based on your item's description and location.</p>
-            </CardContent>
-          </Card>
-          <Card className="transform hover:scale-105 transition-transform duration-300">
-            <CardHeader>
-              <div className="mx-auto bg-primary/10 p-3 rounded-full w-fit">
                 <LocateFixed className="h-8 w-8 text-primary" />
               </div>
-              <CardTitle className="mt-4">3. Get Reunited</CardTitle>
+              <CardTitle className="mt-4">2. Get Reunited</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-foreground/80">We connect you with the finder or owner of the item, helping you get your belongings back safely.</p>
