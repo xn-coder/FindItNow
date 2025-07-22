@@ -3,7 +3,7 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "@/context/auth-context";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { db } from "@/lib/firebase";
 import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
 import type { Item } from "@/lib/types";
