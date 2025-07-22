@@ -28,7 +28,8 @@ import { useState } from "react";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { sendEmail } from "@/lib/email";
-import { getUserByEmail } from "@/lib/actions";
+import { getUserByEmail, createUser } from "@/lib/actions";
+import { OtpDialog } from "./otp-dialog";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
@@ -49,6 +50,8 @@ const formSchema = z.object({
     ),
 });
 
+type FormValues = z.infer<typeof formSchema>;
+
 type ReportFormProps = {
   itemType: "lost" | "found";
 };
@@ -63,8 +66,13 @@ const toBase64 = (file: File): Promise<string> => new Promise((resolve, reject) 
 
 export function ReportForm({ itemType }: ReportFormProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [isOtpOpen, setIsOtpOpen] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [userExists, setUserExists] = useState<boolean | null>(null);
+  const [formValues, setFormValues] = useState<FormValues | null>(null);
+
   const { toast } = useToast();
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
@@ -75,49 +83,86 @@ export function ReportForm({ itemType }: ReportFormProps) {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  const generateOtp = () => {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+  };
+
+  async function handleInitialSubmit(values: FormValues) {
     setIsLoading(true);
     try {
-        // Step 1: Check if user exists
-        const userExists = await getUserByEmail(values.contact);
+        const user = await getUserByEmail(values.contact);
+        setUserExists(!!user);
+        setFormValues(values);
+
+        const generatedOtp = generateOtp();
+        setOtp(generatedOtp);
         
-        // This is where the OTP flow will begin.
-        // For now, we'll just show a toast message.
-        if (userExists) {
-            toast({
-                title: "Login to complete",
-                description: "This email is already registered. We've sent a login link to your email.",
-            });
-            // In a real app, you would trigger an OTP email here.
-            // and likely not proceed with item creation until verified.
-        } else {
-             toast({
-                title: "Create account to complete",
-                description: "This email is not registered. We've sent a registration link to your email to set a password.",
-            });
-             // In a real app, you would trigger an OTP/registration email here
-             // and guide the user to a password creation page after verification.
+        await sendEmail({
+            to_email: values.contact,
+            subject: "Your FindItNow Verification Code",
+            message: `Your one-time password is: ${generatedOtp}`,
+        });
+        
+        toast({
+            title: "Verification Required",
+            description: "We've sent a one-time password to your email.",
+        });
+
+        setIsOtpOpen(true);
+
+    } catch (error) {
+        console.error("Error during initial submission: ", error);
+        toast({
+            title: "Error",
+            description: "Could not send verification code. Please try again.",
+            variant: "destructive",
+        });
+    } finally {
+        setIsLoading(false);
+    }
+  }
+
+  async function handleOtpVerification(password?: string) {
+    setIsLoading(true);
+    if (!formValues) {
+        toast({ title: "Something went wrong", description: "Form data is missing.", variant: "destructive" });
+        setIsLoading(false);
+        return;
+    }
+
+    try {
+        let userId = (await getUserByEmail(formValues.contact))?.id;
+
+        if (!userExists && password) {
+            // Create new user
+            const newUser = await createUser({ email: formValues.contact, password });
+            userId = newUser.id;
+        } else if (!userExists && !password) {
+            toast({ title: "Password Required", description: "Please set a password for your new account.", variant: "destructive" });
+            setIsLoading(false);
+            return;
         }
 
+        if (!userId) {
+            throw new Error("Could not verify user.");
+        }
 
-        const imageFile = values.image[0];
+        const imageFile = formValues.image[0];
         const imageUrl = await toBase64(imageFile);
 
         const docRef = await addDoc(collection(db, "items"), {
             type: itemType,
-            name: values.name,
-            category: values.category,
-            description: values.description,
-            location: values.location,
-            date: values.date,
-            contact: values.contact,
+            name: formValues.name,
+            category: formValues.category,
+            description: formValues.description,
+            location: formValues.location,
+            date: formValues.date,
+            contact: formValues.contact,
             imageUrl,
             createdAt: serverTimestamp(),
-            // A real app would get lat/lng from the location, hardcoding for now
             lat: 40.7580,
             lng: -73.9855,
-             // In a real app, you would associate this with a user ID after authentication
-            userId: userExists ? userExists.id : 'anonymous'
+            userId: userId
         });
 
         toast({
@@ -126,43 +171,15 @@ export function ReportForm({ itemType }: ReportFormProps) {
             variant: "default",
         });
 
-        // Send confirmation email
-        try {
-            const subject = `Your ${itemType.charAt(0).toUpperCase() + itemType.slice(1)} Item Report Confirmation`;
-            const message = `
-              Hello,
-
-              This is a confirmation that your report for the following item has been submitted:
-
-              Item Name: ${values.name}
-              Category: ${values.category}
-              Location: ${values.location}
-              Date: ${format(values.date, "PPP")}
-
-              You can view your submission here: ${window.location.origin}/browse?item=${docRef.id}
-
-              Thank you for using FindItNow.
-            `;
-            
-            await sendEmail({
-              to_email: values.contact,
-              subject,
-              message,
-            });
-             toast({
-              title: "Confirmation Email Sent",
-              description: "A confirmation email has been sent to your address.",
-            });
-        } catch (emailError) {
-             console.error("Failed to send confirmation email:", emailError);
-             toast({
-                title: "Email Sending Failed",
-                description: "Your report was submitted, but we failed to send a confirmation email.",
-                variant: "destructive",
-            });
-        }
+        await sendEmail({
+          to_email: formValues.contact,
+          subject: `Your ${itemType.charAt(0).toUpperCase() + itemType.slice(1)} Item Report Confirmation`,
+          message: `Hello,\n\nThis is a confirmation that your report for the following item has been submitted:\n\nItem Name: ${formValues.name}\nCategory: ${formValues.category}\nLocation: ${formValues.location}\nDate: ${format(formValues.date, "PPP")}\n\nYou can view your submission here: ${window.location.origin}/browse?item=${docRef.id}\n\nThank you for using FindItNow.`,
+        });
 
         form.reset();
+        setIsOtpOpen(false);
+
     } catch (error) {
         console.error("Error adding document: ", error);
         toast({
@@ -175,12 +192,14 @@ export function ReportForm({ itemType }: ReportFormProps) {
     }
   }
 
+
   const title = itemType === "lost" ? "Report a Lost Item" : "Report a Found Item";
   const description = itemType === "lost"
     ? "Fill in the details of the item you've lost. The more specific, the better!"
     : "Thank you for being a good samaritan! Please provide details of the item you found.";
 
   return (
+    <>
     <Card className="max-w-3xl mx-auto border-2">
       <CardHeader className="text-center">
         <CardTitle className="text-3xl font-headline">{title}</CardTitle>
@@ -188,7 +207,7 @@ export function ReportForm({ itemType }: ReportFormProps) {
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form onSubmit={form.handleSubmit(handleInitialSubmit)} className="space-y-8">
             <div className="grid md:grid-cols-2 gap-8">
               <FormField
                 control={form.control}
@@ -337,11 +356,20 @@ export function ReportForm({ itemType }: ReportFormProps) {
 
             <Button type="submit" size="lg" className="w-full md:w-auto shadow-lg hover:shadow-xl transition-shadow" disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Submit Report
+              Verify and Submit
             </Button>
           </form>
         </Form>
       </CardContent>
     </Card>
+     <OtpDialog 
+        isOpen={isOtpOpen}
+        onClose={() => setIsOtpOpen(false)}
+        onVerify={handleOtpVerification}
+        expectedOtp={otp}
+        isNewUser={!userExists}
+        isLoading={isLoading}
+      />
+    </>
   );
 }

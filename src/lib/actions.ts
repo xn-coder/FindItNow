@@ -7,8 +7,6 @@ import bcrypt from 'bcryptjs';
 
 // Schema for new user creation
 const UserSchema = z.object({
-  firstName: z.string().min(2),
-  lastName: z.string().min(2),
   email: z.string().email(),
   password: z.string().min(6),
 });
@@ -36,8 +34,6 @@ export async function createUser(userData: z.infer<typeof UserSchema>) {
   const hashedPassword = await bcrypt.hash(validatedData.password, 10);
 
   const userToStore = {
-    firstName: validatedData.firstName,
-    lastName: validatedData.lastName,
     email: validatedData.email,
     password: hashedPassword,
     createdAt: new Date(),
