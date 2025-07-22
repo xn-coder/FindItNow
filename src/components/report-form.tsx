@@ -28,6 +28,9 @@ import { useState } from "react";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+
 const formSchema = z.object({
   name: z.string().min(3, "Item name must be at least 3 characters.").max(50),
   category: z.string({ required_error: "Please select a category." }),
@@ -35,12 +38,26 @@ const formSchema = z.object({
   location: z.string().min(3, "Location must be at least 3 characters.").max(100),
   date: z.date({ required_error: "A date is required." }),
   contact: z.string().email("Please enter a valid email address."),
-  imageUrl: z.string().url("Please enter a valid image URL.").optional().or(z.literal('')),
+  image: z.any()
+    .refine((files) => files?.length == 1, "Image is required.")
+    .refine((files) => files?.[0]?.size <= MAX_FILE_SIZE, `Max file size is 5MB.`)
+    .refine(
+      (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
+      ".jpg, .jpeg, .png and .webp files are accepted."
+    ),
 });
 
 type ReportFormProps = {
   itemType: "lost" | "found";
 };
+
+// Helper to convert file to base64
+const toBase64 = (file: File): Promise<string> => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = error => reject(error);
+});
 
 export function ReportForm({ itemType }: ReportFormProps) {
   const [isLoading, setIsLoading] = useState(false);
@@ -53,16 +70,24 @@ export function ReportForm({ itemType }: ReportFormProps) {
       description: "",
       location: "",
       contact: "",
-      imageUrl: "https://placehold.co/600x400",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     try {
+        const imageFile = values.image[0];
+        const imageUrl = await toBase64(imageFile);
+
         await addDoc(collection(db, "items"), {
             type: itemType,
-            ...values,
+            name: values.name,
+            category: values.category,
+            description: values.description,
+            location: values.location,
+            date: values.date,
+            contact: values.contact,
+            imageUrl,
             createdAt: serverTimestamp(),
             // A real app would get lat/lng from the location, hardcoding for now
             lat: 40.7580,
@@ -227,15 +252,19 @@ export function ReportForm({ itemType }: ReportFormProps) {
               />
                <FormField
                 control={form.control}
-                name="imageUrl"
+                name="image"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Image URL</FormLabel>
+                    <FormLabel>Image</FormLabel>
                     <FormControl>
-                      <Input placeholder="https://example.com/image.png" {...field} />
+                      <Input 
+                        type="file" 
+                        accept="image/png, image/jpeg, image/jpg, image/webp"
+                        onChange={(e) => field.onChange(e.target.files)}
+                      />
                     </FormControl>
                      <FormDescription>
-                      Optionally, provide a URL for an image of the item. Use a placeholder service like placehold.co.
+                      Upload a picture of the item. Max file size is 5MB.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
