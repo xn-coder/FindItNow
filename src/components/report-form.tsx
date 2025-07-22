@@ -64,6 +64,7 @@ export function ReportForm({ itemType }: ReportFormProps) {
     toast({
       title: "Report Submitted!",
       description: `Your ${itemType} item report has been successfully submitted.`,
+      variant: "default",
     });
     form.reset();
   }
@@ -74,8 +75,8 @@ export function ReportForm({ itemType }: ReportFormProps) {
     : "Thank you for being a good samaritan! Please provide details of the item you found.";
 
   return (
-    <Card className="max-w-3xl mx-auto">
-      <CardHeader>
+    <Card className="max-w-3xl mx-auto border-2">
+      <CardHeader className="text-center">
         <CardTitle className="text-3xl font-headline">{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
@@ -127,7 +128,7 @@ export function ReportForm({ itemType }: ReportFormProps) {
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Provide a detailed description of the item." {...field} />
+                    <Textarea rows={4} placeholder="Provide a detailed description of the item, including any unique features." {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -152,7 +153,7 @@ export function ReportForm({ itemType }: ReportFormProps) {
                 control={form.control}
                 name="date"
                 render={({ field }) => (
-                  <FormItem className="flex flex-col">
+                  <FormItem className="flex flex-col pt-2">
                     <FormLabel>Date {itemType === "lost" ? "Lost" : "Found"}</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -179,7 +180,7 @@ export function ReportForm({ itemType }: ReportFormProps) {
                           selected={field.value}
                           onSelect={field.onChange}
                           disabled={(date) =>
-                            date > new Date() || date < new Date("1900-01-01")
+                            date > new Date() || date < new Date("2000-01-01")
                           }
                           initialFocus
                         />
@@ -208,7 +209,7 @@ export function ReportForm({ itemType }: ReportFormProps) {
                 )}
               />
 
-            <Button type="submit" className="w-full md:w-auto" disabled={isLoading}>
+            <Button type="submit" size="lg" className="w-full md:w-auto shadow-lg hover:shadow-xl transition-shadow" disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Submit Report
             </Button>

@@ -13,19 +13,20 @@ type ItemCardProps = {
 
 export function ItemCard({ item }: ItemCardProps) {
   return (
-    <Card className="flex flex-col h-full overflow-hidden transition-shadow duration-300 hover:shadow-xl">
+    <Card className="flex flex-col h-full overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group">
       <CardHeader className="p-0">
-        <div className="relative h-48 w-full">
+        <div className="relative h-48 w-full overflow-hidden">
           <Image
             src={item.imageUrl}
             alt={item.name}
-            layout="fill"
-            objectFit="cover"
-            className="group-hover:scale-105 transition-transform duration-300"
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            style={{objectFit: 'cover'}}
+            className="group-hover:scale-110 transition-transform duration-500"
             data-ai-hint="lost found item"
           />
           <Badge
-            className="absolute top-2 right-2"
+            className="absolute top-3 right-3"
             variant={item.type === 'lost' ? 'destructive' : 'default'}
           >
             {item.type.charAt(0).toUpperCase() + item.type.slice(1)}
@@ -37,17 +38,17 @@ export function ItemCard({ item }: ItemCardProps) {
         <CardTitle className="text-lg font-headline mb-2">{item.name}</CardTitle>
         <div className="space-y-2 text-sm text-muted-foreground">
           <div className="flex items-center gap-2">
-            <MapPin className="h-4 w-4" />
+            <MapPin className="h-4 w-4 text-primary" />
             <span>{item.location}</span>
           </div>
           <div className="flex items-center gap-2">
-            <Calendar className="h-4 w-4" />
+            <Calendar className="h-4 w-4 text-primary" />
             <span>{item.date.toLocaleDateString()}</span>
           </div>
         </div>
       </CardContent>
       <Separator />
-      <CardFooter className="p-4 bg-muted/50">
+      <CardFooter className="p-4 bg-card">
         <Button asChild variant="link" className="w-full p-0">
           <Link href={`/browse?item=${item.id}`}>
             View Details
