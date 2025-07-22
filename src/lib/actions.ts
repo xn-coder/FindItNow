@@ -2,7 +2,7 @@
 
 import { z } from 'zod';
 import { db } from './firebase';
-import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, where, Timestamp } from 'firebase/firestore';
 import bcrypt from 'bcryptjs';
 
 // Schema for new user creation
@@ -41,7 +41,15 @@ export async function createUser(userData: z.infer<typeof UserSchema>) {
 
   const docRef = await addDoc(collection(db, 'users'), userToStore);
 
-  return { id: docRef.id, ...userToStore };
+  const docData = (await getDocs(query(collection(db, 'users'), where('email', '==', validatedData.email)))).docs[0].data();
+
+  const { createdAt, ...rest } = docData;
+
+  return { 
+    id: docRef.id, 
+    ...rest, 
+    createdAt: createdAt instanceof Timestamp ? createdAt.toJSON() : createdAt 
+  };
 }
 
 /**
@@ -60,7 +68,13 @@ export async function getUserByEmail(email: string) {
   }
 
   const userDoc = querySnapshot.docs[0];
-  return { id: userDoc.id, ...userDoc.data() };
+  const userData = userDoc.data();
+  
+  // Convert Timestamp to a plain object
+  const { createdAt, ...rest } = userData;
+  const serializedCreatedAt = createdAt instanceof Timestamp ? createdAt.toJSON() : createdAt;
+
+  return { id: userDoc.id, ...rest, createdAt: serializedCreatedAt };
 }
 
 /**
@@ -80,7 +94,7 @@ export async function loginUser(credentials: z.infer<typeof LoginSchema>) {
         throw new Error('This account is not set up with a password.');
     }
 
-    const passwordsMatch = await bcrypt.compare(validatedData.password, user.password);
+    const passwordsMatch = await bcrypt.compare(validatedData.password, user.password as string);
 
     if (!passwordsMatch) {
         throw new Error('Invalid password.');

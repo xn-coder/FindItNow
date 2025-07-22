@@ -131,7 +131,8 @@ export function ReportForm({ itemType }: ReportFormProps) {
     }
 
     try {
-        let userId = (await getUserByEmail(formValues.contact))?.id;
+        let userResponse = await getUserByEmail(formValues.contact);
+        let userId = userResponse?.id;
 
         if (!userExists && password) {
             // Create new user
@@ -200,176 +201,176 @@ export function ReportForm({ itemType }: ReportFormProps) {
 
   return (
     <>
-    <Card className="max-w-3xl mx-auto border-2">
-      <CardHeader className="text-center">
-        <CardTitle className="text-3xl font-headline">{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleInitialSubmit)} className="space-y-8">
-            <div className="grid md:grid-cols-2 gap-8">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Item Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g., Brown Leather Wallet" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="category"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Category</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+      <Card className="max-w-3xl mx-auto border-2">
+        <CardHeader className="text-center">
+          <CardTitle className="text-3xl font-headline">{title}</CardTitle>
+          <CardDescription>{description}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleInitialSubmit)} className="space-y-8">
+              <div className="grid md:grid-cols-2 gap-8">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Item Name</FormLabel>
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a category" />
-                        </SelectTrigger>
+                        <Input placeholder="e.g., Brown Leather Wallet" {...field} />
                       </FormControl>
-                      <SelectContent>
-                        {itemCategories.map(cat => (
-                          <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea rows={4} placeholder="Provide a detailed description of the item, including any unique features." {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="grid md:grid-cols-2 gap-8">
-              <FormField
-                control={form.control}
-                name="location"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Location {itemType === "lost" ? "Last Seen" : "Found"}</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g., Central Park, near the fountain" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="date"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col pt-2">
-                    <FormLabel>Date {itemType === "lost" ? "Lost" : "Found"}</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="category"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Category</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-full text-left font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, "PPP")
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a category" />
+                          </SelectTrigger>
                         </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) =>
-                            date > new Date() || date < new Date("2000-01-01")
-                          }
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            
-            <FormField
+                        <SelectContent>
+                          {itemCategories.map(cat => (
+                            <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
                 control={form.control}
-                name="contact"
+                name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Contact Email</FormLabel>
+                    <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder="your.email@example.com" {...field} />
+                      <Textarea rows={4} placeholder="Provide a detailed description of the item, including any unique features." {...field} />
                     </FormControl>
-                    <FormDescription>
-                      This email will be used for notifications and to log in to your account.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-               <FormField
-                control={form.control}
-                name="image"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Image</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="file" 
-                        accept="image/png, image/jpeg, image/jpg, image/webp"
-                        onChange={(e) => field.onChange(e.target.files)}
-                      />
-                    </FormControl>
-                     <FormDescription>
-                      Upload a picture of the item. Max file size is 5MB.
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-            <Button type="submit" size="lg" className="w-full md:w-auto shadow-lg hover:shadow-xl transition-shadow" disabled={isLoading}>
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Verify and Submit
-            </Button>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
-     <OtpDialog 
-        isOpen={isOtpOpen}
-        onClose={() => setIsOtpOpen(false)}
-        onVerify={handleOtpVerification}
-        expectedOtp={otp}
-        isNewUser={!userExists}
-        isLoading={isLoading}
-      />
+              <div className="grid md:grid-cols-2 gap-8">
+                <FormField
+                  control={form.control}
+                  name="location"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Location {itemType === "lost" ? "Last Seen" : "Found"}</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g., Central Park, near the fountain" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="date"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col pt-2">
+                      <FormLabel>Date {itemType === "lost" ? "Lost" : "Found"}</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant={"outline"}
+                              className={cn(
+                                "w-full text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value ? (
+                                format(field.value, "PPP")
+                              ) : (
+                                <span>Pick a date</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            disabled={(date) =>
+                              date > new Date() || date < new Date("2000-01-01")
+                            }
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              
+              <FormField
+                  control={form.control}
+                  name="contact"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Contact Email</FormLabel>
+                      <FormControl>
+                        <Input type="email" placeholder="your.email@example.com" {...field} />
+                      </FormControl>
+                      <FormDescription>
+                        This email will be used for notifications and to log in to your account.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                 <FormField
+                  control={form.control}
+                  name="image"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Image</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="file" 
+                          accept="image/png, image/jpeg, image/jpg, image/webp"
+                          onChange={(e) => field.onChange(e.target.files)}
+                        />
+                      </FormControl>
+                       <FormDescription>
+                        Upload a picture of the item. Max file size is 5MB.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+              <Button type="submit" size="lg" className="w-full md:w-auto shadow-lg hover:shadow-xl transition-shadow" disabled={isLoading}>
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Verify and Submit
+              </Button>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+      <OtpDialog 
+          isOpen={isOtpOpen}
+          onClose={() => setIsOtpOpen(false)}
+          onVerify={handleOtpVerification}
+          expectedOtp={otp}
+          isNewUser={!userExists}
+          isLoading={isLoading}
+        />
     </>
   );
 }
