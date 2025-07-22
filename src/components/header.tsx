@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { MapPin, Menu, Sparkles, Sprout } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useState } from "react";
 
 const navLinks = [
@@ -54,12 +54,16 @@ export default function Header() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-[280px]">
+                <SheetHeader className="p-4 pb-0">
+                    <SheetTitle>
+                        <Link href="/" className="flex items-center gap-2 font-bold text-xl text-primary font-headline" onClick={() => setMobileMenuOpen(false)}>
+                            <Sprout className="h-7 w-7" />
+                            FindItNow
+                        </Link>
+                    </SheetTitle>
+                </SheetHeader>
               <div className="p-4">
-                <Link href="/" className="flex items-center gap-2 font-bold text-xl text-primary font-headline mb-8" onClick={() => setMobileMenuOpen(false)}>
-                  <Sprout className="h-7 w-7" />
-                  FindItNow
-                </Link>
-                <nav className="flex flex-col gap-4">
+                <nav className="flex flex-col gap-4 mt-8">
                   {navLinks.map((link) => (
                     <Link key={link.href} href={link.href} className="flex items-center gap-3 rounded-md p-2 text-base font-medium hover:bg-muted" onClick={() => setMobileMenuOpen(false)}>
                       <link.icon className="h-5 w-5 text-primary" />
