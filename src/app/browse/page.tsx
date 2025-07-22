@@ -14,6 +14,9 @@ import { db } from '@/lib/firebase';
 import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { Timestamp } from "firebase/firestore";
 import { Skeleton } from '@/components/ui/skeleton';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+
 
 function ItemBrowser() {
   const [items, setItems] = useState<Item[]>([]);
