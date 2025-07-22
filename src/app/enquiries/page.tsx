@@ -32,21 +32,22 @@ export default function EnquiriesPage() {
         if (user) {
             setLoadingEnquiries(true);
             const q = query(
-                collection(db, "claims"), 
+                collection(db, "claims"),
                 where("itemOwnerId", "==", user.id),
+                where("status", "==", "open"),
                 orderBy("submittedAt", "desc")
             );
             const querySnapshot = await getDocs(q);
             const enquiriesData = querySnapshot.docs.map(doc => {
                 const data = doc.data();
-                return { 
-                    id: doc.id, 
+                return {
+                    id: doc.id,
                     ...data,
                     submittedAt: data.submittedAt instanceof Timestamp ? data.submittedAt.toDate() : new Date(data.submittedAt),
                     date: data.date instanceof Timestamp ? data.date.toDate() : data.date ? new Date(data.date) : undefined,
                 } as Claim
             });
-            
+
             const itemIds = [...new Set(enquiriesData.map(enquiry => enquiry.itemId))];
             const items: Record<string, Item> = {};
 
@@ -56,8 +57,8 @@ export default function EnquiriesPage() {
                     const docSnap = await getDoc(docRef);
                     if (docSnap.exists()) {
                         const itemData = docSnap.data();
-                        items[itemId] = { 
-                            id: docSnap.id, 
+                        items[itemId] = {
+                            id: docSnap.id,
                             ...itemData,
                             date: itemData.date instanceof Timestamp ? itemData.date.toDate() : new Date(itemData.date),
                             createdAt: itemData.createdAt instanceof Timestamp ? itemData.createdAt.toDate() : new Date(itemData.createdAt),
@@ -73,7 +74,9 @@ export default function EnquiriesPage() {
     };
 
     useEffect(() => {
-        fetchEnquiries();
+        if (user) {
+            fetchEnquiries();
+        }
     }, [user]);
 
     const handleMarkAsResolved = (claimId: string) => {
@@ -87,8 +90,8 @@ export default function EnquiriesPage() {
                     title: "Enquiry Resolved",
                     description: "You've marked this enquiry as resolved.",
                 });
-                // Refresh the list
-                fetchEnquiries();
+                // Refresh the list by removing the resolved item from state
+                setEnquiries(prev => prev.filter(e => e.id !== claimId));
             } catch (error) {
                 console.error("Error resolving enquiry: ", error);
                 toast({
@@ -130,7 +133,7 @@ export default function EnquiriesPage() {
         }
         return 'Claim of Ownership';
     };
-    
+
     const getEnquiryProofLabel = (itemType?: 'lost' | 'found') => {
         if (itemType === 'lost') {
             return 'Finder\'s Message:';
@@ -154,7 +157,7 @@ export default function EnquiriesPage() {
                         My Enquiries
                     </CardTitle>
                     <CardDescription>
-                        Here are the claims and messages submitted for items you've reported.
+                        Here are the open claims and messages for items you've reported.
                     </CardDescription>
                 </CardHeader>
             </Card>
@@ -183,10 +186,9 @@ export default function EnquiriesPage() {
                         if (!item) return null;
                         const enquiryDate = enquiry.submittedAt instanceof Timestamp ? enquiry.submittedAt.toDate() : new Date(enquiry.submittedAt);
                         const foundDate = enquiry.date ? (enquiry.date instanceof Timestamp ? enquiry.date.toDate() : new Date(enquiry.date)) : null;
-                        const isResolved = enquiry.status === 'resolved';
 
                         return (
-                            <Card key={enquiry.id} className={`overflow-hidden transition-opacity ${isResolved ? 'opacity-60 bg-muted/40' : ''}`}>
+                            <Card key={enquiry.id} className="overflow-hidden">
                                 <CardHeader className="bg-muted/50 p-4 border-b flex-row items-center justify-between">
                                     <div className="flex items-center gap-3">
                                         <Package className="h-5 w-5 text-primary"/>
@@ -239,21 +241,14 @@ export default function EnquiriesPage() {
                                     </div>
                                 </CardContent>
                                 <CardFooter className="bg-muted/50 p-4 border-t flex items-center justify-end">
-                                    {isResolved ? (
-                                        <div className="flex items-center gap-2 text-sm font-medium text-green-600">
-                                            <CheckCircle2 className="h-5 w-5" />
-                                            Resolved
-                                        </div>
-                                    ) : (
-                                        <Button 
-                                            size="sm"
-                                            onClick={() => handleMarkAsResolved(enquiry.id)}
-                                            disabled={isPending}
-                                        >
-                                            {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle2 className="mr-2 h-4 w-4"/>}
-                                            Mark as Resolved
-                                        </Button>
-                                    )}
+                                    <Button
+                                        size="sm"
+                                        onClick={() => handleMarkAsResolved(enquiry.id)}
+                                        disabled={isPending}
+                                    >
+                                        {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle2 className="mr-2 h-4 w-4"/>}
+                                        Mark as Resolved
+                                    </Button>
                                 </CardFooter>
                             </Card>
                         )
@@ -261,7 +256,7 @@ export default function EnquiriesPage() {
                 </div>
             ) : (
                 <div className="text-center py-16 bg-card rounded-lg border">
-                    <p className="text-xl font-medium">No enquiries yet.</p>
+                    <p className="text-xl font-medium">No open enquiries.</p>
                     <p className="text-muted-foreground mt-2">When someone claims your found item or messages you about a lost one, you'll see it here.</p>
                 </div>
             )}
