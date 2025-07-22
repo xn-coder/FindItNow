@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { Calendar, MapPin, Sparkles } from "lucide-react";
 import { ClaimForm } from "./claim-form";
 import { Timestamp } from "firebase/firestore";
+import { FoundItemForm } from "./found-item-form";
 
 type ItemDetailProps = {
     item: Item;
@@ -78,17 +79,7 @@ export function ItemDetail({ item }: ItemDetailProps) {
             )}
 
              {item.type === 'lost' && (
-                 <Card className="border-2">
-                    <CardHeader className="text-center">
-                        <CardTitle className="text-2xl font-headline">Have you found this item?</CardTitle>
-                        <CardDescription>
-                           If you have found this item, please contact the owner to arrange its return. The reporter's contact email is provided below.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="text-center">
-                        <p className="text-lg font-semibold">{item.contact}</p>
-                    </CardContent>
-                </Card>
+                 <FoundItemForm item={item} />
             )}
         </div>
     );
