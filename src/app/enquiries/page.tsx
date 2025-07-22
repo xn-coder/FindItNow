@@ -10,7 +10,7 @@ import type { Claim, Item } from "@/lib/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
-import { Inbox, Mail, MessageSquare, Package, User } from "lucide-react";
+import { Inbox, Mail, MessageSquare, Package, User, MapPin, Calendar } from "lucide-react";
 
 export default function EnquiriesPage() {
     const { user, loading: authLoading } = useContext(AuthContext);
@@ -41,7 +41,8 @@ export default function EnquiriesPage() {
                     return { 
                         id: doc.id, 
                         ...data,
-                        submittedAt: data.submittedAt instanceof Timestamp ? data.submittedAt.toDate() : new Date(data.submittedAt)
+                        submittedAt: data.submittedAt instanceof Timestamp ? data.submittedAt.toDate() : new Date(data.submittedAt),
+                        date: data.date instanceof Timestamp ? data.date.toDate() : data.date ? new Date(data.date) : undefined,
                     } as Claim
                 });
                 
@@ -155,7 +156,9 @@ export default function EnquiriesPage() {
                     {enquiries.map((enquiry) => {
                         const item = relatedItems[enquiry.itemId];
                         if (!item) return null;
-                        const enquiryDate = enquiry.submittedAt instanceof Timestamp ? enquiry.submittedAt.toDate() : enquiry.submittedAt;
+                        const enquiryDate = enquiry.submittedAt instanceof Timestamp ? enquiry.submittedAt.toDate() : new Date(enquiry.submittedAt);
+                        const foundDate = enquiry.date ? (enquiry.date instanceof Timestamp ? enquiry.date.toDate() : new Date(enquiry.date)) : null;
+
                         return (
                             <Card key={enquiry.id} className="overflow-hidden">
                                 <CardHeader className="bg-muted/50 p-4 border-b flex-row items-center justify-between">
@@ -165,7 +168,7 @@ export default function EnquiriesPage() {
                                         <span className="text-sm text-muted-foreground">(Item you reported as {item.type})</span>
                                     </div>
                                      <span className="text-sm text-muted-foreground">
-                                        {enquiryDate.toLocaleDateString()}
+                                        Received on: {enquiryDate.toLocaleDateString()}
                                     </span>
                                 </CardHeader>
                                 <CardContent className="p-6 grid md:grid-cols-2 gap-6">
@@ -178,6 +181,24 @@ export default function EnquiriesPage() {
                                                 <p className="text-muted-foreground bg-slate-50 p-3 rounded-md mt-1 border">{enquiry.proof}</p>
                                             </div>
                                         </div>
+                                         {item.type === 'lost' && enquiry.location && foundDate && (
+                                            <>
+                                                <div className="flex items-start gap-3">
+                                                    <MapPin className="h-5 w-5 text-muted-foreground mt-1"/>
+                                                    <div>
+                                                        <p className="font-semibold">Location Reported by Finder:</p>
+                                                        <p className="text-muted-foreground">{enquiry.location}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-start gap-3">
+                                                    <Calendar className="h-5 w-5 text-muted-foreground mt-1"/>
+                                                    <div>
+                                                        <p className="font-semibold">Date Reported by Finder:</p>
+                                                        <p className="text-muted-foreground">{foundDate.toLocaleDateString()}</p>
+                                                    </div>
+                                                </div>
+                                            </>
+                                        )}
                                     </div>
                                      <div className="space-y-4 bg-slate-50 p-4 rounded-lg border">
                                          <h4 className="font-semibold text-lg">{getEnquirerLabel(item.type)}</h4>
@@ -204,4 +225,3 @@ export default function EnquiriesPage() {
         </div>
     );
 }
-

@@ -26,4 +26,6 @@ export type Claim = {
   email: string;
   proof: string;
   submittedAt: Timestamp;
+  location?: string;
+  date?: Timestamp;
 };
