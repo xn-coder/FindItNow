@@ -25,7 +25,9 @@ export const sendEmail = async (templateParams: EmailTemplateParams): Promise<vo
   }
   
   try {
-    await emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams, PUBLIC_KEY);
+    await emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams, {
+        publicKey: PUBLIC_KEY,
+    });
     console.log('Email sent successfully!');
   } catch (error) {
     console.error('Failed to send email:', error);
