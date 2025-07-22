@@ -1,15 +1,17 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ItemCard } from '@/components/item-card';
+import { ItemDetail } from '@/components/item-detail';
 import { mockItems, itemCategories } from '@/lib/data';
 import type { Item } from '@/lib/types';
 import { ListFilter, Search } from 'lucide-react';
 
-export default function BrowsePage() {
+function ItemBrowser() {
   const [searchTerm, setSearchTerm] = useState('');
   const [category, setCategory] = useState('all');
   const [itemType, setItemType] = useState('all');
@@ -91,4 +93,38 @@ export default function BrowsePage() {
       )}
     </div>
   );
+}
+
+export default function BrowsePage() {
+  const searchParams = useSearchParams();
+  const itemId = searchParams.get('item');
+  const [item, setItem] = useState<Item | null | undefined>(null);
+
+  useState(() => {
+    if (itemId) {
+      const foundItem = mockItems.find(i => i.id === itemId);
+      setItem(foundItem);
+    }
+  });
+
+  if (itemId) {
+    if (item === null) {
+      // Still loading
+      return <div>Loading...</div>;
+    }
+    if (item === undefined) {
+      return (
+        <div className="text-center py-16">
+          <h1 className="text-2xl font-bold">Item not found</h1>
+          <p className="text-muted-foreground mt-2">The item you are looking for does not exist.</p>
+          <Button asChild className="mt-4">
+            <a href="/browse">Back to Browse</a>
+          </Button>
+        </div>
+      )
+    }
+    return <ItemDetail item={item} />;
+  }
+
+  return <ItemBrowser />;
 }
