@@ -106,7 +106,7 @@ export default function Home() {
                             <p className="font-semibold mt-2 text-right">Thomas</p>
                         </div>
                          <Avatar className="w-16 h-16 border-2 border-primary">
-                            <AvatarImage src="https://placehold.co/64x64.png" alt="Thomas' avatar" data-ai-hint="man face"/>
+                            <AvatarImage src="https://images.unsplash.com/photo-1624421998513-77a9ebb43d0d?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YW1lcmljYW4lMjBib3l8ZW58MHx8MHx8fDA%3D" alt="Thomas' avatar" data-ai-hint="man face"/>
                             <AvatarFallback>T</AvatarFallback>
                         </Avatar>
                     </div>
