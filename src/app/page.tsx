@@ -39,12 +39,12 @@ export default function Home() {
             </div>
              <div className="hidden md:flex justify-center">
               <Image 
-                src="https://img.freepik.com/free-vector/lost-items-concept-illustration_114360-20230.jpg" 
+                src="https://img.freepik.com/free-vector/lost-unattended-things-concept_23-2148544275.jpg" 
                 alt="Lost and found items" 
                 width={500} 
                 height={500}
                 className="rounded-lg"
-                data-ai-hint="lost found items illustration" 
+                data-ai-hint="lost items illustration" 
               />
             </div>
         </div>
