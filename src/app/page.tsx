@@ -92,7 +92,7 @@ export default function Home() {
                 <div className="space-y-8">
                     <div className="flex items-start gap-4">
                         <Avatar className="w-16 h-16 border-2 border-primary">
-                            <AvatarImage src="https://placehold.co/64x64.png" alt="Sarah's avatar" data-ai-hint="woman face"/>
+                            <AvatarImage src="https://img.freepik.com/free-photo/pretty-smiling-joyfully-female-with-fair-hair-dressed-casually-looking-with-satisfaction_176420-15187.jpg?semt=ais_hybrid&w=740" alt="Sarah's avatar" data-ai-hint="woman face"/>
                             <AvatarFallback>S</AvatarFallback>
                         </Avatar>
                         <div>
