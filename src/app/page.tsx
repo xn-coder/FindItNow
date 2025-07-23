@@ -29,7 +29,7 @@ export default function Home() {
                 </p>
                 <div className="flex flex-col sm:flex-row justify-start items-start gap-4">
                     <Button asChild size="lg" className="w-full sm:w-auto shadow-lg hover:shadow-xl transition-shadow">
-                    <Link href="/browse">Search for lost items</Link>
+                    <Link href="/report-lost">Search for lost items</Link>
                     </Button>
                     <Button asChild size="lg" variant="outline" className="w-full sm:w-auto">
                     <Link href="/report-found">Report found item</Link>
@@ -130,27 +130,19 @@ export default function Home() {
 
       <section id="faq" className="py-12 border-t">
         <div className="container max-w-4xl">
-            <h2 className="text-3xl font-bold text-center font-headline">Frequently asked questions</h2>
-            <Accordion type="single" collapsible className="w-full mt-8">
-                <AccordionItem value="item-1">
-                    <AccordionTrigger className="text-lg">What items can I report?</AccordionTrigger>
-                    <AccordionContent className="text-base text-muted-foreground">
-                    You can report any item you have lost or found. This includes electronics, wallets, keys, accessories, bags, clothing, bottles, toys, documents, and more. If it's lost, someone might find it!
-                    </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="item-2">
-                    <AccordionTrigger className="text-lg">How does the matching work?</AccordionTrigger>
-                    <AccordionContent className="text-base text-muted-foreground">
-                    Our system uses the details you provide—like item category, description, location, and date—to find potential matches. Our AI helps to identify similarities between lost and found reports to increase the chances of a successful reunion.
-                    </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="item-3">
-                    <AccordionTrigger className="text-lg">Is there a fee to use this service?</AccordionTrigger>
-                    <AccordionContent className="text-base text-muted-foreground">
-                    No, our core service is completely free for individuals to report and search for lost and found items. Our goal is to help reunite people with their belongings.
-                    </AccordionContent>
-                </AccordionItem>
-            </Accordion>
+            <h2 className="text-3xl font-bold text-center font-headline mb-8">Frequently asked questions</h2>
+            <div className="grid md:grid-cols-2 gap-x-12 gap-y-6">
+                <div className="space-y-4">
+                    <h3 className="font-semibold text-lg">What items can I report?</h3>
+                    <h3 className="font-semibold text-lg">How does the matching work?</h3>
+                    <h3 className="font-semibold text-lg">Is there a fee to use this service?</h3>
+                </div>
+                <div className="space-y-4 text-muted-foreground">
+                    <p>You can report any item you have lost or found. This includes electronics, wallets, keys, accessories, bags, clothing, bottles, toys, documents, and more. If it's lost, someone might find it!</p>
+                    <p>Our system uses the details you provide—like item category, description, location, and date—to find potential matches. Our AI helps to identify similarities between lost and found reports to increase the chances of a successful reunion.</p>
+                    <p>No, our core service is completely free for individuals to report and search for lost and found items. Our goal is to help reunite people with their belongings.</p>
+                </div>
+            </div>
         </div>
       </section>
     </div>
