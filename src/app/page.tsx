@@ -17,7 +17,7 @@ export default function Home() {
   return (
     <div className="space-y-20">
       <section className="py-8 md:py-16">
-        <div className="container grid md:grid-cols-2 gap-12 items-center">
+        <div className="container grid md:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
             <div className="space-y-6">
                 <h1 className="text-4xl md:text-6xl font-bold font-headline text-foreground tracking-tight">
                     Lost or found?
@@ -51,7 +51,7 @@ export default function Home() {
       </section>
 
       <section id="how-it-works" className="py-12">
-         <div className="container">
+         <div className="container max-w-6xl mx-auto">
             <h2 className="text-3xl font-bold text-center font-headline">How it works</h2>
             <div className="mt-12 grid md:grid-cols-3 gap-y-12 gap-x-8 text-center">
                 <div className="flex flex-col items-center gap-4">
@@ -89,7 +89,7 @@ export default function Home() {
       </section>
 
         <section id="testimonials-and-apps" className="py-12">
-            <div className="container grid md:grid-cols-2 gap-16 items-center">
+            <div className="container grid md:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
                 <div className="space-y-8">
                     <div className="flex items-start gap-4">
                         <Avatar className="w-16 h-16 border-2 border-primary">
@@ -130,7 +130,7 @@ export default function Home() {
         </section>
 
       <section id="faq" className="py-12 border-t">
-        <div className="container max-w-4xl">
+        <div className="container max-w-4xl mx-auto">
             <h2 className="text-3xl font-bold text-center font-headline mb-8">Frequently Asked Questions</h2>
             <Accordion type="single" collapsible className="w-full grid md:grid-cols-2 gap-x-8 gap-y-2">
                 <AccordionItem value="item-1">
