@@ -34,8 +34,7 @@ export default function Header() {
     <header className="bg-card/80 backdrop-blur-lg sticky top-0 z-50 border-b">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-2 font-bold text-xl text-primary font-headline">
-          <Sprout className="h-7 w-7" />
-          FindItNow
+          DEMO
         </Link>
 
         {/* Desktop Navigation */}
@@ -57,13 +56,12 @@ export default function Header() {
           )}
         </nav>
 
-        <div className="hidden md:flex items-center gap-2">
-          <Button asChild variant="outline" size="sm">
-            <Link href="/report-found">Report Found</Link>
-          </Button>
-          <Button asChild size="sm">
-            <Link href="/report-lost">Report Lost</Link>
-          </Button>
+        <div className="hidden md:flex items-center gap-4">
+           <div className="flex gap-2 text-sm font-medium">
+                <Link href="#" className="text-foreground/70 hover:text-primary">DE</Link>
+                <Link href="#" className="text-foreground/70 hover:text-primary">EN</Link>
+                <Link href="#" className="text-foreground/70 hover:text-primary">FR</Link>
+            </div>
           {user ? (
              <Button variant="ghost" size="sm" onClick={handleLogout}>
                 Logout
@@ -88,8 +86,7 @@ export default function Header() {
                 <SheetHeader className="p-4 pb-0">
                     <SheetTitle>
                         <Link href="/" className="flex items-center gap-2 font-bold text-xl text-primary font-headline" onClick={() => setMobileMenuOpen(false)}>
-                            <Sprout className="h-7 w-7" />
-                            FindItNow
+                            DEMO
                         </Link>
                     </SheetTitle>
                 </SheetHeader>
@@ -116,10 +113,10 @@ export default function Header() {
                 </nav>
                 <div className="mt-8 flex flex-col gap-2">
                   <Button asChild>
-                    <Link href="/report-lost" onClick={() => setMobileMenuOpen(false)}>Report Lost Item</Link>
+                    <Link href="/report-lost" onClick={() => setMobileMenuOpen(false)}>Search for lost items</Link>
                   </Button>
                   <Button asChild variant="outline">
-                    <Link href="/report-found" onClick={() => setMobileMenuOpen(false)}>Report Found Item</Link>
+                    <Link href="/report-found" onClick={() => setMobileMenuOpen(false)}>Report found item</Link>
                   </Button>
                   {user ? (
                     <Button variant="ghost" className="mt-4 flex items-center gap-3" onClick={() => { handleLogout(); setMobileMenuOpen(false); }}>
