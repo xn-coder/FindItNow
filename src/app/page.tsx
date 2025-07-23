@@ -90,35 +90,26 @@ export default function Home() {
         <section id="testimonials-and-apps" className="py-12">
             <div className="container grid md:grid-cols-2 gap-16 items-center">
                 <div className="space-y-8">
-                     <Card>
-                        <CardContent className="p-6">
-                            <div className="flex items-start gap-4">
-                                <Avatar>
-                                    <AvatarImage src="https://placehold.co/40x40.png" alt="Sarah's avatar" data-ai-hint="woman face"/>
-                                    <AvatarFallback>S</AvatarFallback>
-                                </Avatar>
-                                <div>
-                                    <blockquote className="text-lg font-medium">"A valuable service that really works!"</blockquote>
-                                    <p className="text-sm text-muted-foreground mt-2">Highly recommend this platform for lost items</p>
-                                    <p className="font-semibold mt-4">Sarah</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                     </Card>
-                     <Card>
-                        <CardContent className="p-6">
-                            <div className="flex items-start gap-4">
-                                 <Avatar>
-                                    <AvatarImage src="https://placehold.co/40x40.png" alt="Thomas' avatar" data-ai-hint="man face"/>
-                                    <AvatarFallback>T</AvatarFallback>
-                                </Avatar>
-                                <div>
-                                     <blockquote className="text-lg font-medium">"A valuable service that really works!"</blockquote>
-                                    <p className="font-semibold mt-4">Thomas</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                     </Card>
+                    <div className="flex items-start gap-4">
+                        <Avatar className="w-16 h-16 border-2 border-primary">
+                            <AvatarImage src="https://placehold.co/64x64.png" alt="Sarah's avatar" data-ai-hint="woman face"/>
+                            <AvatarFallback>S</AvatarFallback>
+                        </Avatar>
+                        <div>
+                            <blockquote className="text-lg font-medium leading-relaxed">"A valuable service that really works!"</blockquote>
+                            <p className="font-semibold mt-2">Sarah</p>
+                        </div>
+                    </div>
+                     <div className="flex items-start gap-4">
+                        <div className="flex-grow">
+                             <blockquote className="text-lg font-medium leading-relaxed text-right">"Highly recommend this platform for lost items"</blockquote>
+                            <p className="font-semibold mt-2 text-right">Thomas</p>
+                        </div>
+                         <Avatar className="w-16 h-16 border-2 border-primary">
+                            <AvatarImage src="https://placehold.co/64x64.png" alt="Thomas' avatar" data-ai-hint="man face"/>
+                            <AvatarFallback>T</AvatarFallback>
+                        </Avatar>
+                    </div>
                 </div>
                  <div className="text-center md:text-left">
                     <h2 className="text-3xl font-bold font-headline">Track & report on the go</h2>
