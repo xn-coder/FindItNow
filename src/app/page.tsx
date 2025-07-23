@@ -4,10 +4,10 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { FilePlus, Search, Sparkles, ShieldCheck, Zap, Users, ArrowRight, MessageSquare, UserCheck } from 'lucide-react';
+import { FilePlus, Sparkles, ShieldCheck, Zap, Users, ArrowRight, MessageSquare, UserCheck, Share2 } from 'lucide-react';
 import Image from 'next/image';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { AppStoreIcon, GooglePlayIcon } from '@/components/icons';
+import { AppStoreIcon, GooglePlayIcon, SecureReportsIcon, VerifiedUsersIcon, FastMatchingIcon } from '@/components/icons';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 
@@ -49,55 +49,41 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="how-it-works" className="py-12 bg-muted/50 rounded-xl">
+      <section id="how-it-works" className="py-12">
          <div className="container">
             <h2 className="text-3xl font-bold text-center font-headline">How it works</h2>
-            <div className="mt-12 grid md:grid-cols-3 gap-8 text-center">
+            <div className="mt-12 grid md:grid-cols-3 gap-y-12 gap-x-8 text-center">
                 <div className="flex flex-col items-center gap-4">
-                     <div className="p-4 rounded-full w-fit bg-background border">
-                        <FilePlus className="h-8 w-8 text-primary" />
-                    </div>
+                    <FilePlus className="h-12 w-12 text-black" strokeWidth={1.5}/>
                     <h3 className="font-semibold text-xl">Submit report</h3>
                     <p className="text-muted-foreground">File a report to list your lost or found item</p>
                 </div>
                  <div className="flex flex-col items-center gap-4">
-                     <div className="p-4 rounded-full w-fit bg-background border">
-                        <Sparkles className="h-8 w-8 text-primary" />
-                    </div>
+                    <Share2 className="h-12 w-12 text-black" strokeWidth={1.5}/>
                     <h3 className="font-semibold text-xl">AI matches items</h3>
                     <p className="text-muted-foreground">Our AI finds possible matches automatically</p>
                 </div>
                  <div className="flex flex-col items-center gap-4">
-                     <div className="p-4 rounded-full w-fit bg-background border">
-                        <UserCheck className="h-8 w-8 text-primary" />
-                    </div>
+                    <UserCheck className="h-12 w-12 text-black" strokeWidth={1.5}/>
                     <h3 className="font-semibold text-xl">Verified users</h3>
                     <p className="text-muted-foreground">Follow instructions to reclaim your property</p>
                 </div>
+                 <div className="flex flex-col items-center gap-4">
+                    <SecureReportsIcon className="h-10 w-10 text-black" />
+                    <h3 className="font-semibold text-xl">Secure reports</h3>
+                    <p className="text-muted-foreground">Your information is protected</p>
+                </div>
+                 <div className="flex flex-col items-center gap-4">
+                    <FastMatchingIcon className="h-10 w-10 text-black" />
+                    <h3 className="font-semibold text-xl">Fast matching</h3>
+                    <p className="text-muted-foreground">Get results in less time</p>
+                </div>
+                 <div className="flex flex-col items-center gap-4">
+                    <VerifiedUsersIcon className="h-10 w-10 text-black" />
+                    <h3 className="font-semibold text-xl">Verified users</h3>
+                    <p className="text-muted-foreground">Trusted by 1,000+ users</p>
+                </div>
             </div>
-             <div className="mt-12 grid md:grid-cols-3 gap-8 text-center">
-                <div className="flex items-center gap-4">
-                    <ShieldCheck className="h-6 w-6 text-primary shrink-0"/>
-                    <div>
-                        <h4 className="font-semibold">Secure reports</h4>
-                        <p className="text-sm text-muted-foreground">Your information is protected</p>
-                    </div>
-                </div>
-                <div className="flex items-center gap-4">
-                    <Zap className="h-6 w-6 text-primary shrink-0"/>
-                    <div>
-                        <h4 className="font-semibold">Fast matching</h4>
-                        <p className="text-sm text-muted-foreground">Get results in less time</p>
-                    </div>
-                </div>
-                <div className="flex items-center gap-4">
-                    <Users className="h-6 w-6 text-primary shrink-0"/>
-                    <div>
-                        <h4 className="font-semibold">Verified users</h4>
-                        <p className="text-sm text-muted-foreground">Trusted by 1,000+ users</p>
-                    </div>
-                </div>
-             </div>
          </div>
       </section>
 
