@@ -25,7 +25,7 @@ export const translations: Translations = {
     feature1Desc: "You can search for your lost item here.",
     feature2Title: "Report",
     feature2Desc: "Have you found something? Create a found report.",
-    feature3Title: "Verified Users",
+    feature3Title: "For Businesses",
     feature3Desc: "Our solutions for lost and found offices: airports, hotels, and more.",
     
     // Benefits Section
@@ -107,11 +107,11 @@ export const translations: Translations = {
     heroButtonFound: "Fundstück melden",
 
     // Features Section
-    feature1Title: "Suchen",
+    feature1Title: "Suche",
     feature1Desc: "Hier können Sie nach Ihrem verlorenen Gegenstand suchen.",
-    feature2Title: "Melden",
+    feature2Title: "Meldung",
     feature2Desc: "Haben Sie etwas gefunden? Erstellen Sie eine Fundmeldung.",
-    feature3Title: "Verifizierte Benutzer",
+    feature3Title: "Für Unternehmen",
     feature3Desc: "Unsere Lösungen für Fundbüros: Flughäfen, Hotels und mehr.",
 
     // Benefits Section
@@ -197,7 +197,7 @@ export const translations: Translations = {
     feature1Desc: "Vous pouvez rechercher votre objet perdu ici.",
     feature2Title: "Signaler",
     feature2Desc: "Avez-vous trouvé quelque chose? Créez un rapport de découverte.",
-    feature3Title: "Utilisateurs vérifiés",
+    feature3Title: "Pour les entreprises",
     feature3Desc: "Nos solutions pour les bureaux des objets trouvés: aéroports, hôtels, etc.",
     
     // Benefits Section
