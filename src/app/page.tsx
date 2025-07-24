@@ -53,17 +53,17 @@ export default function Home() {
       <section className="container max-w-6xl mx-auto py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
           <div className="flex flex-col items-center space-y-4">
-            <Search className="h-10 w-10 text-primary" />
+            <Search className="h-16 w-16 text-primary" />
             <h3 className="font-headline text-3xl font-semibold text-foreground">Search</h3>
             <p className="text-muted-foreground">You can search for your lost item here.</p>
           </div>
           <div className="flex flex-col items-center space-y-4">
-            <FileCheck className="h-10 w-10 text-primary" />
+            <FileCheck className="h-16 w-16 text-primary" />
             <h3 className="font-headline text-3xl font-semibold text-foreground">Report</h3>
             <p className="text-muted-foreground">Have you found something? Create a found report.</p>
           </div>
           <div className="flex flex-col items-center space-y-4">
-            <Building className="h-10 w-10 text-primary" />
+            <Building className="h-16 w-16 text-primary" />
             <h3 className="font-headline text-3xl font-semibold text-foreground">For Businesses</h3>
             <p className="text-muted-foreground">Our solutions for lost and found offices: airports, hotels, and more.</p>
           </div>
