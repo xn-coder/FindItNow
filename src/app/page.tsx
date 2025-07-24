@@ -107,14 +107,6 @@ export default function Home() {
                   </div>
               </div>
               <div className="relative h-80">
-                  <Image
-                      src="https://img.freepik.com/free-vector/people-with-speech-bubbles-illustration_53876-26992.jpg?w=826"
-                      alt="Testimonials illustration"
-                      fill
-                      style={{objectFit:"contain"}}
-                      className="rounded-lg"
-                      data-ai-hint="people talking illustration"
-                  />
               </div>
           </div>
         </div>
