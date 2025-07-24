@@ -15,7 +15,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 export default function Home() {
 
   return (
-    <div className="space-y-20">
+    <div className="space-y-16">
       <section className="py-8 md:py-16">
         <div className="container grid md:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
             <div className="space-y-6">
