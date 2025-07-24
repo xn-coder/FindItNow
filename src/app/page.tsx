@@ -88,7 +88,7 @@ export default function Home() {
       </section>
 
       <section id="testimonials-download" className="py-12 bg-muted/50">
-        <div className="container max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
+        <div className="container max-w-5xl mx-auto grid md:grid-cols-2 gap-16 items-center">
             <div className="space-y-8">
               <h2 className="text-3xl font-bold text-center font-headline">What our users say</h2>
               <div className="flex items-start gap-4">
