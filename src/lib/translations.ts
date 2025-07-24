@@ -16,8 +16,7 @@ export const translations: Translations = {
     
     // Hero Section
     heroTitle1: "Lost or found?",
-    heroSubtitleDE: "Verloren oder gefunden",
-    heroSubtitleFR: "Perdu ou trouvé",
+    heroSubtitle: "Our platform helps you reconnect with your lost belongings. Report lost items, browse found ones, and get reunited quickly.",
     heroButtonLost: "Search for lost items",
     heroButtonFound: "Report found item",
 
@@ -26,7 +25,7 @@ export const translations: Translations = {
     feature1Desc: "You can search for your lost item here.",
     feature2Title: "Report",
     feature2Desc: "Have you found something? Create a found report.",
-    feature3Title: "For Businesses",
+    feature3Title: "Verified Users",
     feature3Desc: "Our solutions for lost and found offices: airports, hotels, and more.",
     
     // Benefits Section
@@ -103,8 +102,7 @@ export const translations: Translations = {
 
     // Hero Section
     heroTitle1: "Verloren oder gefunden?",
-    heroSubtitleDE: "Verloren oder gefunden",
-    heroSubtitleFR: "Perdu ou trouvé",
+    heroSubtitle: "Unsere Plattform hilft Ihnen, Ihre verlorenen Gegenstände wiederzufinden. Melden Sie verlorene Gegenstände, durchsuchen Sie gefundene und werden Sie schnell wiedervereint.",
     heroButtonLost: "Nach verlorenen Gegenständen suchen",
     heroButtonFound: "Fundstück melden",
 
@@ -113,7 +111,7 @@ export const translations: Translations = {
     feature1Desc: "Hier können Sie nach Ihrem verlorenen Gegenstand suchen.",
     feature2Title: "Melden",
     feature2Desc: "Haben Sie etwas gefunden? Erstellen Sie eine Fundmeldung.",
-    feature3Title: "Für Unternehmen",
+    feature3Title: "Verifizierte Benutzer",
     feature3Desc: "Unsere Lösungen für Fundbüros: Flughäfen, Hotels und mehr.",
 
     // Benefits Section
@@ -190,8 +188,7 @@ export const translations: Translations = {
     
     // Hero Section
     heroTitle1: "Perdu ou trouvé?",
-    heroSubtitleDE: "Verloren oder gefunden",
-    heroSubtitleFR: "Perdu ou trouvé",
+    heroSubtitle: "Notre plateforme vous aide à retrouver vos objets perdus. Signalez les objets perdus, parcourez ceux qui ont été trouvés et soyez rapidement réunis.",
     heroButtonLost: "Rechercher des objets perdus",
     heroButtonFound: "Signaler un objet trouvé",
 
@@ -200,7 +197,7 @@ export const translations: Translations = {
     feature1Desc: "Vous pouvez rechercher votre objet perdu ici.",
     feature2Title: "Signaler",
     feature2Desc: "Avez-vous trouvé quelque chose? Créez un rapport de découverte.",
-    feature3Title: "Pour les entreprises",
+    feature3Title: "Utilisateurs vérifiés",
     feature3Desc: "Nos solutions pour les bureaux des objets trouvés: aéroports, hôtels, etc.",
     
     // Benefits Section
