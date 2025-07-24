@@ -108,10 +108,6 @@ export default function LoginPage() {
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Login
               </Button>
-              <Separator className="my-2" />
-              <Button variant="outline" className="w-full" type="button">
-                Login with Google
-              </Button>
             </form>
           </Form>
           <div className="mt-4 text-center text-sm">
