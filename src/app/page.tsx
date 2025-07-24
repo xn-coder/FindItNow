@@ -52,39 +52,21 @@ export default function Home() {
 
       <section className="container max-w-6xl mx-auto py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-          <Card className="bg-transparent border-0 shadow-none">
-            <CardHeader className="items-center">
-              <div className="bg-primary/10 p-4 rounded-full">
-                <Search className="h-8 w-8 text-primary" />
-              </div>
-              <CardTitle className="mt-4 font-headline text-xl">Search</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">You can search for your lost item here.</p>
-            </CardContent>
-          </Card>
-          <Card className="bg-transparent border-0 shadow-none">
-            <CardHeader className="items-center">
-               <div className="bg-primary/10 p-4 rounded-full">
-                <FileCheck className="h-8 w-8 text-primary" />
-              </div>
-              <CardTitle className="mt-4 font-headline text-xl">Report</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">Have you found something? Create a found report.</p>
-            </CardContent>
-          </Card>
-          <Card className="bg-transparent border-0 shadow-none">
-            <CardHeader className="items-center">
-              <div className="bg-primary/10 p-4 rounded-full">
-                <Building className="h-8 w-8 text-primary" />
-              </div>
-              <CardTitle className="mt-4 font-headline text-xl">For Businesses</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">Our solutions for lost and found offices: airports, hotels, and more.</p>
-            </CardContent>
-          </Card>
+          <div className="flex flex-col items-center space-y-4">
+            <Search className="h-10 w-10 text-primary" />
+            <h3 className="font-headline text-2xl font-semibold">Search</h3>
+            <p className="text-muted-foreground">You can search for your lost item here.</p>
+          </div>
+          <div className="flex flex-col items-center space-y-4">
+            <FileCheck className="h-10 w-10 text-primary" />
+            <h3 className="font-headline text-2xl font-semibold">Report</h3>
+            <p className="text-muted-foreground">Have you found something? Create a found report.</p>
+          </div>
+          <div className="flex flex-col items-center space-y-4">
+            <Building className="h-10 w-10 text-primary" />
+            <h3 className="font-headline text-2xl font-semibold">For Businesses</h3>
+            <p className="text-muted-foreground">Our solutions for lost and found offices: airports, hotels, and more.</p>
+          </div>
         </div>
       </section>
       
