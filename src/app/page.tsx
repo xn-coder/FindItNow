@@ -37,7 +37,14 @@ export default function Home() {
                 </div>
             </div>
              <div className="flex justify-center">
-             
+              <Image
+                src="https://img.freepik.com/free-vector/lost-and-found-banner-with-things-in-boxes_107791-11158.jpg?w=826"
+                alt="Illustration of people looking at lost and found items"
+                width={500}
+                height={400}
+                className="rounded-lg"
+                data-ai-hint="lost and found"
+              />
             </div>
         </div>
       </section>
