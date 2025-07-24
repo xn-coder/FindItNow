@@ -30,7 +30,7 @@ export default function Home() {
                 </p>
                 <div className="flex flex-col justify-start items-start gap-4">
                     <Button asChild size="lg" className="w-full shadow-lg hover:shadow-xl transition-shadow py-4 px-10 text-xl h-auto">
-                    <Link href="/report-lost">{t('heroButtonLost')}</Link>
+                    <Link href="/browse">{t('heroButtonLost')}<Search /></Link>
                     </Button>
                     <Button asChild size="lg" variant="outline" className="w-full py-4 px-10 text-xl h-auto border-2 border-foreground">
                     <Link href="/report-found">{t('heroButtonFound')}</Link>
@@ -39,12 +39,12 @@ export default function Home() {
             </div>
              <div className="flex justify-center">
               <Image
-                src="/hero.jpg"
-                alt="A person's hands holding a lost wallet found on the ground"
+                src="/hero.png"
+                alt="FindItNow hero image"
                 width={500}
                 height={400}
                 className="rounded-lg object-cover"
-                data-ai-hint="lost wallet"
+                data-ai-hint="lost and found items"
               />
             </div>
         </div>
@@ -52,7 +52,7 @@ export default function Home() {
 
       <section className="container max-w-6xl mx-auto py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-          <div className="flex flex-col items-center space-y-4">
+          <Link href="/browse" className="flex flex-col items-center space-y-4 p-4 rounded-lg hover:bg-muted transition-colors">
             <Image 
               src="/search.jpg"
               alt="Search icon"
@@ -62,8 +62,8 @@ export default function Home() {
             />
             <h3 className="font-headline text-3xl font-semibold text-foreground">{t('feature1Title')}</h3>
             <p className="text-muted-foreground">{t('feature1Desc')}</p>
-          </div>
-          <div className="flex flex-col items-center space-y-4">
+          </Link>
+          <div className="flex flex-col items-center space-y-4 p-4 rounded-lg">
             <Image 
               src="/report.jpg"
               alt="Report icon"
@@ -74,7 +74,7 @@ export default function Home() {
             <h3 className="font-headline text-3xl font-semibold text-foreground">{t('feature2Title')}</h3>
             <p className="text-muted-foreground">{t('feature2Desc')}</p>
           </div>
-          <div className="flex flex-col items-center space-y-4">
+          <div className="flex flex-col items-center space-y-4 p-4 rounded-lg">
             <Image 
               src="/business.jpg"
               alt="Business icon"
