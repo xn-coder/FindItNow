@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -29,7 +30,7 @@ export default function Home() {
                  <p className="text-lg text-muted-foreground -mt-4">
                     {t('heroSubtitleFR')}
                 </p>
-                <div className="flex flex-col sm:flex-row justify-start items-start gap-4">
+                <div className="flex flex-col justify-start items-start gap-4">
                     <Button asChild size="lg" className="w-full sm:w-auto shadow-lg hover:shadow-xl transition-shadow">
                     <Link href="/report-lost">{t('heroButtonLost')}</Link>
                     </Button>
