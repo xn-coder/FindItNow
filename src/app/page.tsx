@@ -1,10 +1,11 @@
 
+
 'use client';
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { FilePlus, Sparkles, ShieldCheck, Zap, Users, ArrowRight, MessageSquare, UserCheck, Share2, Star, Quote, Check } from 'lucide-react';
+import { FileCheck, Sparkles, Building, Zap, Users, ArrowRight, MessageSquare, UserCheck, Share2, Star, Quote, Check, Search } from 'lucide-react';
 import Image from 'next/image';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { AppStoreIcon, GooglePlayIcon, SecureReportsIcon, VerifiedUsersIcon, FastMatchingIcon } from '@/components/icons';
@@ -49,6 +50,44 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="container max-w-6xl mx-auto py-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+          <Card className="bg-transparent border-0 shadow-none">
+            <CardHeader className="items-center">
+              <div className="bg-primary/10 p-4 rounded-full">
+                <Search className="h-8 w-8 text-primary" />
+              </div>
+              <CardTitle className="mt-4 font-headline text-xl">Search</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">You can search for your lost item here.</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-transparent border-0 shadow-none">
+            <CardHeader className="items-center">
+               <div className="bg-primary/10 p-4 rounded-full">
+                <FileCheck className="h-8 w-8 text-primary" />
+              </div>
+              <CardTitle className="mt-4 font-headline text-xl">Report</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">Have you found something? Create a found report.</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-transparent border-0 shadow-none">
+            <CardHeader className="items-center">
+              <div className="bg-primary/10 p-4 rounded-full">
+                <Building className="h-8 w-8 text-primary" />
+              </div>
+              <CardTitle className="mt-4 font-headline text-xl">For Businesses</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">Our solutions for lost and found offices: airports, hotels, and more.</p>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+      
       <section id="features" className="py-12">
         <div className="container max-w-6xl mx-auto grid md:grid-cols-2 gap-x-16 gap-y-12">
           
