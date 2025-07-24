@@ -39,7 +39,7 @@ export default function Home() {
             </div>
              <div className="flex justify-center">
               <Image
-                src="/hero.jpg"
+                src="/hero.png"
                 alt="A person's hands holding a lost wallet found on the ground"
                 width={500}
                 height={400}
