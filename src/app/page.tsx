@@ -80,40 +80,31 @@ export default function Home() {
          </div>
       </section>
 
-      <section id="testimonials" className="py-12">
-        <div className="container max-w-6xl mx-auto">
-           <h2 className="text-3xl font-bold text-center font-headline mb-12">What our users say</h2>
-          <div className="grid md:grid-cols-2 gap-16 items-center">
-              <div className="space-y-8">
-                  <div className="flex items-start gap-4">
-                      <Avatar className="w-16 h-16 border-2 border-primary">
-                          <AvatarImage src="https://img.freepik.com/free-photo/pretty-smiling-joyfully-female-with-fair-hair-dressed-casually-looking-with-satisfaction_176420-15187.jpg?semt=ais_hybrid&w=740" alt="Sarah's avatar" data-ai-hint="woman face"/>
-                          <AvatarFallback>S</AvatarFallback>
-                      </Avatar>
-                      <div>
-                          <blockquote className="text-lg font-medium leading-relaxed">"A valuable service that really works!"</blockquote>
-                          <p className="font-semibold mt-2">Sarah</p>
-                      </div>
-                  </div>
-                    <div className="flex items-start gap-4">
-                      <div className="flex-grow">
-                            <blockquote className="text-lg font-medium leading-relaxed text-right">"Highly recommend this platform for lost items"</blockquote>
-                          <p className="font-semibold mt-2 text-right">Thomas</p>
-                      </div>
-                        <Avatar className="w-16 h-16 border-2 border-primary">
-                          <AvatarImage src="https://images.unsplash.com/photo-1624421998513-77a9ebb43d0d?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YW1lcmljYW4lMjBib3l8ZW58MHx8MHx8fDA%3D" alt="Thomas' avatar" data-ai-hint="man face"/>
-                          <AvatarFallback>T</AvatarFallback>
-                      </Avatar>
+      <section id="testimonials-download" className="py-12 bg-muted/50">
+        <div className="container max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
+            <div className="space-y-8">
+              <h2 className="text-3xl font-bold text-center font-headline">What our users say</h2>
+              <div className="flex items-start gap-4">
+                  <Avatar className="w-16 h-16 border-2 border-primary">
+                      <AvatarImage src="https://img.freepik.com/free-photo/pretty-smiling-joyfully-female-with-fair-hair-dressed-casually-looking-with-satisfaction_176420-15187.jpg?semt=ais_hybrid&w=740" alt="Sarah's avatar" data-ai-hint="woman face"/>
+                      <AvatarFallback>S</AvatarFallback>
+                  </Avatar>
+                  <div>
+                      <blockquote className="text-lg font-medium leading-relaxed">"A valuable service that really works!"</blockquote>
+                      <p className="font-semibold mt-2">Sarah</p>
                   </div>
               </div>
-              <div className="relative h-80">
+                <div className="flex items-start gap-4">
+                  <div className="flex-grow">
+                        <blockquote className="text-lg font-medium leading-relaxed text-right">"Highly recommend this platform for lost items"</blockquote>
+                      <p className="font-semibold mt-2 text-right">Thomas</p>
+                  </div>
+                    <Avatar className="w-16 h-16 border-2 border-primary">
+                      <AvatarImage src="https://images.unsplash.com/photo-1624421998513-77a9ebb43d0d?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YW1lcmljYW4lMjBib3l8ZW58MHx8MHx8fDA%3D" alt="Thomas' avatar" data-ai-hint="man face"/>
+                      <AvatarFallback>T</AvatarFallback>
+                  </Avatar>
               </div>
           </div>
-        </div>
-      </section>
-
-      <section id="download-app" className="py-12 bg-muted/50">
-        <div className="container max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
           <div className="text-center md:text-left">
             <h2 className="text-3xl font-bold font-headline">Track &amp; report on the go</h2>
             <p className="mt-4 text-lg text-muted-foreground">
@@ -136,8 +127,6 @@ export default function Home() {
                </Button>
             </div>
           </div>
-           <div className="flex justify-center">
-            </div>
         </div>
       </section>
 
