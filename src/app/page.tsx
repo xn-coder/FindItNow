@@ -144,9 +144,9 @@ export default function Home() {
             <p className="text-muted-foreground mt-2">Here's what people are saying about FindItNow.</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card className="flex flex-col bg-card transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+            <Card className="flex flex-col bg-background transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
               <CardContent className="p-6 flex-grow space-y-4">
-                 <Quote className="h-8 w-8 text-primary/50" />
+                 <Quote className="h-6 w-6 text-primary/70" />
                 <div className="flex gap-1 mb-2">
                     <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
                     <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
@@ -154,9 +154,9 @@ export default function Home() {
                     <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
                     <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
                 </div>
-                <blockquote className="text-lg font-medium leading-relaxed">"This platform is a lifesaver! I lost my wallet and got it back within a day. The process was so simple."</blockquote>
+                <blockquote className="text-lg font-medium leading-relaxed flex-grow">"This platform is a lifesaver! I lost my wallet and got it back within a day. The process was so simple."</blockquote>
               </CardContent>
-              <CardFooter className="p-6 pt-0 mt-auto">
+              <CardFooter className="p-6 pt-4 mt-auto">
                 <div className="flex items-center gap-4">
                   <Avatar className="w-12 h-12">
                     <AvatarImage src="https://placehold.co/100x100" alt="User 1" data-ai-hint="woman face"/>
@@ -169,9 +169,9 @@ export default function Home() {
                 </div>
               </CardFooter>
             </Card>
-            <Card className="flex flex-col bg-card transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+            <Card className="flex flex-col bg-background transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
               <CardContent className="p-6 flex-grow space-y-4">
-                 <Quote className="h-8 w-8 text-primary/50" />
+                 <Quote className="h-6 w-6 text-primary/70" />
                 <div className="flex gap-1 mb-2">
                     <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
                     <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
@@ -179,9 +179,9 @@ export default function Home() {
                     <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
                     <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
                 </div>
-                <blockquote className="text-lg font-medium leading-relaxed">"I found a phone and reported it here. The owner contacted me the same evening. So glad I could help!"</blockquote>
+                <blockquote className="text-lg font-medium leading-relaxed flex-grow">"I found a phone and reported it here. The owner contacted me the same evening. So glad I could help!"</blockquote>
               </CardContent>
-              <CardFooter className="p-6 pt-0 mt-auto">
+              <CardFooter className="p-6 pt-4 mt-auto">
                  <div className="flex items-center gap-4">
                   <Avatar className="w-12 h-12">
                     <AvatarImage src="https://placehold.co/100x100" alt="User 2" data-ai-hint="man face"/>
@@ -194,9 +194,9 @@ export default function Home() {
                 </div>
               </CardFooter>
             </Card>
-            <Card className="flex flex-col bg-card transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+            <Card className="flex flex-col bg-background transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
               <CardContent className="p-6 flex-grow space-y-4">
-                 <Quote className="h-8 w-8 text-primary/50" />
+                 <Quote className="h-6 w-6 text-primary/70" />
                 <div className="flex gap-1 mb-2">
                     <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
                     <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
@@ -204,9 +204,9 @@ export default function Home() {
                     <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
                     <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
                 </div>
-                <blockquote className="text-lg font-medium leading-relaxed">"The AI matching feature is brilliant. It suggested a match for my lost keys that I never would have found on my own."</blockquote>
+                <blockquote className="text-lg font-medium leading-relaxed flex-grow">"The AI matching feature is brilliant. It suggested a match for my lost keys that I never would have found on my own."</blockquote>
               </CardContent>
-              <CardFooter className="p-6 pt-0 mt-auto">
+              <CardFooter className="p-6 pt-4 mt-auto">
                  <div className="flex items-center gap-4">
                   <Avatar className="w-12 h-12">
                     <AvatarImage src="https://placehold.co/100x100" alt="User 3" data-ai-hint="woman face"/>
