@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { FilePlus, Sparkles, ShieldCheck, Zap, Users, ArrowRight, MessageSquare, UserCheck, Share2, Star, Quote } from 'lucide-react';
+import { FilePlus, Sparkles, ShieldCheck, Zap, Users, ArrowRight, MessageSquare, UserCheck, Share2, Star, Quote, Check } from 'lucide-react';
 import Image from 'next/image';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { AppStoreIcon, GooglePlayIcon, SecureReportsIcon, VerifiedUsersIcon, FastMatchingIcon } from '@/components/icons';
@@ -49,91 +49,85 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="how-it-works" className="py-12">
-         <div className="container max-w-6xl mx-auto">
-            <h2 className="text-3xl font-bold text-center font-headline">How it works</h2>
-            <div className="mt-12 grid md:grid-cols-3 gap-y-12 gap-x-8 text-center">
-                <div className="flex flex-col items-center gap-4">
-                    <FilePlus className="h-12 w-12 text-black" strokeWidth={1.5}/>
-                    <h3 className="font-semibold text-xl">Submit report</h3>
-                    <p className="text-muted-foreground">File a report to list your lost or found item</p>
-                </div>
-                 <div className="flex flex-col items-center gap-4">
-                    <Share2 className="h-12 w-12 text-black" strokeWidth={1.5}/>
-                    <h3 className="font-semibold text-xl">AI matches items</h3>
-                    <p className="text-muted-foreground">Our AI finds possible matches automatically</p>
-                </div>
-                 <div className="flex flex-col items-center gap-4">
-                    <UserCheck className="h-12 w-12 text-black" strokeWidth={1.5}/>
-                    <h3 className="font-semibold text-xl">Verified users</h3>
-                    <p className="text-muted-foreground">Follow instructions to reclaim your property</p>
-                </div>
-                 <div className="flex flex-col items-center gap-4">
-                    <SecureReportsIcon className="h-10 w-10 text-black" />
-                    <h3 className="font-semibold text-xl">Secure reports</h3>
-                    <p className="text-muted-foreground">Your information is protected</p>
-                </div>
-                 <div className="flex flex-col items-center gap-4">
-                    <FastMatchingIcon className="h-10 w-10 text-black" />
-                    <h3 className="font-semibold text-xl">Fast matching</h3>
-                    <p className="text-muted-foreground">Get results in less time</p>
-                </div>
-                 <div className="flex flex-col items-center gap-4">
-                    <VerifiedUsersIcon className="h-10 w-10 text-black" />
-                    <h3 className="font-semibold text-xl">Verified users</h3>
-                    <p className="text-muted-foreground">Trusted by 1,000+ users</p>
-                </div>
+      <section id="features" className="py-12">
+        <div className="container max-w-6xl mx-auto grid md:grid-cols-2 gap-x-16 gap-y-12">
+          
+          {/* Column 1: Benefits & Success Story */}
+          <div className="space-y-12">
+            <div>
+              <h2 className="text-3xl font-bold font-headline mb-6">Benefits</h2>
+              <ul className="space-y-4">
+                <li className="flex items-center gap-3">
+                  <Check className="h-6 w-6 text-primary" />
+                  <span className="text-lg">Save time and effort</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <Check className="h-6 w-6 text-primary" />
+                  <span className="text-lg">Receive notifications</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <Check className="h-6 w-6 text-primary" />
+                  <span className="text-lg">More successful matches</span>
+                </li>
+              </ul>
             </div>
-         </div>
-      </section>
+            <div>
+              <h2 className="text-3xl font-bold font-headline mb-6">Success stories</h2>
+              <div className="flex items-center gap-6">
+                <Avatar className="w-20 h-20 border-2 border-primary">
+                  <AvatarImage src="https://img.freepik.com/free-photo/pretty-smiling-joyfully-female-with-fair-hair-dressed-casually-looking-with-satisfaction_176420-15187.jpg?semt=ais_hybrid&w=740" alt="Anna Muller's avatar" data-ai-hint="woman face"/>
+                  <AvatarFallback>AM</AvatarFallback>
+                </Avatar>
+                <div>
+                  <blockquote className="text-lg italic text-foreground/80">"I found my laptop using this platform the very next day, I'm very grateful!"</blockquote>
+                  <p className="font-semibold mt-2 text-muted-foreground">- Anna Muller</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Column 2: Download App & FAQ */}
+          <div className="space-y-12">
+            <div>
+              <h2 className="text-3xl font-bold font-headline mb-2">Download our app</h2>
+              <p className="text-lg text-muted-foreground mb-6">Find lost or found items on the go</p>
+              <div className="flex gap-4">
+                 <Button variant="outline" size="lg" className="flex items-center gap-2 bg-background h-auto py-2">
+                    <AppStoreIcon className="h-8 w-8"/>
+                    <div>
+                      <p className="text-xs -mb-1 text-left">Download on the</p>
+                      <p className="text-lg font-semibold leading-5">App Store</p>
+                    </div>
+                 </Button>
+                 <Button variant="outline" size="lg" className="flex items-center gap-2 bg-background h-auto py-2">
+                    <GooglePlayIcon className="h-8 w-8"/>
+                    <div>
+                      <p className="text-xs -mb-1 text-left">GET IT ON</p>
+                      <p className="text-lg font-semibold leading-5">Google Play</p>
+                    </div>
+                 </Button>
+              </div>
+            </div>
+            <div className="space-y-3">
+                <Link href="#faq" className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted transition-colors">
+                  <span className="font-medium">How do I report a found item?</span>
+                  <ArrowRight className="h-5 w-5 text-muted-foreground" />
+                </Link>
+                <Link href="#faq" className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted transition-colors">
+                  <span className="font-medium">Is the service free of charge?</span>
+                  <ArrowRight className="h-5 w-5 text-muted-foreground" />
+                </Link>
+                 <Link href="#faq" className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted transition-colors">
+                  <span className="font-medium">How can I edit my listings?</span>
+                  <ArrowRight className="h-5 w-5 text-muted-foreground" />
+                </Link>
+                 <Link href="#faq" className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted transition-colors">
+                  <span className="font-medium">Can I search in another city?</span>
+                  <ArrowRight className="h-5 w-5 text-muted-foreground" />
+                </Link>
+            </div>
+          </div>
 
-      <section id="testimonials-download" className="py-12 bg-muted/50">
-        <div className="container max-w-4xl mx-auto grid md:grid-cols-2 gap-16 items-center">
-            <div className="space-y-8">
-              <h2 className="text-3xl font-bold text-center font-headline">What our users say</h2>
-              <div className="flex items-start gap-4">
-                  <Avatar className="w-20 h-20 border-2 border-primary">
-                      <AvatarImage src="https://img.freepik.com/free-photo/pretty-smiling-joyfully-female-with-fair-hair-dressed-casually-looking-with-satisfaction_176420-15187.jpg?semt=ais_hybrid&w=740" alt="Sarah's avatar" data-ai-hint="woman face"/>
-                      <AvatarFallback>S</AvatarFallback>
-                  </Avatar>
-                  <div>
-                      <blockquote className="text-lg font-medium leading-relaxed">"A valuable service that really works!"</blockquote>
-                      <p className="font-semibold mt-2">Sarah</p>
-                  </div>
-              </div>
-                <div className="flex items-start gap-4">
-                  <div className="flex-grow">
-                        <blockquote className="text-lg font-medium leading-relaxed text-right">"Highly recommend this platform for lost items"</blockquote>
-                      <p className="font-semibold mt-2 text-right">Thomas</p>
-                  </div>
-                    <Avatar className="w-20 h-20 border-2 border-primary">
-                      <AvatarImage src="https://images.unsplash.com/photo-1624421998513-77a9ebb43d0d?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YW1lcmljYW4lMjBib3l8ZW58MHx8MHx8fDA%3D" alt="Thomas' avatar" data-ai-hint="man face"/>
-                      <AvatarFallback>T</AvatarFallback>
-                  </Avatar>
-              </div>
-          </div>
-          <div className="text-center md:text-left">
-            <h2 className="text-3xl font-bold font-headline">Track &amp; report on the go</h2>
-            <p className="mt-4 text-lg text-muted-foreground">
-              Get our app for Android or iOS to get instant notifications and manage your reports easily.
-            </p>
-            <div className="mt-6 flex justify-center md:justify-start gap-4">
-               <Button variant="outline" size="lg" className="flex items-center gap-2 bg-background">
-                  <GooglePlayIcon className="h-6 w-6"/>
-                  <div>
-                    <p className="text-xs -mb-1">Get on</p>
-                    <p className="text-base font-semibold">Google Play</p>
-                  </div>
-               </Button>
-               <Button variant="outline" size="lg" className="flex items-center gap-2 bg-background">
-                  <AppStoreIcon className="h-6 w-6"/>
-                  <div>
-                    <p className="text-xs -mb-1">Download on the</p>
-                    <p className="text-base font-semibold">App Store</p>
-                  </div>
-               </Button>
-            </div>
-          </div>
         </div>
       </section>
 
