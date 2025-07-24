@@ -85,7 +85,7 @@ export default function Home() {
             <div className="space-y-8">
               <h2 className="text-3xl font-bold text-center font-headline">What our users say</h2>
               <div className="flex items-start gap-4">
-                  <Avatar className="w-16 h-16 border-2 border-primary">
+                  <Avatar className="w-20 h-20 border-2 border-primary">
                       <AvatarImage src="https://img.freepik.com/free-photo/pretty-smiling-joyfully-female-with-fair-hair-dressed-casually-looking-with-satisfaction_176420-15187.jpg?semt=ais_hybrid&w=740" alt="Sarah's avatar" data-ai-hint="woman face"/>
                       <AvatarFallback>S</AvatarFallback>
                   </Avatar>
@@ -99,7 +99,7 @@ export default function Home() {
                         <blockquote className="text-lg font-medium leading-relaxed text-right">"Highly recommend this platform for lost items"</blockquote>
                       <p className="font-semibold mt-2 text-right">Thomas</p>
                   </div>
-                    <Avatar className="w-16 h-16 border-2 border-primary">
+                    <Avatar className="w-20 h-20 border-2 border-primary">
                       <AvatarImage src="https://images.unsplash.com/photo-1624421998513-77a9ebb43d0d?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YW1lcmljYW4lMjBib3l8ZW58MHx8MHx8fDA%3D" alt="Thomas' avatar" data-ai-hint="man face"/>
                       <AvatarFallback>T</AvatarFallback>
                   </Avatar>
@@ -167,7 +167,7 @@ export default function Home() {
                 <AccordionItem value="item-6">
                     <AccordionTrigger className="font-semibold text-lg text-left">Is my personal information safe?</AccordionTrigger>
                     <AccordionContent className="text-muted-foreground">
-                        Yes, we take your privacy seriously. Your contact information is only used for verification and to connect you with a potential owner or finder. It is not displayed publicly on the website.
+                        Yes, we take your privacy seriously. Your contact information is only for verification and to connect you with a potential owner or finder. It is not displayed publicly on the website.
                     </AccordionContent>
                 </AccordionItem>
             </Accordion>
