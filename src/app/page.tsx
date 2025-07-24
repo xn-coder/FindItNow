@@ -36,7 +36,7 @@ export default function Home() {
                     </Button>
                 </div>
             </div>
-             <div className="hidden md:flex justify-center">
+             <div className="flex justify-center">
               <Image 
                 src="https://img.freepik.com/free-vector/employment-insurance-abstract-concept_335657-3057.jpg?w=740" 
                 alt="Lost and found items" 
