@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import Link from 'next/link';
@@ -65,7 +66,7 @@ export default function Home() {
             <p className="text-muted-foreground">{t('feature2Desc')}</p>
           </div>
           <div className="flex flex-col items-center space-y-4">
-            <Building className="h-20 w-20 text-foreground" />
+            <UserCheck className="h-20 w-20 text-foreground" />
             <h3 className="font-headline text-3xl font-semibold text-foreground">{t('feature3Title')}</h3>
             <p className="text-muted-foreground">{t('feature3Desc')}</p>
           </div>
