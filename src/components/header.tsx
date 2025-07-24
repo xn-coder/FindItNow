@@ -8,6 +8,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { useState, useContext } from "react";
 import { AuthContext } from "@/context/auth-context";
 import { useRouter } from "next/navigation";
+import { LanguageContext } from "@/context/language-context";
+import { cn } from "@/lib/utils";
 
 
 const allNavLinks = [
@@ -23,12 +25,19 @@ const navLinks = process.env.NEXT_PUBLIC_MAP_ENABLED === 'false'
 export default function Header() {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, logout } = useContext(AuthContext);
+  const { language, setLanguage, t } = useContext(LanguageContext);
   const router = useRouter();
 
   const handleLogout = () => {
     logout();
     router.push('/');
   }
+  
+  const languages = [
+    { code: 'de', name: 'DE' },
+    { code: 'en', name: 'EN' },
+    { code: 'fr', name: 'FR' },
+  ]
 
   return (
     <header className="bg-card/80 backdrop-blur-lg sticky top-0 z-50 border-b">
@@ -41,16 +50,16 @@ export default function Header() {
         <nav className="hidden md:flex items-center gap-6">
           {navLinks.map((link) => (
             <Link key={link.href} href={link.href} className="text-sm font-medium text-foreground/70 transition-colors hover:text-primary">
-              {link.label}
+              {t(link.label.toLowerCase().replace(' ', ''))}
             </Link>
           ))}
           {user && (
             <>
              <Link href="/account" className="text-sm font-medium text-foreground/70 transition-colors hover:text-primary">
-                My Account
+                {t('myaccount')}
             </Link>
              <Link href="/enquiries" className="text-sm font-medium text-foreground/70 transition-colors hover:text-primary">
-                Enquiries
+                {t('enquiries')}
             </Link>
             </>
           )}
@@ -58,17 +67,26 @@ export default function Header() {
 
         <div className="hidden md:flex items-center gap-4">
            <div className="flex gap-2 text-sm font-medium">
-                <Link href="#" className="text-foreground/70 hover:text-primary">DE</Link>
-                <Link href="#" className="text-foreground/70 hover:text-primary">EN</Link>
-                <Link href="#" className="text-foreground/70 hover:text-primary">FR</Link>
+                {languages.map((lang) => (
+                    <button
+                        key={lang.code}
+                        onClick={() => setLanguage(lang.code as 'en' | 'de' | 'fr')}
+                        className={cn(
+                            "hover:text-primary",
+                            language === lang.code ? "text-primary font-bold underline underline-offset-4" : "text-foreground/70"
+                        )}
+                    >
+                        {lang.name}
+                    </button>
+                ))}
             </div>
           {user ? (
              <Button variant="ghost" size="sm" onClick={handleLogout}>
-                Logout
+                {t('logout')}
             </Button>
           ) : (
             <Button asChild variant="ghost" size="sm">
-                <Link href="/login">Login</Link>
+                <Link href="/login">{t('login')}</Link>
             </Button>
           )}
         </div>
@@ -95,37 +113,37 @@ export default function Header() {
                   {navLinks.map((link) => (
                     <Link key={link.href} href={link.href} className="flex items-center gap-3 rounded-md p-2 text-base font-medium hover:bg-muted" onClick={() => setMobileMenuOpen(false)}>
                       <link.icon className="h-5 w-5 text-primary" />
-                      {link.label}
+                      {t(link.label.toLowerCase().replace(' ', ''))}
                     </Link>
                   ))}
                   {user && (
                     <>
                      <Link href="/account" className="flex items-center gap-3 rounded-md p-2 text-base font-medium hover:bg-muted" onClick={() => setMobileMenuOpen(false)}>
                       <User className="h-5 w-5 text-primary" />
-                      My Account
+                      {t('myaccount')}
                     </Link>
                      <Link href="/enquiries" className="flex items-center gap-3 rounded-md p-2 text-base font-medium hover:bg-muted" onClick={() => setMobileMenuOpen(false)}>
                       <Inbox className="h-5 w-5 text-primary" />
-                      Enquiries
+                      {t('enquiries')}
                     </Link>
                     </>
                   )}
                 </nav>
                 <div className="mt-8 flex flex-col gap-2">
                   <Button asChild>
-                    <Link href="/report-lost" onClick={() => setMobileMenuOpen(false)}>Search for lost items</Link>
+                    <Link href="/report-lost" onClick={() => setMobileMenuOpen(false)}>{t('heroButtonLost')}</Link>
                   </Button>
                   <Button asChild variant="outline">
-                    <Link href="/report-found" onClick={() => setMobileMenuOpen(false)}>Report found item</Link>
+                    <Link href="/report-found" onClick={() => setMobileMenuOpen(false)}>{t('heroButtonFound')}</Link>
                   </Button>
                   {user ? (
                     <Button variant="ghost" className="mt-4 flex items-center gap-3" onClick={() => { handleLogout(); setMobileMenuOpen(false); }}>
                        <LogOut className="h-5 w-5" />
-                       Logout
+                       {t('logout')}
                     </Button>
                   ) : (
                     <Button asChild variant="ghost" className="mt-4">
-                        <Link href="/login" onClick={() => setMobileMenuOpen(false)}>Login / Sign Up</Link>
+                        <Link href="/login" onClick={() => setMobileMenuOpen(false)}>{t('login')} / {t('signup')}</Link>
                     </Button>
                   )}
                 </div>
