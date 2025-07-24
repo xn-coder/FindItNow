@@ -1,8 +1,14 @@
 
+"use client";
+
 import Link from "next/link"
 import { Sprout } from "lucide-react"
+import { useContext } from "react";
+import { LanguageContext } from "@/context/language-context";
 
 export default function Footer() {
+  const { t } = useContext(LanguageContext);
+  
   return (
     <footer className="bg-gray-900 text-gray-300">
       <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
@@ -12,34 +18,34 @@ export default function Footer() {
                     <Sprout className="h-6 w-6 text-primary" />
                     FindItNow
                 </Link>
-                <p className="text-sm text-gray-400">Reuniting people with their belongings.</p>
+                <p className="text-sm text-gray-400">{t('footerReuniting')}</p>
             </div>
              <div className="space-y-2">
-                <h4 className="font-semibold text-white">Company</h4>
+                <h4 className="font-semibold text-white">{t('footerCompany')}</h4>
                 <nav className="flex flex-col gap-1">
-                    <Link href="#" className="text-sm text-gray-400 hover:text-white">About</Link>
-                    <Link href="#" className="text-sm text-gray-400 hover:text-white">Press</Link>
-                    <Link href="#" className="text-sm text-gray-400 hover:text-white">Careers</Link>
+                    <Link href="#" className="text-sm text-gray-400 hover:text-white">{t('footerAbout')}</Link>
+                    <Link href="#" className="text-sm text-gray-400 hover:text-white">{t('footerPress')}</Link>
+                    <Link href="#" className="text-sm text-gray-400 hover:text-white">{t('footerCareers')}</Link>
                 </nav>
             </div>
              <div className="space-y-2">
-                <h4 className="font-semibold text-white">Legal</h4>
+                <h4 className="font-semibold text-white">{t('footerLegal')}</h4>
                 <nav className="flex flex-col gap-1">
-                    <Link href="#" className="text-sm text-gray-400 hover:text-white">Privacy Policy</Link>
-                    <Link href="#" className="text-sm text-gray-400 hover:text-white">Terms of Service</Link>
+                    <Link href="#" className="text-sm text-gray-400 hover:text-white">{t('footerPrivacy')}</Link>
+                    <Link href="#" className="text-sm text-gray-400 hover:text-white">{t('footerTerms')}</Link>
                 </nav>
             </div>
              <div className="space-y-2">
-                <h4 className="font-semibold text-white">Connect</h4>
+                <h4 className="font-semibold text-white">{t('footerConnect')}</h4>
                 <nav className="flex flex-col gap-1">
-                    <Link href="#" className="text-sm text-gray-400 hover:text-white">Contact</Link>
-                    <Link href="#" className="text-sm text-gray-400 hover:text-white">Twitter</Link>
-                    <Link href="#" className="text-sm text-gray-400 hover:text-white">LinkedIn</Link>
+                    <Link href="#" className="text-sm text-gray-400 hover:text-white">{t('footerContact')}</Link>
+                    <Link href="#" className="text-sm text-gray-400 hover:text-white">{t('footerTwitter')}</Link>
+                    <Link href="#" className="text-sm text-gray-400 hover:text-white">{t('footerLinkedIn')}</Link>
                 </nav>
             </div>
         </div>
         <div className="mt-12 text-center text-sm text-gray-500 border-t border-gray-800 pt-8">
-          <p>&copy; {new Date().getFullYear()} FindItNow. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} FindItNow. {t('footerRights')}</p>
         </div>
       </div>
     </footer>

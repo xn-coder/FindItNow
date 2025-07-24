@@ -75,6 +75,21 @@ export const translations: Translations = {
     faq5Content: "You will receive an email notification with the claimant's message. It is your responsibility to review their proof of ownership and coordinate the return. Always meet in a public, safe location.",
     faq6Title: "Is my personal information safe?",
     faq6Content: "Yes, we take your privacy seriously. Your contact information is only for verification and to connect you with a potential owner or finder. It is not displayed publicly on the website.",
+
+    // Footer
+    footerReuniting: "Reuniting people with their belongings.",
+    footerCompany: "Company",
+    footerAbout: "About",
+    footerPress: "Press",
+    footerCareers: "Careers",
+    footerLegal: "Legal",
+    footerPrivacy: "Privacy Policy",
+    footerTerms: "Terms of Service",
+    footerConnect: "Connect",
+    footerContact: "Contact",
+    footerTwitter: "Twitter",
+    footerLinkedIn: "LinkedIn",
+    footerRights: "All rights reserved.",
   },
   de: {
     // Header
@@ -147,6 +162,21 @@ export const translations: Translations = {
     faq5Content: "Sie erhalten eine E-Mail-Benachrichtigung mit der Nachricht des Anspruchstellers. Es liegt in Ihrer Verantwortung, deren Eigentumsnachweis zu überprüfen und die Rückgabe zu koordinieren. Treffen Sie sich immer an einem öffentlichen, sicheren Ort.",
     faq6Title: "Sind meine persönlichen Daten sicher?",
     faq6Content: "Ja, wir nehmen Ihre Privatsphäre ernst. Ihre Kontaktinformationen dienen nur zur Überprüfung und um Sie mit einem potenziellen Besitzer oder Finder zu verbinden. Sie werden nicht öffentlich auf der Website angezeigt.",
+
+    // Footer
+    footerReuniting: "Wir bringen Menschen wieder mit ihren Sachen zusammen.",
+    footerCompany: "Unternehmen",
+    footerAbout: "Über uns",
+    footerPress: "Presse",
+    footerCareers: "Karriere",
+    footerLegal: "Rechtliches",
+    footerPrivacy: "Datenschutz-Bestimmungen",
+    footerTerms: "Nutzungsbedingungen",
+    footerConnect: "Verbinden",
+    footerContact: "Kontakt",
+    footerTwitter: "Twitter",
+    footerLinkedIn: "LinkedIn",
+    footerRights: "Alle Rechte vorbehalten.",
   },
   fr: {
     // Header
@@ -219,6 +249,21 @@ export const translations: Translations = {
     faq5Content: "Vous recevrez une notification par e-mail avec le message du demandeur. Il est de votre responsabilité d'examiner leur preuve de propriété et de coordonner le retour. Rencontrez-vous toujours dans un lieu public et sûr.",
     faq6Title: "Mes informations personnelles sont-elles en sécurité?",
     faq6Content: "Oui, nous prenons votre vie privée au sérieux. Vos coordonnées ne servent qu'à la vérification et à vous mettre en contact avec un propriétaire ou un trouveur potentiel. Elles ne sont pas affichées publiquement sur le site Web.",
+
+     // Footer
+    footerReuniting: "Réunir les gens avec leurs biens.",
+    footerCompany: "Entreprise",
+    footerAbout: "À propos",
+    footerPress: "Presse",
+    footerCareers: "Carrières",
+    footerLegal: "Légal",
+    footerPrivacy: "Politique de confidentialité",
+    footerTerms: "Conditions d'utilisation",
+    footerConnect: "Connecter",
+    footerContact: "Contact",
+    footerTwitter: "Twitter",
+    footerLinkedIn: "LinkedIn",
+    footerRights: "Tous les droits sont réservés.",
   }
 };
 
