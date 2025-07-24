@@ -37,14 +37,7 @@ export default function Home() {
                 </div>
             </div>
              <div className="flex justify-center">
-              <Image 
-                src="https://img.freepik.com/free-vector/employment-insurance-abstract-concept_335657-3057.jpg?w=740" 
-                alt="Lost and found items" 
-                width={500} 
-                height={500}
-                className="rounded-lg"
-                data-ai-hint="lost items illustration" 
-              />
+             
             </div>
         </div>
       </section>
@@ -124,6 +117,44 @@ export default function Home() {
                   />
               </div>
           </div>
+        </div>
+      </section>
+
+      <section id="download-app" className="py-12 bg-muted/50">
+        <div className="container max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+          <div className="text-center md:text-left">
+            <h2 className="text-3xl font-bold font-headline">Track &amp; report on the go</h2>
+            <p className="mt-4 text-lg text-muted-foreground">
+              Get our app for Android or iOS to get instant notifications and manage your reports easily.
+            </p>
+            <div className="mt-6 flex justify-center md:justify-start gap-4">
+               <Button variant="outline" size="lg" className="flex items-center gap-2 bg-background">
+                  <GooglePlayIcon className="h-6 w-6"/>
+                  <div>
+                    <p className="text-xs -mb-1">Get on</p>
+                    <p className="text-base font-semibold">Google Play</p>
+                  </div>
+               </Button>
+               <Button variant="outline" size="lg" className="flex items-center gap-2 bg-background">
+                  <AppStoreIcon className="h-6 w-6"/>
+                  <div>
+                    <p className="text-xs -mb-1">Download on the</p>
+                    <p className="text-base font-semibold">App Store</p>
+                  </div>
+               </Button>
+            </div>
+          </div>
+           <div className="flex justify-center">
+                <Image
+                    src="https://img.freepik.com/free-vector/people-holding-mobile-phone-with-map-gps-location_53876-66046.jpg?w=740"
+                    alt="Mobile app illustration"
+                    width={400}
+                    height={400}
+                    style={{objectFit:"contain"}}
+                    className="rounded-lg"
+                    data-ai-hint="mobile phone map illustration"
+                />
+            </div>
         </div>
       </section>
 
