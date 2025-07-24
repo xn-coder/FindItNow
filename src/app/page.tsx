@@ -152,50 +152,6 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="faq" className="py-12 border-t">
-        <div className="container max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold text-center font-headline mb-8">Frequently Asked Questions</h2>
-            <Accordion type="single" collapsible className="w-full grid md:grid-cols-2 gap-x-8 gap-y-2">
-                <AccordionItem value="item-1">
-                    <AccordionTrigger className="font-semibold text-lg text-left">What items can I report?</AccordionTrigger>
-                    <AccordionContent className="text-muted-foreground">
-                    You can report any item you have lost or found. This includes electronics, wallets, keys, accessories, bags, clothing, bottles, toys, documents, and more. If it's lost, someone might find it!
-                    </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="item-2">
-                    <AccordionTrigger className="font-semibold text-lg text-left">How does the matching work?</AccordionTrigger>
-                    <AccordionContent className="text-muted-foreground">
-                    Our system uses the details you provide—like item category, description, location, and date—to find potential matches. Our AI helps to identify similarities between lost and found reports to increase the chances of a successful reunion.
-                    </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="item-3">
-                    <AccordionTrigger className="font-semibold text-lg text-left">Is there a fee to use this service?</AccordionTrigger>
-                    <AccordionContent className="text-muted-foreground">
-                    No, our core service is completely free for individuals to report and search for lost and found items. Our goal is to help reunite people with their belongings.
-                    </AccordionContent>
-                </AccordionItem>
-                 <AccordionItem value="item-4">
-                    <AccordionTrigger className="font-semibold text-lg text-left">How do I claim a found item?</AccordionTrigger>
-                    <AccordionContent className="text-muted-foreground">
-                        If you believe a listed found item is yours, open the item's detail page and use the 'Claim Item' form. Provide specific details that only the owner would know to prove your ownership. The person who found the item will be notified of your claim.
-                    </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="item-5">
-                    <AccordionTrigger className="font-semibold text-lg text-left">What if someone claims my item?</AccordionTrigger>
-                    <AccordionContent className="text-muted-foreground">
-                        You will receive an email notification with the claimant's message. It is your responsibility to review their proof of ownership and coordinate the return. Always meet in a public, safe location.
-                    </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="item-6">
-                    <AccordionTrigger className="font-semibold text-lg text-left">Is my personal information safe?</AccordionTrigger>
-                    <AccordionContent className="text-muted-foreground">
-                        Yes, we take your privacy seriously. Your contact information is only for verification and to connect you with a potential owner or finder. It is not displayed publicly on the website.
-                    </AccordionContent>
-                </AccordionItem>
-            </Accordion>
-        </div>
-      </section>
-
       <section id="new-testimonials" className="py-12 bg-muted/50">
         <div className="container max-w-6xl mx-auto">
           <div className="text-center mb-12">
@@ -279,6 +235,50 @@ export default function Home() {
               </CardFooter>
             </Card>
           </div>
+        </div>
+      </section>
+
+      <section id="faq" className="py-12 border-t">
+        <div className="container max-w-4xl mx-auto">
+            <h2 className="text-3xl font-bold text-center font-headline mb-8">Frequently Asked Questions</h2>
+            <Accordion type="single" collapsible className="w-full grid md:grid-cols-2 gap-x-8 gap-y-2">
+                <AccordionItem value="item-1">
+                    <AccordionTrigger className="font-semibold text-lg text-left">What items can I report?</AccordionTrigger>
+                    <AccordionContent className="text-muted-foreground">
+                    You can report any item you have lost or found. This includes electronics, wallets, keys, accessories, bags, clothing, bottles, toys, documents, and more. If it's lost, someone might find it!
+                    </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="item-2">
+                    <AccordionTrigger className="font-semibold text-lg text-left">How does the matching work?</AccordionTrigger>
+                    <AccordionContent className="text-muted-foreground">
+                    Our system uses the details you provide—like item category, description, location, and date—to find potential matches. Our AI helps to identify similarities between lost and found reports to increase the chances of a successful reunion.
+                    </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="item-3">
+                    <AccordionTrigger className="font-semibold text-lg text-left">Is there a fee to use this service?</AccordionTrigger>
+                    <AccordionContent className="text-muted-foreground">
+                    No, our core service is completely free for individuals to report and search for lost and found items. Our goal is to help reunite people with their belongings.
+                    </AccordionContent>
+                </AccordionItem>
+                 <AccordionItem value="item-4">
+                    <AccordionTrigger className="font-semibold text-lg text-left">How do I claim a found item?</AccordionTrigger>
+                    <AccordionContent className="text-muted-foreground">
+                        If you believe a listed found item is yours, open the item's detail page and use the 'Claim Item' form. Provide specific details that only the owner would know to prove your ownership. The person who found the item will be notified of your claim.
+                    </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="item-5">
+                    <AccordionTrigger className="font-semibold text-lg text-left">What if someone claims my item?</AccordionTrigger>
+                    <AccordionContent className="text-muted-foreground">
+                        You will receive an email notification with the claimant's message. It is your responsibility to review their proof of ownership and coordinate the return. Always meet in a public, safe location.
+                    </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="item-6">
+                    <AccordionTrigger className="font-semibold text-lg text-left">Is my personal information safe?</AccordionTrigger>
+                    <AccordionContent className="text-muted-foreground">
+                        Yes, we take your privacy seriously. Your contact information is only for verification and to connect you with a potential owner or finder. It is not displayed publicly on the website.
+                    </AccordionContent>
+                </AccordionItem>
+            </Accordion>
         </div>
       </section>
     </div>
