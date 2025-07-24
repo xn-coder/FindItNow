@@ -30,7 +30,7 @@ export default function Home() {
                 </p>
                 <div className="flex flex-col justify-start items-start gap-4">
                     <Button asChild size="lg" className="w-full shadow-lg hover:shadow-xl transition-shadow py-4 px-10 text-xl h-auto">
-                    <Link href="/browse">{t('heroButtonLost')}<Search /></Link>
+                    <Link href="/browse">{t('heroButtonLost')}</Link>
                     </Button>
                     <Button asChild size="lg" variant="outline" className="w-full py-4 px-10 text-xl h-auto border-2 border-foreground">
                     <Link href="/report-found">{t('heroButtonFound')}</Link>
