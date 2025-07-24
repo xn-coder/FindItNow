@@ -38,7 +38,7 @@ export default function Home() {
             </div>
              <div className="flex justify-center">
               <Image
-                src="https://img.freepik.com/free-vector/lost-and-found-banner-with-things-in-boxes_107791-11158.jpg?w=826"
+                src="https://img.freepik.com/free-vector/employment-insurance-abstract-concept_335657-3057.jpg?t=st=1753337203~exp=1753340803~hmac=e540540dec3ac212ee2b5912d6254dcb40eadb20b7bd58aad4e8868ee8895d75&w=1380"
                 alt="Illustration of people looking at lost and found items"
                 width={500}
                 height={400}
