@@ -137,15 +137,16 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="new-testimonials" className="py-12">
+      <section id="new-testimonials" className="py-12 bg-muted/50">
         <div className="container max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold font-headline">Loved by our users</h2>
             <p className="text-muted-foreground mt-2">Here's what people are saying about FindItNow.</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card className="flex flex-col">
-              <CardContent className="p-6 flex-grow">
+            <Card className="flex flex-col bg-card transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+              <CardContent className="p-6 flex-grow space-y-4">
+                 <Quote className="h-8 w-8 text-primary/50" />
                 <div className="flex gap-1 mb-2">
                     <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
                     <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
@@ -168,8 +169,9 @@ export default function Home() {
                 </div>
               </CardFooter>
             </Card>
-            <Card className="flex flex-col">
-              <CardContent className="p-6 flex-grow">
+            <Card className="flex flex-col bg-card transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+              <CardContent className="p-6 flex-grow space-y-4">
+                 <Quote className="h-8 w-8 text-primary/50" />
                 <div className="flex gap-1 mb-2">
                     <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
                     <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
@@ -192,8 +194,9 @@ export default function Home() {
                 </div>
               </CardFooter>
             </Card>
-            <Card className="flex flex-col">
-              <CardContent className="p-6 flex-grow">
+            <Card className="flex flex-col bg-card transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+              <CardContent className="p-6 flex-grow space-y-4">
+                 <Quote className="h-8 w-8 text-primary/50" />
                 <div className="flex gap-1 mb-2">
                     <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
                     <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
@@ -266,3 +269,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
