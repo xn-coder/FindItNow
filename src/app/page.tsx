@@ -39,12 +39,12 @@ export default function Home() {
             </div>
              <div className="flex justify-center">
               <Image
-                src="https://img.freepik.com/free-vector/employment-insurance-abstract-concept_335657-3057.jpg?t=st=1753337203~exp=1753340803~hmac=e540540dec3ac212ee2b5912d6254dcb40eadb20b7bd58aad4e8868ee8895d75&w=1380"
-                alt="Illustration of people looking at lost and found items"
+                src="https://images.unsplash.com/photo-1599252515053-2b4f2c0a1f4f?q=80&w=2070&auto=format&fit=crop"
+                alt="A person's hands holding a lost wallet found on the ground"
                 width={500}
                 height={400}
-                className="rounded-lg"
-                data-ai-hint="lost and found"
+                className="rounded-lg object-cover"
+                data-ai-hint="lost wallet"
               />
             </div>
         </div>
