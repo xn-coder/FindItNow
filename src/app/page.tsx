@@ -34,7 +34,7 @@ export default function Home() {
                     <Button asChild size="lg" className="w-full shadow-lg hover:shadow-xl transition-shadow py-4 px-10 text-xl h-auto">
                     <Link href="/report-lost">{t('heroButtonLost')}</Link>
                     </Button>
-                    <Button asChild size="lg" variant="outline" className="w-full py-4 px-10 text-xl h-auto">
+                    <Button asChild size="lg" variant="outline" className="w-full py-4 px-10 text-xl h-auto border-2 border-foreground">
                     <Link href="/report-found">{t('heroButtonFound')}</Link>
                     </Button>
                 </div>
