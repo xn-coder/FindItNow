@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import Link from 'next/link';
@@ -88,46 +87,76 @@ export default function Home() {
          </div>
       </section>
 
-        <section id="testimonials-and-apps" className="py-12">
-            <div className="container grid md:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
-                <div className="space-y-8">
+      <section id="testimonials" className="py-12">
+        <div className="container max-w-6xl mx-auto">
+           <h2 className="text-3xl font-bold text-center font-headline mb-12">What our users say</h2>
+          <div className="grid md:grid-cols-2 gap-16 items-center">
+              <div className="space-y-8">
+                  <div className="flex items-start gap-4">
+                      <Avatar className="w-16 h-16 border-2 border-primary">
+                          <AvatarImage src="https://img.freepik.com/free-photo/pretty-smiling-joyfully-female-with-fair-hair-dressed-casually-looking-with-satisfaction_176420-15187.jpg?semt=ais_hybrid&w=740" alt="Sarah's avatar" data-ai-hint="woman face"/>
+                          <AvatarFallback>S</AvatarFallback>
+                      </Avatar>
+                      <div>
+                          <blockquote className="text-lg font-medium leading-relaxed">"A valuable service that really works!"</blockquote>
+                          <p className="font-semibold mt-2">Sarah</p>
+                      </div>
+                  </div>
                     <div className="flex items-start gap-4">
+                      <div className="flex-grow">
+                            <blockquote className="text-lg font-medium leading-relaxed text-right">"Highly recommend this platform for lost items"</blockquote>
+                          <p className="font-semibold mt-2 text-right">Thomas</p>
+                      </div>
                         <Avatar className="w-16 h-16 border-2 border-primary">
-                            <AvatarImage src="https://img.freepik.com/free-photo/pretty-smiling-joyfully-female-with-fair-hair-dressed-casually-looking-with-satisfaction_176420-15187.jpg?semt=ais_hybrid&w=740" alt="Sarah's avatar" data-ai-hint="woman face"/>
-                            <AvatarFallback>S</AvatarFallback>
-                        </Avatar>
-                        <div>
-                            <blockquote className="text-lg font-medium leading-relaxed">"A valuable service that really works!"</blockquote>
-                            <p className="font-semibold mt-2">Sarah</p>
-                        </div>
-                    </div>
-                     <div className="flex items-start gap-4">
-                        <div className="flex-grow">
-                             <blockquote className="text-lg font-medium leading-relaxed text-right">"Highly recommend this platform for lost items"</blockquote>
-                            <p className="font-semibold mt-2 text-right">Thomas</p>
-                        </div>
-                         <Avatar className="w-16 h-16 border-2 border-primary">
-                            <AvatarImage src="https://images.unsplash.com/photo-1624421998513-77a9ebb43d0d?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YW1lcmljYW4lMjBib3l8ZW58MHx8MHx8fDA%3D" alt="Thomas' avatar" data-ai-hint="man face"/>
-                            <AvatarFallback>T</AvatarFallback>
-                        </Avatar>
-                    </div>
-                </div>
-                 <div className="text-center md:text-left">
-                    <h2 className="text-3xl font-bold font-headline">Track & report on the go</h2>
-                    <p className="mt-2 text-muted-foreground">Get our app for Android or iOS</p>
-                    <div className="mt-6 flex justify-center md:justify-start gap-4">
+                          <AvatarImage src="https://images.unsplash.com/photo-1624421998513-77a9ebb43d0d?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YW1lcmljYW4lMjBib3l8ZW58MHx8MHx8fDA%3D" alt="Thomas' avatar" data-ai-hint="man face"/>
+                          <AvatarFallback>T</AvatarFallback>
+                      </Avatar>
+                  </div>
+              </div>
+              <div className="relative h-80">
+                  <Image
+                      src="https://img.freepik.com/free-vector/people-with-speech-bubbles-illustration_53876-26992.jpg?w=826"
+                      alt="Testimonials illustration"
+                      fill
+                      style={{objectFit:"contain"}}
+                      className="rounded-lg"
+                      data-ai-hint="people talking illustration"
+                  />
+              </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="mobile-apps" className="py-16 bg-muted">
+          <div className="container grid md:grid-cols-2 gap-8 items-center max-w-6xl mx-auto">
+              <div className="text-center md:text-left">
+                  <h2 className="text-3xl font-bold font-headline">Track &amp; report on the go</h2>
+                  <p className="mt-4 text-muted-foreground text-lg">
+                    Get the full experience on your phone. Report items, get notified of matches, and manage your claims, all from our mobile app.
+                  </p>
+                  <div className="mt-8 flex justify-center md:justify-start gap-4">
+                      <Link href="#">
+                          <GooglePlayIcon className="h-12"/>
+                          <span className="sr-only">Get on Google Play</span>
+                      </Link>
                         <Link href="#">
-                            <GooglePlayIcon className="h-12"/>
-                            <span className="sr-only">Get on Google Play</span>
-                        </Link>
-                         <Link href="#">
-                            <AppStoreIcon className="h-12"/>
-                            <span className="sr-only">Download on the App Store</span>
-                        </Link>
-                    </div>
-                </div>
-            </div>
-        </section>
+                          <AppStoreIcon className="h-12"/>
+                          <span className="sr-only">Download on the App Store</span>
+                      </Link>
+                  </div>
+              </div>
+              <div className="relative h-96 hidden md:block">
+                  <Image
+                    src="https://img.freepik.com/free-vector/user-flow-concept-illustration_114360-1552.jpg?w=740"
+                    alt="Mobile app screenshot"
+                    fill
+                    style={{objectFit: "contain"}}
+                    className="drop-shadow-2xl"
+                    data-ai-hint="mobile app interface"
+                  />
+              </div>
+          </div>
+      </section>
 
       <section id="faq" className="py-12 border-t">
         <div className="container max-w-4xl mx-auto">
