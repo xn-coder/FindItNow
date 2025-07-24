@@ -145,15 +145,6 @@ export default function Home() {
             </div>
           </div>
            <div className="flex justify-center">
-                <Image
-                    src="https://img.freepik.com/free-vector/people-holding-mobile-phone-with-map-gps-location_53876-66046.jpg?w=740"
-                    alt="Mobile app illustration"
-                    width={400}
-                    height={400}
-                    style={{objectFit:"contain"}}
-                    className="rounded-lg"
-                    data-ai-hint="mobile phone map illustration"
-                />
             </div>
         </div>
       </section>
