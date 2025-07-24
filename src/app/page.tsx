@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { FilePlus, Sparkles, ShieldCheck, Zap, Users, ArrowRight, MessageSquare, UserCheck, Share2 } from 'lucide-react';
+import { FilePlus, Sparkles, ShieldCheck, Zap, Users, ArrowRight, MessageSquare, UserCheck, Share2, Star, Quote } from 'lucide-react';
 import Image from 'next/image';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { AppStoreIcon, GooglePlayIcon, SecureReportsIcon, VerifiedUsersIcon, FastMatchingIcon } from '@/components/icons';
@@ -137,6 +137,89 @@ export default function Home() {
         </div>
       </section>
 
+      <section id="new-testimonials" className="py-12">
+        <div className="container max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold font-headline">Loved by our users</h2>
+            <p className="text-muted-foreground mt-2">Here's what people are saying about FindItNow.</p>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <Card className="flex flex-col">
+              <CardContent className="p-6 flex-grow">
+                <div className="flex gap-1 mb-2">
+                    <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
+                    <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
+                    <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
+                    <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
+                    <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
+                </div>
+                <blockquote className="text-lg font-medium leading-relaxed">"This platform is a lifesaver! I lost my wallet and got it back within a day. The process was so simple."</blockquote>
+              </CardContent>
+              <CardFooter className="p-6 pt-0 mt-auto">
+                <div className="flex items-center gap-4">
+                  <Avatar className="w-12 h-12">
+                    <AvatarImage src="https://placehold.co/100x100" alt="User 1" data-ai-hint="woman face"/>
+                    <AvatarFallback>MJ</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-semibold">Maria Jones</p>
+                    <p className="text-sm text-muted-foreground">Happy User</p>
+                  </div>
+                </div>
+              </CardFooter>
+            </Card>
+            <Card className="flex flex-col">
+              <CardContent className="p-6 flex-grow">
+                <div className="flex gap-1 mb-2">
+                    <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
+                    <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
+                    <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
+                    <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
+                    <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
+                </div>
+                <blockquote className="text-lg font-medium leading-relaxed">"I found a phone and reported it here. The owner contacted me the same evening. So glad I could help!"</blockquote>
+              </CardContent>
+              <CardFooter className="p-6 pt-0 mt-auto">
+                 <div className="flex items-center gap-4">
+                  <Avatar className="w-12 h-12">
+                    <AvatarImage src="https://placehold.co/100x100" alt="User 2" data-ai-hint="man face"/>
+                    <AvatarFallback>DK</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-semibold">David Kim</p>
+                    <p className="text-sm text-muted-foreground">Good Samaritan</p>
+                  </div>
+                </div>
+              </CardFooter>
+            </Card>
+            <Card className="flex flex-col">
+              <CardContent className="p-6 flex-grow">
+                <div className="flex gap-1 mb-2">
+                    <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
+                    <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
+                    <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
+                    <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
+                    <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
+                </div>
+                <blockquote className="text-lg font-medium leading-relaxed">"The AI matching feature is brilliant. It suggested a match for my lost keys that I never would have found on my own."</blockquote>
+              </CardContent>
+              <CardFooter className="p-6 pt-0 mt-auto">
+                 <div className="flex items-center gap-4">
+                  <Avatar className="w-12 h-12">
+                    <AvatarImage src="https://placehold.co/100x100" alt="User 3" data-ai-hint="woman face"/>
+                    <AvatarFallback>LS</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-semibold">Linda Smith</p>
+                    <p className="text-sm text-muted-foreground">Grateful User</p>
+                  </div>
+                </div>
+              </CardFooter>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       <section id="faq" className="py-12 border-t">
         <div className="container max-w-4xl mx-auto">
             <h2 className="text-3xl font-bold text-center font-headline mb-8">Frequently Asked Questions</h2>
@@ -183,5 +266,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
