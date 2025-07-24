@@ -56,7 +56,18 @@ export default function Home() {
       <section className="container max-w-6xl mx-auto py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
           <div className="flex flex-col items-center space-y-4">
-            <Search className="h-20 w-20 text-foreground" />
+            <svg
+              className="h-20 w-20 text-foreground"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
             <h3 className="font-headline text-3xl font-semibold text-foreground">{t('feature1Title')}</h3>
             <p className="text-muted-foreground">{t('feature1Desc')}</p>
           </div>
@@ -240,7 +251,7 @@ export default function Home() {
           </div>
         </div>
       </section>
-
+      
       <section id="faq" className="py-12 border-t">
         <div className="container max-w-4xl mx-auto">
             <h2 className="text-3xl font-bold text-center font-headline mb-8">{t('faqTitle')}</h2>
