@@ -31,10 +31,10 @@ export default function Home() {
                     {t('heroSubtitleFR')}
                 </p>
                 <div className="flex flex-col justify-start items-start gap-4">
-                    <Button asChild size="lg" className="w-full sm:w-auto shadow-lg hover:shadow-xl transition-shadow py-3 px-10 text-lg h-auto">
+                    <Button asChild size="lg" className="w-full shadow-lg hover:shadow-xl transition-shadow py-3 px-10 text-lg h-auto">
                     <Link href="/report-lost">{t('heroButtonLost')}</Link>
                     </Button>
-                    <Button asChild size="lg" variant="outline" className="w-full sm:w-auto py-3 px-10 text-lg h-auto">
+                    <Button asChild size="lg" variant="outline" className="w-full py-3 px-10 text-lg h-auto">
                     <Link href="/report-found">{t('heroButtonFound')}</Link>
                     </Button>
                 </div>
