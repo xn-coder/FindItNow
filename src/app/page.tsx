@@ -127,37 +127,6 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="mobile-apps" className="py-16 bg-muted">
-          <div className="container grid md:grid-cols-2 gap-8 items-center max-w-6xl mx-auto">
-              <div className="text-center md:text-left">
-                  <h2 className="text-3xl font-bold font-headline">Track &amp; report on the go</h2>
-                  <p className="mt-4 text-muted-foreground text-lg">
-                    Get the full experience on your phone. Report items, get notified of matches, and manage your claims, all from our mobile app.
-                  </p>
-                  <div className="mt-8 flex justify-center md:justify-start gap-4">
-                      <Link href="#">
-                          <GooglePlayIcon className="h-12"/>
-                          <span className="sr-only">Get on Google Play</span>
-                      </Link>
-                        <Link href="#">
-                          <AppStoreIcon className="h-12"/>
-                          <span className="sr-only">Download on the App Store</span>
-                      </Link>
-                  </div>
-              </div>
-              <div className="relative h-96 hidden md:block">
-                  <Image
-                    src="https://img.freepik.com/free-vector/user-flow-concept-illustration_114360-1552.jpg?w=740"
-                    alt="Mobile app screenshot"
-                    fill
-                    style={{objectFit: "contain"}}
-                    className="drop-shadow-2xl"
-                    data-ai-hint="mobile app interface"
-                  />
-              </div>
-          </div>
-      </section>
-
       <section id="faq" className="py-12 border-t">
         <div className="container max-w-4xl mx-auto">
             <h2 className="text-3xl font-bold text-center font-headline mb-8">Frequently Asked Questions</h2>
