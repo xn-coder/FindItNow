@@ -55,17 +55,17 @@ export default function Home() {
       <section className="container max-w-6xl mx-auto py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
           <div className="flex flex-col items-center space-y-4">
-            <Search className="h-20 w-20 text-primary" />
+            <Search className="h-20 w-20 text-foreground" />
             <h3 className="font-headline text-3xl font-semibold text-foreground">{t('feature1Title')}</h3>
             <p className="text-muted-foreground">{t('feature1Desc')}</p>
           </div>
           <div className="flex flex-col items-center space-y-4">
-            <FileCheck className="h-20 w-20 text-primary" />
+            <FileCheck className="h-20 w-20 text-foreground" />
             <h3 className="font-headline text-3xl font-semibold text-foreground">{t('feature2Title')}</h3>
             <p className="text-muted-foreground">{t('feature2Desc')}</p>
           </div>
           <div className="flex flex-col items-center space-y-4">
-            <Building className="h-20 w-20 text-primary" />
+            <Building className="h-20 w-20 text-foreground" />
             <h3 className="font-headline text-3xl font-semibold text-foreground">{t('feature3Title')}</h3>
             <p className="text-muted-foreground">{t('feature3Desc')}</p>
           </div>
