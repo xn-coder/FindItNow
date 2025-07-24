@@ -39,7 +39,7 @@ export default function Home() {
             </div>
              <div className="hidden md:flex justify-center">
               <Image 
-                src="https://img.freepik.com/free-vector/lost-unattended-things-concept_23-2148544275.jpg" 
+                src="https://img.freepik.com/free-vector/employment-insurance-abstract-concept_335657-3057.jpg?w=740" 
                 alt="Lost and found items" 
                 width={500} 
                 height={500}
