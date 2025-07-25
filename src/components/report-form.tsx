@@ -233,7 +233,7 @@ export function ReportForm({ itemType }: ReportFormProps) {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleInitialSubmit)} className="space-y-8">
-              <div className="grid md:grid-cols-2 gap-8">
+              <div className="grid sm:grid-cols-2 gap-8">
                 <FormField
                   control={form.control}
                   name="name"
@@ -285,7 +285,7 @@ export function ReportForm({ itemType }: ReportFormProps) {
                 )}
               />
 
-              <div className="grid md:grid-cols-2 gap-8">
+              <div className="grid sm:grid-cols-2 gap-8">
                 <FormField
                   control={form.control}
                   name="location"

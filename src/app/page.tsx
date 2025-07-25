@@ -21,18 +21,18 @@ export default function Home() {
     <div className="space-y-16">
       <section className="py-8 md:py-16">
         <div className="container grid md:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
-            <div className="space-y-6">
-                <h1 className="text-4xl md:text-6xl font-bold font-headline text-foreground tracking-tight">
+            <div className="space-y-6 text-center md:text-left">
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-headline text-foreground tracking-tight">
                     {t('heroTitle1')}
                 </h1>
                 <p className="text-lg text-muted-foreground">
                     {t('heroSubtitle')}
                 </p>
-                <div className="flex flex-col justify-start items-start gap-4">
-                    <Button asChild size="lg" className="w-full shadow-lg hover:shadow-xl transition-shadow py-4 px-10 text-xl h-auto">
+                <div className="flex flex-col sm:flex-row justify-center md:justify-start items-center gap-4">
+                    <Button asChild size="lg" className="w-full sm:w-auto shadow-lg hover:shadow-xl transition-shadow py-4 px-10 text-lg sm:text-xl h-auto">
                     <Link href="/browse">{t('heroButtonLost')}</Link>
                     </Button>
-                    <Button asChild size="lg" variant="outline" className="w-full py-4 px-10 text-xl h-auto border-2 border-foreground">
+                    <Button asChild size="lg" variant="outline" className="w-full sm:w-auto py-4 px-10 text-lg sm:text-xl h-auto border-2 border-foreground">
                     <Link href="/report-found">{t('heroButtonFound')}</Link>
                     </Button>
                 </div>
@@ -60,7 +60,7 @@ export default function Home() {
               height={80}
               className="rounded-lg object-cover"
             />
-            <h3 className="font-headline text-3xl font-semibold text-foreground">{t('feature1Title')}</h3>
+            <h3 className="font-headline text-2xl lg:text-3xl font-semibold text-foreground">{t('feature1Title')}</h3>
             <p className="text-muted-foreground">{t('feature1Desc')}</p>
           </Link>
           <div className="flex flex-col items-center space-y-4 p-4 rounded-lg">
@@ -71,7 +71,7 @@ export default function Home() {
               height={80}
               className="rounded-lg object-cover"
             />
-            <h3 className="font-headline text-3xl font-semibold text-foreground">{t('feature2Title')}</h3>
+            <h3 className="font-headline text-2xl lg:text-3xl font-semibold text-foreground">{t('feature2Title')}</h3>
             <p className="text-muted-foreground">{t('feature2Desc')}</p>
           </div>
           <div className="flex flex-col items-center space-y-4 p-4 rounded-lg">
@@ -82,7 +82,7 @@ export default function Home() {
               height={80}
               className="rounded-lg object-cover"
             />
-            <h3 className="font-headline text-3xl font-semibold text-foreground">{t('feature3Title')}</h3>
+            <h3 className="font-headline text-2xl lg:text-3xl font-semibold text-foreground">{t('feature3Title')}</h3>
             <p className="text-muted-foreground">{t('feature3Desc')}</p>
           </div>
         </div>
@@ -130,7 +130,7 @@ export default function Home() {
             <div>
               <h2 className="text-3xl font-bold font-headline mb-2">{t('downloadTitle')}</h2>
               <p className="text-lg text-muted-foreground mb-6">{t('downloadSubtitle')}</p>
-              <div className="flex gap-4">
+              <div className="flex flex-col sm:flex-row gap-4">
                  <Button variant="outline" size="lg" className="flex items-center gap-2 bg-background h-auto py-2">
                     <AppStoreIcon className="h-8 w-8"/>
                     <div>
@@ -149,19 +149,19 @@ export default function Home() {
             </div>
             <div className="space-y-3">
                 <Link href="#faq" className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted transition-colors">
-                  <span className="font-medium">{t('faqLink1')}</span>
+                  <span className="font-medium text-sm sm:text-base">{t('faqLink1')}</span>
                   <ArrowRight className="h-5 w-5 text-muted-foreground" />
                 </Link>
                 <Link href="#faq" className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted transition-colors">
-                  <span className="font-medium">{t('faqLink2')}</span>
+                  <span className="font-medium text-sm sm:text-base">{t('faqLink2')}</span>
                   <ArrowRight className="h-5 w-5 text-muted-foreground" />
                 </Link>
                  <Link href="#faq" className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted transition-colors">
-                  <span className="font-medium">{t('faqLink3')}</span>
+                  <span className="font-medium text-sm sm:text-base">{t('faqLink3')}</span>
                   <ArrowRight className="h-5 w-5 text-muted-foreground" />
                 </Link>
                  <Link href="#faq" className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted transition-colors">
-                  <span className="font-medium">{t('faqLink4')}</span>
+                  <span className="font-medium text-sm sm:text-base">{t('faqLink4')}</span>
                   <ArrowRight className="h-5 w-5 text-muted-foreground" />
                 </Link>
             </div>

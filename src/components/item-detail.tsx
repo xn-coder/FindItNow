@@ -33,7 +33,7 @@ export function ItemDetail({ item }: ItemDetailProps) {
                         />
                          <Badge
                             className="absolute top-4 right-4 text-sm py-1 px-3"
-                            variant={item.type === 'lost' ? 'destructive' : 'default'}
+                            variant={item.status === 'resolved' ? 'secondary' : item.type === 'lost' ? 'destructive' : 'default'}
                          >
                             {item.status === 'resolved' ? 'Resolved' : item.type.charAt(0).toUpperCase() + item.type.slice(1)} Item
                         </Badge>
