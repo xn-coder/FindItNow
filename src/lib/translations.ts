@@ -89,6 +89,9 @@ export const translations: Translations = {
     footerTwitter: "Twitter",
     footerLinkedIn: "LinkedIn",
     footerRights: "All rights reserved.",
+    footerStayUpdated: "Stay Updated",
+    footerSubscribeInfo: "Subscribe to our newsletter to get the latest news and updates.",
+    footerSubscribeButton: "Subscribe",
   },
   de: {
     // Header
@@ -175,6 +178,9 @@ export const translations: Translations = {
     footerTwitter: "Twitter",
     footerLinkedIn: "LinkedIn",
     footerRights: "Alle Rechte vorbehalten.",
+    footerStayUpdated: "Bleiben Sie auf dem Laufenden",
+    footerSubscribeInfo: "Abonnieren Sie unseren Newsletter, um die neuesten Nachrichten und Updates zu erhalten.",
+    footerSubscribeButton: "Abonnieren",
   },
   fr: {
     // Header
@@ -261,6 +267,9 @@ export const translations: Translations = {
     footerTwitter: "Twitter",
     footerLinkedIn: "LinkedIn",
     footerRights: "Tous les droits sont réservés.",
+    footerStayUpdated: "Restez à jour",
+    footerSubscribeInfo: "Abonnez-vous à notre newsletter pour recevoir les dernières nouvelles et mises à jour.",
+    footerSubscribeButton: "S'abonner",
   }
 };
 
