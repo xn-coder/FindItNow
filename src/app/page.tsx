@@ -114,7 +114,7 @@ export default function Home() {
               <h2 className="text-3xl font-bold font-headline mb-6">{t('successTitle')}</h2>
               <div className="flex items-center gap-6">
                 <Avatar className="w-20 h-20 border-2 border-primary">
-                  <AvatarImage src="https://img.freepik.com/free-photo/pretty-smiling-joyfully-female-with-fair-hair-dressed-casually-looking-with-satisfaction_176420-15187.jpg?semt=ais_hybrid&w=740" alt="Anna Muller's avatar" data-ai-hint="woman face"/>
+                  <AvatarImage src="/profile.jpeg" alt="Anna Muller's avatar" data-ai-hint="woman face"/>
                   <AvatarFallback>AM</AvatarFallback>
                 </Avatar>
                 <div>
