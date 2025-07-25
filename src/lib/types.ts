@@ -17,6 +17,7 @@ export type Item = {
   date: Date | Timestamp;
   imageUrl: string;
   contact: string;
+  phoneNumber?: string;
   lat: number;
   lng: number;
   createdAt?: Timestamp;
@@ -31,6 +32,7 @@ export type Claim = {
   itemOwnerId: string;
   fullName: string;
   email: string;
+  phoneNumber?: string;
   proof: string;
   submittedAt: Timestamp;
   location?: string;

@@ -38,6 +38,10 @@ import { useRouter } from "next/navigation";
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
+const phoneRegex = new RegExp(
+  /^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/
+);
+
 const formSchema = z.object({
   name: z.string().min(3, "Item name must be at least 3 characters.").max(50),
   category: z.string({ required_error: "Please select a category." }),
@@ -45,6 +49,7 @@ const formSchema = z.object({
   location: z.string().min(3, "Location must be at least 3 characters.").max(100),
   date: z.date({ required_error: "A date is required." }),
   contact: z.string().email("Please enter a valid email address."),
+  phoneNumber: z.string().regex(phoneRegex, 'Invalid Number!').optional().or(z.literal('')),
   image: z.any()
     .refine((files) => files?.length == 1, "Image is required.")
     .refine((files) => files?.[0]?.size <= MAX_FILE_SIZE, `Max file size is 5MB.`)
@@ -86,6 +91,7 @@ export function ReportForm({ itemType }: ReportFormProps) {
       description: "",
       location: "",
       contact: "",
+      phoneNumber: "",
     },
   });
 
@@ -175,6 +181,7 @@ export function ReportForm({ itemType }: ReportFormProps) {
             location: formValues.location,
             date: formValues.date,
             contact: formValues.contact,
+            phoneNumber: formValues.phoneNumber,
             imageUrl,
             createdAt: serverTimestamp(),
             lat: 40.7580,
@@ -342,22 +349,38 @@ export function ReportForm({ itemType }: ReportFormProps) {
                 />
               </div>
               
-              <FormField
-                  control={form.control}
-                  name="contact"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Contact Email</FormLabel>
-                      <FormControl>
-                        <Input type="email" placeholder="your.email@example.com" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        This email will be used for notifications and to log in to your account.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              <div className="grid sm:grid-cols-2 gap-8">
+                <FormField
+                    control={form.control}
+                    name="contact"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Contact Email</FormLabel>
+                        <FormControl>
+                          <Input type="email" placeholder="your.email@example.com" {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          This email will be used for notifications and to log in to your account.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="phoneNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone Number (Optional)</FormLabel>
+                        <FormControl>
+                          <Input type="tel" placeholder="+1 123-456-7890" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+              </div>
+
                  <FormField
                   control={form.control}
                   name="image"

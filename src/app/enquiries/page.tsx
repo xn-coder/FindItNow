@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Inbox, Mail, MessageSquare, Package, User, MapPin, Calendar, CheckCircle2, Loader2, Circle } from "lucide-react";
+import { Inbox, Mail, MessageSquare, Package, User, MapPin, Calendar, CheckCircle2, Loader2, Circle, Phone } from "lucide-react";
 
 export default function EnquiriesPage() {
     const { user, loading: authLoading } = useContext(AuthContext);
@@ -251,6 +251,12 @@ export default function EnquiriesPage() {
                                             <Mail className="h-5 w-5 text-muted-foreground"/>
                                             <p><span className="font-semibold">Email:</span> {enquiry.email}</p>
                                         </div>
+                                        {enquiry.phoneNumber && (
+                                            <div className="flex items-center gap-3">
+                                                <Phone className="h-5 w-5 text-muted-foreground"/>
+                                                <p><span className="font-semibold">Phone:</span> {enquiry.phoneNumber}</p>
+                                            </div>
+                                        )}
                                     </div>
                                 </CardContent>
                                 <CardFooter className="bg-muted/50 p-4 border-t flex items-center justify-end">
