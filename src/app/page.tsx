@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -17,31 +18,27 @@ export default function Home() {
 
   return (
     <div className="space-y-16">
-      {/* --- START OF MODIFIED SECTION --- */}
       <section className="py-8 md:py-16">
-        {/* Switched from Grid to Flexbox for better control over column wrapping */}
-        <div className="container flex flex-col md:flex-row gap-8 md:gap-12 items-center max-w-6xl mx-auto">
-            {/* Image Block: Set to 50% width on medium screens and up */}
-            <div className="w-full md:w-1/2 flex justify-center">
+        <div className="container flex flex-col items-center gap-8 max-w-6xl mx-auto lg:flex-row lg:gap-12">
+            <div className="w-full lg:w-1/2 flex justify-center">
               <Image
                 src="/hero (1).png"
                 alt="FindItNow hero image"
                 width={500}
                 height={400}
-                className="rounded-lg object-cover w-full h-auto max-w-md md:max-w-full"
+                className="rounded-lg object-cover w-full h-auto max-w-md lg:max-w-full"
                 priority
                 data-ai-hint="lost and found items"
               />
             </div>
-            {/* Text Block: Set to 50% width on medium screens and up, and ordered first */}
-            <div className="w-full md:w-1/2 space-y-6 text-center md:text-left md:order-first">
+            <div className="w-full lg:w-1/2 space-y-6 text-center lg:text-left">
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-headline text-foreground tracking-tight">
                     {t('heroTitle1')}
                 </h1>
                 <p className="text-lg text-muted-foreground">
                     {t('heroSubtitle')}
                 </p>
-                <div className="flex flex-col sm:flex-row justify-center md:justify-start items-center gap-4">
+                <div className="flex flex-col sm:flex-row justify-center lg:justify-start items-center gap-4">
                     <Button asChild size="lg" className="w-full sm:w-auto shadow-lg hover:shadow-xl transition-shadow py-3 px-8 text-base sm:text-lg h-auto">
                     <Link href="/browse">{t('heroButtonLost')}</Link>
                     </Button>
@@ -52,7 +49,6 @@ export default function Home() {
             </div>
         </div>
       </section>
-      {/* --- END OF MODIFIED SECTION --- */}
 
       <section className="container max-w-6xl mx-auto py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
