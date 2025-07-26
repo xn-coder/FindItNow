@@ -21,7 +21,7 @@ export default function Home() {
     <div className="space-y-16">
       <section className="py-8 md:py-16">
         <div className="container grid md:grid-cols-2 gap-8 md:gap-12 items-center max-w-6xl mx-auto">
-            <div className="space-y-6 text-center md:text-left">
+            <div className="space-y-6 text-center md:text-left order-last md:order-first">
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-headline text-foreground tracking-tight">
                     {t('heroTitle1')}
                 </h1>
