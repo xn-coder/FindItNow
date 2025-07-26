@@ -27,7 +27,7 @@ export default function Home() {
                 <p className="text-lg text-muted-foreground">
                     {t('heroSubtitle')}
                 </p>
-                <div className="flex flex-col [@media(min-width:1000px)]:flex-row justify-center [@media(min-width:950px)]:justify-start items-center gap-4">
+                <div className="flex flex-col justify-center [@media(min-width:950px)]:justify-start items-center gap-4">
                     <Button asChild size="lg" className="w-full [@media(min-width:1000px)]:w-auto shadow-lg hover:shadow-xl transition-shadow py-3 px-8 text-base sm:text-lg h-auto">
                       <Link href="/browse">{t('heroButtonLost')}</Link>
                     </Button>
@@ -292,4 +292,5 @@ export default function Home() {
 }
 
     
+
 
