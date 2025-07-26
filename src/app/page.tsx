@@ -40,9 +40,9 @@ export default function Home() {
               <Image
                 src="/hero (1).png"
                 alt="FindItNow hero image"
-                width={500}
-                height={400}
-                className="rounded-lg object-cover w-full h-auto max-w-md lg:max-w-full"
+                width={450}
+                height={360}
+                className="rounded-lg object-cover w-full h-auto max-w-md lg:max-w-md"
                 priority
                 data-ai-hint="lost and found items"
               />
