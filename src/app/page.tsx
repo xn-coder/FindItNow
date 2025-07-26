@@ -19,8 +19,24 @@ export default function Home() {
   return (
     <div className="space-y-16">
       <section className="py-8 md:py-16">
-        <div className="container flex flex-col items-center gap-8 max-w-6xl mx-auto lg:flex-row lg:gap-12">
-            <div className="w-full lg:w-1/2 flex justify-center">
+        <div className="container grid grid-cols-1 lg:grid-cols-2 items-center gap-8 max-w-6xl mx-auto">
+            <div className="space-y-6 text-center lg:text-left">
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-headline text-foreground tracking-tight">
+                    {t('heroTitle1')}
+                </h1>
+                <p className="text-lg text-muted-foreground">
+                    {t('heroSubtitle')}
+                </p>
+                <div className="flex flex-col sm:flex-row justify-center lg:justify-start items-center gap-4">
+                    <Button asChild size="lg" className="w-full sm:w-auto shadow-lg hover:shadow-xl transition-shadow py-3 px-8 text-base sm:text-lg h-auto">
+                      <Link href="/browse">{t('heroButtonLost')}</Link>
+                    </Button>
+                    <Button asChild size="lg" variant="outline" className="w-full sm:w-auto py-3 px-8 text-base sm:text-lg h-auto border-2 border-foreground">
+                      <Link href="/report-found">{t('heroButtonFound')}</Link>
+                    </Button>
+                </div>
+            </div>
+            <div className="flex justify-center lg:order-last order-first">
               <Image
                 src="/hero (1).png"
                 alt="FindItNow hero image"
@@ -30,22 +46,6 @@ export default function Home() {
                 priority
                 data-ai-hint="lost and found items"
               />
-            </div>
-            <div className="w-full lg:w-1/2 space-y-6 text-center lg:text-left">
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-headline text-foreground tracking-tight">
-                    {t('heroTitle1')}
-                </h1>
-                <p className="text-lg text-muted-foreground">
-                    {t('heroSubtitle')}
-                </p>
-                <div className="flex flex-col sm:flex-row justify-center lg:justify-start items-center gap-4">
-                    <Button asChild size="lg" className="w-full sm:w-auto shadow-lg hover:shadow-xl transition-shadow py-3 px-8 text-base sm:text-lg h-auto">
-                    <Link href="/browse">{t('heroButtonLost')}</Link>
-                    </Button>
-                    <Button asChild size="lg" variant="outline" className="w-full sm:w-auto py-3 px-8 text-base sm:text-lg h-auto border-2 border-foreground">
-                    <Link href="/report-found">{t('heroButtonFound')}</Link>
-                    </Button>
-                </div>
             </div>
         </div>
       </section>
