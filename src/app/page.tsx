@@ -20,7 +20,7 @@ export default function Home() {
   return (
     <div className="space-y-16">
       <section className="py-8 md:py-16">
-        <div className="container grid md:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
+        <div className="container grid md:grid-cols-2 gap-8 md:gap-12 items-center max-w-6xl mx-auto">
             <div className="space-y-6 text-center md:text-left">
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-headline text-foreground tracking-tight">
                     {t('heroTitle1')}
@@ -29,17 +29,17 @@ export default function Home() {
                     {t('heroSubtitle')}
                 </p>
                 <div className="flex flex-col sm:flex-row justify-center md:justify-start items-center gap-4">
-                    <Button asChild size="lg" className="w-full sm:w-auto shadow-lg hover:shadow-xl transition-shadow py-4 px-10 text-lg sm:text-xl h-auto">
+                    <Button asChild size="lg" className="w-full sm:w-auto shadow-lg hover:shadow-xl transition-shadow py-3 px-8 text-base sm:text-lg h-auto">
                     <Link href="/browse">{t('heroButtonLost')}</Link>
                     </Button>
-                    <Button asChild size="lg" variant="outline" className="w-full sm:w-auto py-4 px-10 text-lg sm:text-xl h-auto border-2 border-foreground">
+                    <Button asChild size="lg" variant="outline" className="w-full sm:w-auto py-3 px-8 text-base sm:text-lg h-auto border-2 border-foreground">
                     <Link href="/report-found">{t('heroButtonFound')}</Link>
                     </Button>
                 </div>
             </div>
-             <div className="flex justify-center">
+             <div className="flex justify-center order-first md:order-last">
               <Image
-                src="/hero.png"
+                src="https://thumb.photo-ac.com/a3/a3ea8f0696bc002a2e7425406318bae8_t.jpeg"
                 alt="FindItNow hero image"
                 width={500}
                 height={400}
