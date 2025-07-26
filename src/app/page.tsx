@@ -37,9 +37,9 @@ export default function Home() {
                     </Button>
                 </div>
             </div>
-             <div className="flex justify-center order-first md:order-last">
+             <div className="flex justify-center">
               <Image
-                src="https://thumb.photo-ac.com/a3/a3ea8f0696bc002a2e7425406318bae8_t.jpeg"
+                src="/hero (1).png"
                 alt="FindItNow hero image"
                 width={500}
                 height={400}
