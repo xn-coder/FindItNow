@@ -28,10 +28,10 @@ export default function Home() {
                     {t('heroSubtitle')}
                 </p>
                 <div className="flex flex-col justify-center items-center gap-4">
-                    <Button asChild size="lg" className="shadow-lg hover:shadow-xl transition-shadow py-3 px-8 text-base sm:text-lg h-auto">
+                    <Button asChild size="lg" className="w-full shadow-lg hover:shadow-xl transition-shadow py-3 px-8 text-base sm:text-lg h-auto">
                       <Link href="/browse">{t('heroButtonLost')}</Link>
                     </Button>
-                    <Button asChild size="lg" variant="outline" className="py-3 px-8 text-base sm:text-lg h-auto border-2 border-foreground">
+                    <Button asChild size="lg" variant="outline" className="w-full py-3 px-8 text-base sm:text-lg h-auto border-2 border-foreground">
                       <Link href="/report-found">{t('heroButtonFound')}</Link>
                     </Button>
                 </div>
@@ -292,6 +292,7 @@ export default function Home() {
 }
 
     
+
 
 
 
