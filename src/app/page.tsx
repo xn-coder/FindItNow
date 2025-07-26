@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import Link from 'next/link';
@@ -19,9 +17,24 @@ export default function Home() {
 
   return (
     <div className="space-y-16">
+      {/* --- START OF MODIFIED SECTION --- */}
       <section className="py-8 md:py-16">
-        <div className="container grid md:grid-cols-2 gap-8 md:gap-12 items-center max-w-6xl mx-auto">
-            <div className="space-y-6 text-center md:text-left order-last md:order-first">
+        {/* Switched from Grid to Flexbox for better control over column wrapping */}
+        <div className="container flex flex-col md:flex-row gap-8 md:gap-12 items-center max-w-6xl mx-auto">
+            {/* Image Block: Set to 50% width on medium screens and up */}
+            <div className="w-full md:w-1/2 flex justify-center">
+              <Image
+                src="/hero (1).png"
+                alt="FindItNow hero image"
+                width={500}
+                height={400}
+                className="rounded-lg object-cover w-full h-auto max-w-md md:max-w-full"
+                priority
+                data-ai-hint="lost and found items"
+              />
+            </div>
+            {/* Text Block: Set to 50% width on medium screens and up, and ordered first */}
+            <div className="w-full md:w-1/2 space-y-6 text-center md:text-left md:order-first">
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-headline text-foreground tracking-tight">
                     {t('heroTitle1')}
                 </h1>
@@ -37,18 +50,9 @@ export default function Home() {
                     </Button>
                 </div>
             </div>
-             <div className="flex justify-center">
-              <Image
-                src="/hero (1).png"
-                alt="FindItNow hero image"
-                width={500}
-                height={400}
-                className="rounded-lg object-cover"
-                data-ai-hint="lost and found items"
-              />
-            </div>
         </div>
       </section>
+      {/* --- END OF MODIFIED SECTION --- */}
 
       <section className="container max-w-6xl mx-auto py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
