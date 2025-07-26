@@ -27,11 +27,11 @@ export default function Home() {
                 <p className="text-lg text-muted-foreground">
                     {t('heroSubtitle')}
                 </p>
-                <div className="flex flex-col sm:flex-row justify-center [@media(min-width:950px)]:justify-start items-center gap-4">
-                    <Button asChild size="lg" className="w-full sm:w-auto shadow-lg hover:shadow-xl transition-shadow py-3 px-8 text-base sm:text-lg h-auto">
+                <div className="flex flex-col [@media(min-width:1000px)]:flex-row justify-center [@media(min-width:950px)]:justify-start items-center gap-4">
+                    <Button asChild size="lg" className="w-full [@media(min-width:1000px)]:w-auto shadow-lg hover:shadow-xl transition-shadow py-3 px-8 text-base sm:text-lg h-auto">
                       <Link href="/browse">{t('heroButtonLost')}</Link>
                     </Button>
-                    <Button asChild size="lg" variant="outline" className="w-full sm:w-auto py-3 px-8 text-base sm:text-lg h-auto border-2 border-foreground">
+                    <Button asChild size="lg" variant="outline" className="w-full [@media(min-width:1000px)]:w-auto py-3 px-8 text-base sm:text-lg h-auto border-2 border-foreground">
                       <Link href="/report-found">{t('heroButtonFound')}</Link>
                     </Button>
                 </div>
@@ -42,7 +42,7 @@ export default function Home() {
                 alt="FindItNow hero image"
                 width={450}
                 height={360}
-                className="rounded-lg object-cover w-full h-auto max-w-md lg:max-w-md"
+                className="rounded-lg object-cover w-full h-auto max-w-full lg:max-w-md"
                 priority
                 data-ai-hint="lost and found items"
               />
