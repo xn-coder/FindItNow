@@ -40,7 +40,7 @@ export default function Footer() {
              <div className="space-y-2">
                 <h4 className="font-semibold text-white uppercase tracking-wider text-sm">{t('footerConnect')}</h4>
                 <nav className="flex flex-col gap-1">
-                    <Link href="#" className="text-sm text-gray-400 hover:text-white">{t('footerContact')}</Link>
+                    <Link href="/contact" className="text-sm text-gray-400 hover:text-white">{t('footerContact')}</Link>
                     <Link href="#" className="text-sm text-gray-400 hover:text-white">{t('footerTwitter')}</Link>
                     <Link href="#" className="text-sm text-gray-400 hover:text-white">{t('footerLinkedIn')}</Link>
                 </nav>

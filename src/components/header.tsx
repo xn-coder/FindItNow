@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { MapPin, Menu, Sprout, User, LogOut, Inbox } from "lucide-react";
+import { MapPin, Menu, Sprout, User, LogOut, Inbox, Phone } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useState, useContext } from "react";
 import { AuthContext } from "@/context/auth-context";
@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 const allNavLinks = [
   { href: "/browse", label: "Browse", icon: MapPin },
   { href: "/map", label: "Map View", icon: MapPin },
+  { href: "/contact", label: "Contact", icon: Phone },
 ];
 
 const navLinks = process.env.NEXT_PUBLIC_MAP_ENABLED === 'false' 
