@@ -25,7 +25,8 @@ export default function Footer() {
              <div className="space-y-2">
                 <h4 className="font-semibold text-white uppercase tracking-wider text-sm">{t('footerCompany')}</h4>
                 <nav className="flex flex-col gap-1">
-                    <Link href="#" className="text-sm text-gray-400 hover:text-white">{t('footerAbout')}</Link>
+                    <Link href="/how-it-works" className="text-sm text-gray-400 hover:text-white">How It Works</Link>
+                    <Link href="/faq" className="text-sm text-gray-400 hover:text-white">FAQs</Link>
                     <Link href="#" className="text-sm text-gray-400 hover:text-white">{t('footerPress')}</Link>
                     <Link href="#" className="text-sm text-gray-400 hover:text-white">{t('footerCareers')}</Link>
                 </nav>
@@ -33,8 +34,8 @@ export default function Footer() {
              <div className="space-y-2">
                 <h4 className="font-semibold text-white uppercase tracking-wider text-sm">{t('footerLegal')}</h4>
                 <nav className="flex flex-col gap-1">
-                    <Link href="#" className="text-sm text-gray-400 hover:text-white">{t('footerPrivacy')}</Link>
-                    <Link href="#" className="text-sm text-gray-400 hover:text-white">{t('footerTerms')}</Link>
+                    <Link href="/privacy-policy" className="text-sm text-gray-400 hover:text-white">{t('footerPrivacy')}</Link>
+                    <Link href="/terms-conditions" className="text-sm text-gray-400 hover:text-white">{t('footerTerms')}</Link>
                 </nav>
             </div>
              <div className="space-y-2">

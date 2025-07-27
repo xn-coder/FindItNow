@@ -148,19 +148,19 @@ export default function Home() {
               </div>
             </div>
             <div className="space-y-3">
-                <Link href="#faq" className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted transition-colors">
+                <Link href="/faq" className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted transition-colors">
                   <span className="font-medium text-sm sm:text-base">{t('faqLink1')}</span>
                   <ArrowRight className="h-5 w-5 text-muted-foreground" />
                 </Link>
-                <Link href="#faq" className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted transition-colors">
+                <Link href="/faq" className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted transition-colors">
                   <span className="font-medium text-sm sm:text-base">{t('faqLink2')}</span>
                   <ArrowRight className="h-5 w-5 text-muted-foreground" />
                 </Link>
-                 <Link href="#faq" className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted transition-colors">
+                 <Link href="/faq" className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted transition-colors">
                   <span className="font-medium text-sm sm:text-base">{t('faqLink3')}</span>
                   <ArrowRight className="h-5 w-5 text-muted-foreground" />
                 </Link>
-                 <Link href="#faq" className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted transition-colors">
+                 <Link href="/faq" className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted transition-colors">
                   <span className="font-medium text-sm sm:text-base">{t('faqLink4')}</span>
                   <ArrowRight className="h-5 w-5 text-muted-foreground" />
                 </Link>
@@ -256,43 +256,6 @@ export default function Home() {
         </div>
       </section>
       
-      <section id="faq" className="py-12 border-t">
-        <div className="container max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold text-center font-headline mb-8">{t('faqTitle')}</h2>
-            <Accordion type="single" collapsible className="w-full grid md:grid-cols-2 gap-x-8 gap-y-2">
-                <AccordionItem value="item-1">
-                    <AccordionTrigger className="font-semibold text-lg text-left">{t('faq1Title')}</AccordionTrigger>
-                    <AccordionContent className="text-muted-foreground">{t('faq1Content')}</AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="item-2">
-                    <AccordionTrigger className="font-semibold text-lg text-left">{t('faq2Title')}</AccordionTrigger>
-                    <AccordionContent className="text-muted-foreground">{t('faq2Content')}</AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="item-3">
-                    <AccordionTrigger className="font-semibold text-lg text-left">{t('faq3Title')}</AccordionTrigger>
-                    <AccordionContent className="text-muted-foreground">{t('faq3Content')}</AccordionContent>
-                </AccordionItem>
-                 <AccordionItem value="item-4">
-                    <AccordionTrigger className="font-semibold text-lg text-left">{t('faq4Title')}</AccordionTrigger>
-                    <AccordionContent className="text-muted-foreground">{t('faq4Content')}</AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="item-5">
-                    <AccordionTrigger className="font-semibold text-lg text-left">{t('faq5Title')}</AccordionTrigger>
-                    <AccordionContent className="text-muted-foreground">{t('faq5Content')}</AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="item-6">
-                    <AccordionTrigger className="font-semibold text-lg text-left">{t('faq6Title')}</AccordionTrigger>
-                    <AccordionContent className="text-muted-foreground">{t('faq6Content')}</AccordionContent>
-                </AccordionItem>
-            </Accordion>
-        </div>
-      </section>
     </div>
   );
 }
-
-    
-
-
-
-
