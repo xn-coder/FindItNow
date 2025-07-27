@@ -5,6 +5,10 @@ type Translations = {
 
 export const translations: Translations = {
   en: {
+    // General
+    locale: "en-US",
+    lastUpdated: "Last Updated:",
+
     // Header
     browse: "Browse",
     mapview: "Map View",
@@ -61,8 +65,21 @@ export const translations: Translations = {
     testimonial3Quote: "The AI matching feature is brilliant. It suggested a match for my lost keys that I never would have found on my own.",
     testimonial3Role: "Grateful User",
     
-    // FAQ Section
+    // How It Works Page
+    hiwTitle: "How It Works",
+    hiwSubtitle: "Reuniting with your lost items is simple. Here’s a step-by-step guide.",
+    hiwStep1Title: "1. Search or Report",
+    hiwStep1Desc: "If you've lost something, start by searching our database. If you've found an item, create a detailed report in minutes.",
+    hiwStep2Title: "2. Provide Details",
+    hiwStep2Desc: "Add key details like category, location, date, and a description. A clear photo significantly increases your chances of a match.",
+    hiwStep3Title: "3. Get Notified",
+    hiwStep3Desc: "Our system and community get to work. We'll notify you via email when a potential match is found or when someone enquires about your item.",
+    hiwStep4Title: "4. Connect & Reunite",
+    hiwStep4Desc: "Communicate securely with the other party to verify ownership and arrange a safe reunion. Your personal info is kept private.",
+
+    // FAQ Page
     faqTitle: "Frequently Asked Questions",
+    faqSubtitle: "Have questions? We've got answers.",
     faq1Title: "What items can I report?",
     faq1Content: "You can report any item you have lost or found. This includes electronics, wallets, keys, accessories, bags, clothing, bottles, toys, documents, and more. If it's lost, someone might find it!",
     faq2Title: "How does the matching work?",
@@ -75,6 +92,66 @@ export const translations: Translations = {
     faq5Content: "You will receive an email notification with the claimant's message. It is your responsibility to review their proof of ownership and coordinate the return. Always meet in a public, safe location.",
     faq6Title: "Is my personal information safe?",
     faq6Content: "Yes, we take your privacy seriously. Your contact information is only for verification and to connect you with a potential owner or finder. It is not displayed publicly on the website.",
+
+    // Privacy Policy Page
+    privacyTitle: "Privacy Policy",
+    privacyIntroTitle: "1. Introduction",
+    privacyIntroContent: "Welcome to FindItNow. We are committed to protecting your personal information and your right to privacy. If you have any questions or concerns about our policy, or our practices with regards to your personal information, please contact us.",
+    privacyInfoCollectTitle: "2. Information We Collect",
+    privacyInfoCollectContent1: "We collect personal information that you voluntarily provide to us when you register on the website, express an interest in obtaining information about us or our products and services, when you participate in activities on the website or otherwise when you contact us.",
+    privacyInfoCollectContent2: "The personal information that we collect depends on the context of your interactions with us and the website, the choices you make and the products and features you use. The personal information we collect may include the following: name, email address, phone number, and any other information you choose to provide.",
+    privacyInfoUseTitle: "3. How We Use Your Information",
+    privacyInfoUseContent: "We use personal information collected via our website for a variety of business purposes described below. We process your personal information for these purposes in reliance on our legitimate business interests, in order to enter into or perform a contract with you, with your consent, and/or for compliance with our legal obligations.",
+    privacyInfoShareTitle: "4. Will Your Information Be Shared With Anyone?",
+    privacyInfoShareContent: "We only share information with your consent, to comply with laws, to provide you with services, to protect your rights, or to fulfill business obligations.",
+    privacyInfoKeepTitle: "5. How Long Do We Keep Your Information?",
+    privacyInfoKeepContent: "We keep your information for as long as necessary to fulfill the purposes outlined in this privacy policy unless otherwise required by law.",
+    privacyInfoSafeTitle: "6. How Do We Keep Your Information Safe?",
+    privacyInfoSafeContent: "We aim to protect your personal information through a system of organizational and technical security measures.",
+    privacyMinorsTitle: "7. Do We Collect Information From Minors?",
+    privacyMinorsContent: "We do not knowingly solicit data from or market to children under 18 years of age.",
+    privacyRightsTitle: "8. What Are Your Privacy Rights?",
+    privacyRightsContent: "In some regions (like the European Economic Area), you have rights that allow you greater access to and control over your personal information. You may review, change, or terminate your account at any time.",
+
+    // Terms & Conditions Page
+    termsTitle: "Terms & Conditions",
+    termsAgreementTitle: "1. Agreement to Terms",
+    termsAgreementContent: "By using our services, you agree to be bound by these Terms. If you do not agree to these Terms, do not use the services.",
+    termsServiceDescTitle: "2. Description of Service",
+    termsServiceDescContent: "FindItNow provides a platform for users to report and search for lost and found items. We are a neutral venue and are not directly involved in the exchanges between users.",
+    termsUserConductTitle: "3. User Conduct",
+    termsUserConductContent: "You agree not to use the service for any unlawful purpose or any purpose prohibited under this clause. You agree not to use the service in any way that could damage the service, the reputation of FindItNow, or the general business of FindItNow.",
+    termsDisclaimersTitle: "4. Disclaimers",
+    termsDisclaimersContent: "Your use of the service is at your sole risk. The service is provided on an \"AS IS\" and \"AS AVAILABLE\" basis. We do not guarantee the accuracy, completeness, or usefulness of any information on the service and neither adopt nor endorse nor are responsible for the accuracy or reliability of any opinion, advice, or statement made.",
+    termsLiabilityTitle: "5. Limitation of Liability",
+    termsLiabilityContent: "FindItNow shall not be liable for any direct, indirect, incidental, special, consequential or exemplary damages, including but not limited to, damages for loss of profits, goodwill, use, data or other intangible losses.",
+    termsGoverningLawTitle: "6. Governing Law",
+    termsGoverningLawContent: "These Terms shall be governed by the laws of the jurisdiction in which the company is based, without regard to its conflict of law provisions.",
+
+    // Contact Page
+    contactTitle: "Contact Us",
+    contactSubtitle: "We're here to help. Reach out to us with any questions or feedback.",
+    contactFormTitle: "Send us a Message",
+    contactFormDesc: "Fill out the form and we'll get back to you as soon as possible.",
+    contactNameLabel: "Full Name",
+    contactNamePlaceholder: "John Doe",
+    contactEmailLabel: "Email Address",
+    contactEmailPlaceholder: "you@example.com",
+    contactSubjectLabel: "Subject",
+    contactSubjectPlaceholder: "e.g., Question about my report",
+    contactMessageLabel: "Your Message",
+    contactMessagePlaceholder: "Please describe your issue or question in detail...",
+    contactSubmitButton: "Submit",
+    contactInfoTitle: "Contact Information",
+    contactInfoDesc: "Prefer to reach us directly? Here's how.",
+    contactInfoEmail: "Email",
+    contactInfoPhone: "Phone",
+    contactFollowTitle: "Follow Us",
+    contactFollowDesc: "Stay connected with us on social media.",
+    contactToastSuccessTitle: "Message Sent!",
+    contactToastSuccessDesc: "Thank you for contacting us. We'll get back to you shortly.",
+    contactToastErrorTitle: "Failed to Send Message",
+    contactToastErrorDesc: "There was an issue sending your message. Please try again later.",
 
     // Footer
     footerReuniting: "Reuniting people with their belongings.",
@@ -95,6 +172,10 @@ export const translations: Translations = {
     footerSubscribeButton: "Subscribe",
   },
   de: {
+    // General
+    locale: "de-DE",
+    lastUpdated: "Zuletzt aktualisiert:",
+
     // Header
     browse: "Durchsuchen",
     mapview: "Kartenansicht",
@@ -150,9 +231,22 @@ export const translations: Translations = {
     testimonial2Role: "Guter Samariter",
     testimonial3Quote: "Die KI-Matching-Funktion ist brillant. Sie schlug eine Übereinstimmung für meine verlorenen Schlüssel vor, die ich alleine nie gefunden hätte.",
     testimonial3Role: "Dankbarer Nutzer",
-    
-    // FAQ Section
+
+    // How It Works Page
+    hiwTitle: "So funktioniert's",
+    hiwSubtitle: "Der Weg zu Ihren verlorenen Gegenständen ist einfach. Hier ist eine Schritt-für-Schritt-Anleitung.",
+    hiwStep1Title: "1. Suchen oder Melden",
+    hiwStep1Desc: "Wenn Sie etwas verloren haben, beginnen Sie mit der Suche in unserer Datenbank. Wenn Sie einen Gegenstand gefunden haben, erstellen Sie in wenigen Minuten eine detaillierte Meldung.",
+    hiwStep2Title: "2. Details angeben",
+    hiwStep2Desc: "Fügen Sie wichtige Details wie Kategorie, Ort, Datum und eine Beschreibung hinzu. Ein klares Foto erhöht Ihre Erfolgschancen erheblich.",
+    hiwStep3Title: "3. Benachrichtigt werden",
+    hiwStep3Desc: "Unser System und unsere Community machen sich an die Arbeit. Wir benachrichtigen Sie per E-Mail, wenn eine potenzielle Übereinstimmung gefunden wird oder jemand eine Anfrage zu Ihrem Gegenstand stellt.",
+    hiwStep4Title: "4. Verbinden & Wiederfinden",
+    hiwStep4Desc: "Kommunizieren Sie sicher mit der anderen Partei, um den Besitz zu überprüfen und ein sicheres Wiedersehen zu vereinbaren. Ihre persönlichen Daten bleiben privat.",
+
+    // FAQ Page
     faqTitle: "Häufig gestellte Fragen",
+    faqSubtitle: "Haben Sie Fragen? Wir haben Antworten.",
     faq1Title: "Welche Gegenstände kann ich melden?",
     faq1Content: "Sie können jeden Gegenstand melden, den Sie verloren oder gefunden haben. Dazu gehören Elektronik, Brieftaschen, Schlüssel, Accessoires, Taschen, Kleidung, Flaschen, Spielzeug, Dokumente und mehr. Wenn es verloren geht, findet es vielleicht jemand!",
     faq2Title: "Wie funktioniert das Matching?",
@@ -166,6 +260,66 @@ export const translations: Translations = {
     faq6Title: "Sind meine persönlichen Daten sicher?",
     faq6Content: "Ja, wir nehmen Ihre Privatsphäre ernst. Ihre Kontaktinformationen dienen nur zur Überprüfung und um Sie mit einem potenziellen Besitzer oder Finder zu verbinden. Sie werden nicht öffentlich auf der Website angezeigt.",
 
+    // Privacy Policy Page
+    privacyTitle: "Datenschutz-Bestimmungen",
+    privacyIntroTitle: "1. Einleitung",
+    privacyIntroContent: "Willkommen bei FindItNow. Wir verpflichten uns, Ihre persönlichen Daten und Ihr Recht auf Privatsphäre zu schützen. Wenn Sie Fragen oder Bedenken zu unserer Richtlinie oder unseren Praktiken in Bezug auf Ihre persönlichen Daten haben, kontaktieren Sie uns bitte.",
+    privacyInfoCollectTitle: "2. Informationen, die wir sammeln",
+    privacyInfoCollectContent1: "Wir sammeln personenbezogene Daten, die Sie uns freiwillig zur Verfügung stellen, wenn Sie sich auf der Website registrieren, Interesse an Informationen über uns oder unsere Produkte und Dienstleistungen bekunden, an Aktivitäten auf der Website teilnehmen oder uns anderweitig kontaktieren.",
+    privacyInfoCollectContent2: "Die von uns erfassten personenbezogenen Daten hängen vom Kontext Ihrer Interaktionen mit uns und der Website, den von Ihnen getroffenen Entscheidungen und den von Ihnen genutzten Produkten und Funktionen ab. Zu den von uns erfassten personenbezogenen Daten können gehören: Name, E-Mail-Adresse, Telefonnummer und alle anderen Informationen, die Sie angeben möchten.",
+    privacyInfoUseTitle: "3. Wie wir Ihre Informationen verwenden",
+    privacyInfoUseContent: "Wir verwenden die über unsere Website gesammelten personenbezogenen Daten für eine Vielzahl von Geschäftszwecken, die unten beschrieben werden. Wir verarbeiten Ihre personenbezogenen Daten für diese Zwecke im Vertrauen auf unsere legitimen Geschäftsinteressen, um einen Vertrag mit Ihnen abzuschließen oder zu erfüllen, mit Ihrer Zustimmung und/oder zur Einhaltung unserer gesetzlichen Verpflichtungen.",
+    privacyInfoShareTitle: "4. Werden Ihre Informationen mit jemandem geteilt?",
+    privacyInfoShareContent: "Wir geben Informationen nur mit Ihrer Zustimmung weiter, um Gesetze einzuhalten, Ihnen Dienstleistungen zu erbringen, Ihre Rechte zu schützen oder geschäftliche Verpflichtungen zu erfüllen.",
+    privacyInfoKeepTitle: "5. Wie lange bewahren wir Ihre Informationen auf?",
+    privacyInfoKeepContent: "Wir bewahren Ihre Daten so lange auf, wie es zur Erfüllung der in dieser Datenschutzerklärung dargelegten Zwecke erforderlich ist, sofern gesetzlich nichts anderes vorgeschrieben ist.",
+    privacyInfoSafeTitle: "6. Wie schützen wir Ihre Informationen?",
+    privacyInfoSafeContent: "Wir sind bestrebt, Ihre personenbezogenen Daten durch ein System organisatorischer und technischer Sicherheitsmaßnahmen zu schützen.",
+    privacyMinorsTitle: "7. Sammeln wir Informationen von Minderjährigen?",
+    privacyMinorsContent: "Wir fordern wissentlich keine Daten von Kindern unter 18 Jahren an und vermarkten diese auch nicht an sie.",
+    privacyRightsTitle: "8. Was sind Ihre Datenschutzrechte?",
+    privacyRightsContent: "In einigen Regionen (wie dem Europäischen Wirtschaftsraum) haben Sie Rechte, die Ihnen einen größeren Zugang zu und eine bessere Kontrolle über Ihre personenbezogenen Daten ermöglichen. Sie können Ihr Konto jederzeit überprüfen, ändern oder kündigen.",
+
+    // Terms & Conditions Page
+    termsTitle: "Allgemeine Geschäftsbedingungen",
+    termsAgreementTitle: "1. Zustimmung zu den Bedingungen",
+    termsAgreementContent: "Durch die Nutzung unserer Dienste erklären Sie sich mit diesen Bedingungen einverstanden. Wenn Sie diesen Bedingungen nicht zustimmen, nutzen Sie die Dienste nicht.",
+    termsServiceDescTitle: "2. Beschreibung des Dienstes",
+    termsServiceDescContent: "FindItNow bietet eine Plattform für Benutzer, um verlorene und gefundene Gegenstände zu melden und zu suchen. Wir sind ein neutraler Ort und nicht direkt an den Austauschvorgängen zwischen den Benutzern beteiligt.",
+    termsUserConductTitle: "3. Nutzerverhalten",
+    termsUserConductContent: "Sie verpflichten sich, den Dienst nicht für rechtswidrige Zwecke oder für Zwecke zu nutzen, die nach dieser Klausel verboten sind. Sie verpflichten sich, den Dienst nicht in einer Weise zu nutzen, die den Dienst, den Ruf von FindItNow oder das allgemeine Geschäft von FindItNow schädigen könnte.",
+    termsDisclaimersTitle: "4. Haftungsausschlüsse",
+    termsDisclaimersContent: "Ihre Nutzung des Dienstes erfolgt auf Ihr alleiniges Risiko. Der Dienst wird auf einer \"AS IS\"- und \"AS AVAILABLE\"-Basis bereitgestellt. Wir übernehmen keine Garantie für die Richtigkeit, Vollständigkeit oder Nützlichkeit von Informationen auf dem Dienst und übernehmen, befürworten oder sind nicht verantwortlich für die Richtigkeit oder Zuverlässigkeit von Meinungen, Ratschlägen oder Aussagen.",
+    termsLiabilityTitle: "5. Haftungsbeschränkung",
+    termsLiabilityContent: "FindItNow haftet nicht für direkte, indirekte, zufällige, besondere, Folgeschäden oder exemplarische Schäden, einschließlich, aber не beschränkt auf, Schäden aus entgangenem Gewinn, Goodwill, Nutzung, Daten oder anderen immateriellen Verlusten.",
+    termsGoverningLawTitle: "6. Geltendes Recht",
+    termsGoverningLawContent: "Diese Bedingungen unterliegen den Gesetzen der Gerichtsbarkeit, in der das Unternehmen seinen Sitz hat, ungeachtet seiner Kollisionsnormen.",
+
+    // Contact Page
+    contactTitle: "Kontaktiere uns",
+    contactSubtitle: "Wir sind hier um zu helfen. Kontaktieren Sie uns bei Fragen oder Feedback.",
+    contactFormTitle: "Schick uns eine Nachricht",
+    contactFormDesc: "Füllen Sie das Formular aus und wir werden uns so schnell wie möglich bei Ihnen melden.",
+    contactNameLabel: "Vollständiger Name",
+    contactNamePlaceholder: "Max Mustermann",
+    contactEmailLabel: "E-Mail-Addresse",
+    contactEmailPlaceholder: "du@beispiel.com",
+    contactSubjectLabel: "Betreff",
+    contactSubjectPlaceholder: "z.B. Frage zu meinem Bericht",
+    contactMessageLabel: "Deine Nachricht",
+    contactMessagePlaceholder: "Bitte beschreiben Sie Ihr Problem oder Ihre Frage im Detail...",
+    contactSubmitButton: "Senden",
+    contactInfoTitle: "Kontaktinformationen",
+    contactInfoDesc: "Möchten Sie uns direkt erreichen? So geht's.",
+    contactInfoEmail: "Email",
+    contactInfoPhone: "Telefon",
+    contactFollowTitle: "Folge uns",
+    contactFollowDesc: "Bleiben Sie mit uns in den sozialen Medien in Verbindung.",
+    contactToastSuccessTitle: "Nachricht gesendet!",
+    contactToastSuccessDesc: "Danke, dass Sie uns kontaktiert haben. Wir melden uns in Kürze bei Ihnen.",
+    contactToastErrorTitle: "Nachricht konnte nicht gesendet werden",
+    contactToastErrorDesc: "Beim Senden Ihrer Nachricht ist ein Fehler aufgetreten. Bitte versuchen Sie es später noch einmal.",
+    
     // Footer
     footerReuniting: "Wir bringen Menschen wieder mit ihren Sachen zusammen.",
     footerCompany: "Unternehmen",
@@ -185,6 +339,10 @@ export const translations: Translations = {
     footerSubscribeButton: "Abonnieren",
   },
   fr: {
+    // General
+    locale: "fr-FR",
+    lastUpdated: "Dernière mise à jour:",
+
     // Header
     browse: "Parcourir",
     mapview: "Vue Carte",
@@ -241,8 +399,21 @@ export const translations: Translations = {
     testimonial3Quote: "La fonction de correspondance par IA est brillante. Elle a suggéré une correspondance pour mes clés perdues que je n'aurais jamais trouvée par moi-même.",
     testimonial3Role: "Utilisateur reconnaissant",
 
-    // FAQ Section
+    // How It Works Page
+    hiwTitle: "Comment ça marche",
+    hiwSubtitle: "Retrouver vos objets perdus est simple. Voici un guide étape par étape.",
+    hiwStep1Title: "1. Rechercher ou Signaler",
+    hiwStep1Desc: "Si vous avez perdu quelque chose, commencez par effectuer une recherche dans notre base de données. Si vous avez trouvé un objet, créez un rapport détaillé en quelques minutes.",
+    hiwStep2Title: "2. Fournir des détails",
+    hiwStep2Desc: "Ajoutez des détails clés comme la catégorie, l'emplacement, la date et une description. Une photo claire augmente considérablement vos chances de correspondance.",
+    hiwStep3Title: "3. Être notifié",
+    hiwStep3Desc: "Notre système et notre communauté se mettent au travail. Nous vous informerons par e-mail lorsqu'une correspondance potentielle sera trouvée ou lorsque quelqu'un se renseignera sur votre objet.",
+    hiwStep4Title: "4. Connecter & Retrouver",
+    hiwStep4Desc: "Communiquez en toute sécurité avec l'autre partie pour vérifier la propriété et organiser une remise en mains propres. Vos informations personnelles restent privées.",
+
+    // FAQ Page
     faqTitle: "Questions fréquemment posées",
+    faqSubtitle: "Vous avez des questions? Nous avons des réponses.",
     faq1Title: "Quels objets puis-je signaler?",
     faq1Content: "Vous pouvez signaler tout objet que vous avez perdu ou trouvé. Cela inclut l'électronique, les portefeuilles, les clés, les accessoires, les sacs, les vêtements, les bouteilles, les jouets, les documents, et plus encore. S'il est perdu, quelqu'un pourrait le trouver!",
     faq2Title: "Comment fonctionne la mise en correspondance?",
@@ -256,7 +427,67 @@ export const translations: Translations = {
     faq6Title: "Mes informations personnelles sont-elles en sécurité?",
     faq6Content: "Oui, nous prenons votre vie privée au sérieux. Vos coordonnées ne servent qu'à la vérification et à vous mettre en contact avec un propriétaire ou un trouveur potentiel. Elles ne sont pas affichées publiquement sur le site Web.",
 
-     // Footer
+    // Privacy Policy Page
+    privacyTitle: "Politique de confidentialité",
+    privacyIntroTitle: "1. Introduction",
+    privacyIntroContent: "Bienvenue sur FindItNow. Nous nous engageons à protéger vos informations personnelles et votre droit à la vie privée. Si vous avez des questions ou des préoccupations concernant notre politique, ou nos pratiques concernant vos informations personnelles, veuillez nous contacter.",
+    privacyInfoCollectTitle: "2. Informations que nous collectons",
+    privacyInfoCollectContent1: "Nous collectons les informations personnelles que vous nous fournissez volontairement lorsque vous vous inscrivez sur le site, manifestez votre intérêt à obtenir des informations sur nous ou nos produits et services, lorsque vous participez à des activités sur le site ou lorsque vous nous contactez.",
+    privacyInfoCollectContent2: "Les informations personnelles que nous collectons dépendent du contexte de vos interactions avec nous et le site Web, des choix que vous faites et des produits et fonctionnalités que vous utilisez. Les informations personnelles que nous collectons peuvent inclure : nom, adresse e-mail, numéro de téléphone et toute autre information que vous choisissez de fournir.",
+    privacyInfoUseTitle: "3. Comment nous utilisons vos informations",
+    privacyInfoUseContent: "Nous utilisons les informations personnelles collectées via notre site Web à diverses fins commerciales décrites ci-dessous. Nous traitons vos informations personnelles à ces fins sur la base de nos intérêts commerciaux légitimes, afin de conclure ou d'exécuter un contrat avec vous, avec votre consentement et/ou pour nous conformer à nos obligations légales.",
+    privacyInfoShareTitle: "4. Vos informations seront-elles partagées avec quelqu'un?",
+    privacyInfoShareContent: "Nous ne partageons les informations qu'avec votre consentement, pour nous conformer aux lois, pour vous fournir des services, pour protéger vos droits ou pour remplir des obligations commerciales.",
+    privacyInfoKeepTitle: "5. Combien de temps conservons-nous vos informations?",
+    privacyInfoKeepContent: "Nous conservons vos informations aussi longtemps que nécessaire pour atteindre les objectifs décrits dans cette politique de confidentialité, sauf si la loi l'exige autrement.",
+    privacyInfoSafeTitle: "6. Comment protégeons-nous vos informations?",
+    privacyInfoSafeContent: "Nous visons à protéger vos informations personnelles grâce à un système de mesures de sécurité organisationnelles et techniques.",
+    privacyMinorsTitle: "7. Collectons-nous des informations auprès de mineurs?",
+    privacyMinorsContent: "Nous ne sollicitons pas sciemment de données auprès d'enfants de moins de 18 ans et ne commercialisons pas auprès d'eux.",
+    privacyRightsTitle: "8. Quels sont vos droits en matière de confidentialité?",
+    privacyRightsContent: "Dans certaines régions (comme l'Espace économique européen), vous disposez de droits qui vous permettent un meilleur accès et un meilleur contrôle de vos informations personnelles. Vous pouvez revoir, modifier ou résilier votre compte à tout moment.",
+
+    // Terms & Conditions Page
+    termsTitle: "Termes et Conditions",
+    termsAgreementTitle: "1. Acceptation des conditions",
+    termsAgreementContent: "En utilisant nos services, vous acceptez d'être lié par ces Conditions. Si vous n'acceptez pas ces Conditions, n'utilisez pas les services.",
+    termsServiceDescTitle: "2. Description du service",
+    termsServiceDescContent: "FindItNow fournit une plate-forme permettant aux utilisateurs de signaler et de rechercher des objets perdus et trouvés. Nous sommes un lieu neutre et ne sommes pas directement impliqués dans les échanges entre utilisateurs.",
+    termsUserConductTitle: "3. Conduite de l'utilisateur",
+    termsUserConductContent: "Vous vous engagez à ne pas utiliser le service à des fins illégales ou à des fins interdites par cette clause. Vous vous engagez à ne pas utiliser le service d'une manière qui pourrait endommager le service, la réputation de FindItNow ou l'activité générale de FindItNow.",
+    termsDisclaimersTitle: "4. Clauses de non-responsabilité",
+    termsDisclaimersContent: "Votre utilisation du service est à vos risques et périls. Le service est fourni \"TEL QUEL\" et \"TEL QUE DISPONIBLE\". Nous ne garantissons pas l'exactitude, l'exhaustivité ou l'utilité de toute information sur le service et n'adoptons, n'approuvons ni ne sommes responsables de l'exactitude ou de la fiabilité de toute opinion, conseil ou déclaration faite.",
+    termsLiabilityTitle: "5. Limitation de responsabilité",
+    termsLiabilityContent: "FindItNow ne sera pas responsable des dommages directs, indirects, accessoires, spéciaux, consécutifs ou exemplaires, y compris, mais sans s'y limiter, les dommages pour perte de profits, de clientèle, d'utilisation, de données ou autres pertes immatérielles.",
+    termsGoverningLawTitle: "6. Droit applicable",
+    termsGoverningLawContent: "Ces Conditions seront régies par les lois de la juridiction dans laquelle la société est basée, sans égard à ses dispositions en matière de conflit de lois.",
+
+    // Contact Page
+    contactTitle: "Contactez-nous",
+    contactSubtitle: "Nous sommes là pour vous aider. Contactez-nous pour toute question ou commentaire.",
+    contactFormTitle: "Envoyez-nous un message",
+    contactFormDesc: "Remplissez le formulaire et nous vous répondrons dans les plus brefs délais.",
+    contactNameLabel: "Nom complet",
+    contactNamePlaceholder: "Jean Dupont",
+    contactEmailLabel: "Adresse e-mail",
+    contactEmailPlaceholder: "vous@exemple.com",
+    contactSubjectLabel: "Sujet",
+    contactSubjectPlaceholder: "ex: Question sur mon rapport",
+    contactMessageLabel: "Votre message",
+    contactMessagePlaceholder: "Veuillez décrire votre problème ou votre question en détail...",
+    contactSubmitButton: "Soumettre",
+    contactInfoTitle: "Informations de contact",
+    contactInfoDesc: "Vous préférez nous joindre directement? Voici comment.",
+    contactInfoEmail: "E-mail",
+    contactInfoPhone: "Téléphone",
+    contactFollowTitle: "Suivez-nous",
+    contactFollowDesc: "Restez connecté avec nous sur les réseaux sociaux.",
+    contactToastSuccessTitle: "Message envoyé!",
+    contactToastSuccessDesc: "Merci de nous avoir contactés. Nous vous répondrons sous peu.",
+    contactToastErrorTitle: "Échec de l'envoi du message",
+    contactToastErrorDesc: "Une erreur s'est produite lors de l'envoi de votre message. Veuillez réessayer plus tard.",
+
+    // Footer
     footerReuniting: "Réunir les gens avec leurs biens.",
     footerCompany: "Entreprise",
     footerAbout: "À propos",

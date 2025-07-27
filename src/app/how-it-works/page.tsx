@@ -1,14 +1,20 @@
 
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Search, Edit, Bell, Users } from "lucide-react";
+import { useContext } from "react";
+import { LanguageContext } from "@/context/language-context";
 
 export default function HowItWorksPage() {
+  const { t } = useContext(LanguageContext);
+
   return (
     <div className="space-y-12">
       <div className="text-center">
-        <h1 className="text-4xl font-bold font-headline">How It Works</h1>
+        <h1 className="text-4xl font-bold font-headline">{t('hiwTitle')}</h1>
         <p className="mt-2 text-lg text-muted-foreground">
-          Reuniting with your lost items is simple. Here’s a step-by-step guide.
+          {t('hiwSubtitle')}
         </p>
       </div>
 
@@ -20,9 +26,9 @@ export default function HowItWorksPage() {
             </div>
           </CardHeader>
           <CardContent>
-            <CardTitle className="text-xl font-headline mb-2">1. Search or Report</CardTitle>
+            <CardTitle className="text-xl font-headline mb-2">{t('hiwStep1Title')}</CardTitle>
             <p className="text-muted-foreground">
-              If you've lost something, start by searching our database. If you've found an item, create a detailed report in minutes.
+              {t('hiwStep1Desc')}
             </p>
           </CardContent>
         </Card>
@@ -34,9 +40,9 @@ export default function HowItWorksPage() {
             </div>
           </CardHeader>
           <CardContent>
-            <CardTitle className="text-xl font-headline mb-2">2. Provide Details</CardTitle>
+            <CardTitle className="text-xl font-headline mb-2">{t('hiwStep2Title')}</CardTitle>
             <p className="text-muted-foreground">
-              Add key details like category, location, date, and a description. A clear photo significantly increases your chances of a match.
+              {t('hiwStep2Desc')}
             </p>
           </CardContent>
         </Card>
@@ -48,9 +54,9 @@ export default function HowItWorksPage() {
             </div>
           </CardHeader>
           <CardContent>
-            <CardTitle className="text-xl font-headline mb-2">3. Get Notified</CardTitle>
+            <CardTitle className="text-xl font-headline mb-2">{t('hiwStep3Title')}</CardTitle>
             <p className="text-muted-foreground">
-              Our system and community get to work. We'll notify you via email when a potential match is found or when someone enquires about your item.
+              {t('hiwStep3Desc')}
             </p>
           </CardContent>
         </Card>
@@ -62,9 +68,9 @@ export default function HowItWorksPage() {
             </div>
           </CardHeader>
           <CardContent>
-            <CardTitle className="text-xl font-headline mb-2">4. Connect & Reunite</CardTitle>
+            <CardTitle className="text-xl font-headline mb-2">{t('hiwStep4Title')}</CardTitle>
             <p className="text-muted-foreground">
-              Communicate securely with the other party to verify ownership and arrange a safe reunion. Your personal info is kept private.
+              {t('hiwStep4Desc')}
             </p>
           </CardContent>
         </Card>
