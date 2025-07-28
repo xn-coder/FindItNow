@@ -14,12 +14,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import { getPartnerByEmail, sendOtp } from "@/lib/actions";
+import { getPartnerByEmail, sendOtp, loginPartner } from "@/lib/actions";
 import { OtpDialog } from "@/components/otp-dialog";
 import { AuthContext } from "@/context/auth-context";
 
 const partnerLoginSchema = z.object({
   email: z.string().email("Please enter a valid email address."),
+  password: z.string().min(1, "Password is required."),
 });
 
 
@@ -38,18 +39,19 @@ export default function PartnerLoginPage() {
         resolver: zodResolver(partnerLoginSchema),
         defaultValues: {
             email: "",
+            password: "",
         },
     });
     
     async function onSubmit(values: z.infer<typeof partnerLoginSchema>) {
         setIsLoading(true);
         try {
-            const partner = await getPartnerByEmail(values.email);
+            const partner = await loginPartner(values);
             if (!partner) {
                 toast({
                     variant: "destructive",
                     title: "Login Failed",
-                    description: "No partner account found with this email.",
+                    description: "Invalid credentials.",
                 });
                 setIsLoading(false);
                 return;
@@ -137,6 +139,19 @@ export default function PartnerLoginPage() {
                                         </FormItem>
                                     )}
                                 />
+                                <FormField
+                                    control={form.control}
+                                    name="password"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>{t('loginPassword')}</FormLabel>
+                                            <FormControl>
+                                                <Input type="password" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
                                 <Button type="submit" className="w-full" disabled={isLoading}>
                                     {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                     {t('login')}
@@ -158,7 +173,7 @@ export default function PartnerLoginPage() {
                 onClose={() => setIsOtpOpen(false)}
                 onVerify={handleOtpVerification}
                 expectedOtp={otp}
-                isNewUser={false} // Not a new user, just logging in
+                isNewUser={false} 
                 isLoading={isLoading}
             />
         </>

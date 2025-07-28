@@ -29,6 +29,12 @@ const PartnerSchema = z.object({
   password: z.string().min(6),
 });
 
+// Schema for partner login
+const PartnerLoginSchema = z.object({
+    email: z.string().email(),
+    password: z.string().min(1),
+});
+
 const generateOtp = () => {
     return Math.floor(100000 + Math.random() * 900000).toString();
 };
@@ -182,4 +188,33 @@ export async function getPartnerByEmail(email: string) {
   const serializedCreatedAt = createdAt instanceof Timestamp ? createdAt.toJSON() : createdAt;
 
   return { id: partnerDoc.id, ...rest, createdAt: serializedCreatedAt };
+}
+
+
+/**
+ * Authenticates a partner by checking their email and password.
+ * @param credentials - The partner's login credentials.
+ */
+export async function loginPartner(credentials: z.infer<typeof PartnerLoginSchema>) {
+    const validatedData = PartnerLoginSchema.parse(credentials);
+
+    const partner = await getPartnerByEmail(validatedData.email);
+
+    if (!partner) {
+        throw new Error('No partner found with this email address.');
+    }
+
+    if (!partner.password) {
+        // This case should ideally not happen if registration enforces password.
+        throw new Error('This partner account does not have a password.');
+    }
+
+    const passwordsMatch = await bcrypt.compare(validatedData.password, partner.password as string);
+
+    if (!passwordsMatch) {
+        throw new Error('Invalid password.');
+    }
+    
+    const { password, ...partnerWithoutPassword } = partner;
+    return partnerWithoutPassword;
 }
