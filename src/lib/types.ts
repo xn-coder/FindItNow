@@ -39,4 +39,18 @@ export type Claim = {
   date?: Timestamp;
   status: 'open' | 'resolved';
   type?: 'message' | 'claim';
+  userId?: string; // The ID of the user who made the claim/message
+};
+
+export type Feedback = {
+  id: string;
+  rating: number;
+  story: string;
+  userId: string;
+  userName: string;
+  itemName: string;
+  itemId: string;
+  finderId: string;
+  finderName: string;
+  createdAt: string;
 };

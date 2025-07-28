@@ -3,7 +3,7 @@
 
 import { z } from 'zod';
 import { db } from './firebase';
-import { collection, addDoc, getDocs, query, where, Timestamp } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, where, Timestamp, limit, orderBy, serverTimestamp } from 'firebase/firestore';
 import bcrypt from 'bcryptjs';
 import { sendEmail as sendEmailJs } from './email';
 
@@ -34,6 +34,18 @@ const PartnerLoginSchema = z.object({
     email: z.string().email(),
     password: z.string().min(1),
 });
+
+const FeedbackSchema = z.object({
+    rating: z.number().min(1).max(5),
+    story: z.string().min(10).max(500),
+    userId: z.string(),
+    userName: z.string(),
+    itemName: z.string(),
+    finderId: z.string(),
+    finderName: z.string(),
+    itemId: z.string(),
+});
+
 
 const generateOtp = () => {
     return Math.floor(100000 + Math.random() * 900000).toString();
@@ -217,4 +229,42 @@ export async function loginPartner(credentials: z.infer<typeof PartnerLoginSchem
     
     const { password, ...partnerWithoutPassword } = partner;
     return partnerWithoutPassword;
+}
+
+/**
+ * Submits feedback to the 'feedback' collection in Firestore.
+ */
+export async function submitFeedback(feedbackData: z.infer<typeof FeedbackSchema>) {
+    const validatedData = FeedbackSchema.parse(feedbackData);
+    
+    await addDoc(collection(db, 'feedback'), {
+        ...validatedData,
+        createdAt: serverTimestamp(),
+    });
+
+    return { success: true };
+}
+
+
+/**
+ * Retrieves the most recent feedback entries from Firestore.
+ */
+export async function getRecentFeedback() {
+    const q = query(
+        collection(db, "feedback"),
+        orderBy("createdAt", "desc"),
+        limit(3)
+    );
+    const querySnapshot = await getDocs(q);
+    
+    const feedbackData = querySnapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+            id: doc.id,
+            ...data,
+            createdAt: data.createdAt.toDate().toISOString(),
+        };
+    });
+    
+    return feedbackData;
 }

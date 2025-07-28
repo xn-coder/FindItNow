@@ -4,17 +4,31 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { FileCheck, Sparkles, Building, Zap, Users, ArrowRight, MessageSquare, UserCheck, Share2, Star, Quote, Check, Search } from 'lucide-react';
+import { FileCheck, Sparkles, Building, Zap, Users, ArrowRight, MessageSquare, UserCheck, Share2, Quote, Check, Search } from 'lucide-react';
 import Image from 'next/image';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { AppStoreIcon, GooglePlayIcon, SecureReportsIcon, VerifiedUsersIcon, FastMatchingIcon } from '@/components/icons';
+import { AppStoreIcon, GooglePlayIcon, SecureReportsIcon, VerifiedUsersIcon, FastMatchingIcon, StarIcon } from '@/components/icons';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { LanguageContext } from '@/context/language-context';
-
+import type { Feedback } from '@/lib/types';
+import { getRecentFeedback } from '@/lib/actions';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function Home() {
   const { t } = useContext(LanguageContext);
+  const [feedback, setFeedback] = useState<Feedback[]>([]);
+  const [loadingFeedback, setLoadingFeedback] = useState(true);
+
+  useEffect(() => {
+    const fetchFeedback = async () => {
+      setLoadingFeedback(true);
+      const recentFeedback = await getRecentFeedback();
+      setFeedback(recentFeedback);
+      setLoadingFeedback(false);
+    };
+    fetchFeedback();
+  }, []);
 
   return (
     <div className="space-y-16">
@@ -177,81 +191,54 @@ export default function Home() {
             <p className="text-muted-foreground mt-2">{t('testimonialsSubtitle')}</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card className="flex flex-col bg-background transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-              <CardContent className="p-6 flex-grow space-y-4">
-                 <Quote className="h-6 w-6 text-primary/70" />
-                <div className="flex gap-1 mb-2">
-                    <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
-                    <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
-                    <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
-                    <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
-                    <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
-                </div>
-                <blockquote className="text-lg font-medium leading-relaxed flex-grow">"{t('testimonial1Quote')}"</blockquote>
-              </CardContent>
-              <CardFooter className="p-6 pt-4 mt-auto">
-                <div className="flex items-center gap-4">
-                  <Avatar className="w-12 h-12">
-                    <AvatarImage src="https://placehold.co/100x100" alt="User 1" data-ai-hint="woman face"/>
-                    <AvatarFallback>MJ</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-semibold">Maria Jones</p>
-                    <p className="text-sm text-muted-foreground">{t('testimonial1Role')}</p>
-                  </div>
-                </div>
-              </CardFooter>
-            </Card>
-            <Card className="flex flex-col bg-background transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-              <CardContent className="p-6 flex-grow space-y-4">
-                 <Quote className="h-6 w-6 text-primary/70" />
-                <div className="flex gap-1 mb-2">
-                    <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
-                    <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
-                    <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
-                    <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
-                    <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
-                </div>
-                <blockquote className="text-lg font-medium leading-relaxed flex-grow">"{t('testimonial2Quote')}"</blockquote>
-              </CardContent>
-              <CardFooter className="p-6 pt-4 mt-auto">
-                 <div className="flex items-center gap-4">
-                  <Avatar className="w-12 h-12">
-                    <AvatarImage src="https://placehold.co/100x100" alt="User 2" data-ai-hint="man face"/>
-                    <AvatarFallback>DK</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-semibold">David Kim</p>
-                    <p className="text-sm text-muted-foreground">{t('testimonial2Role')}</p>
-                  </div>
-                </div>
-              </CardFooter>
-            </Card>
-            <Card className="flex flex-col bg-background transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-              <CardContent className="p-6 flex-grow space-y-4">
-                 <Quote className="h-6 w-6 text-primary/70" />
-                <div className="flex gap-1 mb-2">
-                    <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
-                    <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
-                    <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
-                    <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
-                    <Star className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
-                </div>
-                <blockquote className="text-lg font-medium leading-relaxed flex-grow">"{t('testimonial3Quote')}"</blockquote>
-              </CardContent>
-              <CardFooter className="p-6 pt-4 mt-auto">
-                 <div className="flex items-center gap-4">
-                  <Avatar className="w-12 h-12">
-                    <AvatarImage src="https://placehold.co/100x100" alt="User 3" data-ai-hint="woman face"/>
-                    <AvatarFallback>LS</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-semibold">Linda Smith</p>
-                    <p className="text-sm text-muted-foreground">{t('testimonial3Role')}</p>
-                  </div>
-                </div>
-              </CardFooter>
-            </Card>
+            {loadingFeedback ? (
+               Array.from({ length: 3 }).map((_, i) => (
+                  <Card key={i} className="flex flex-col bg-background">
+                    <CardContent className="p-6 flex-grow space-y-4">
+                      <Skeleton className="h-6 w-6" />
+                      <Skeleton className="h-5 w-24" />
+                      <Skeleton className="h-16 w-full" />
+                    </CardContent>
+                    <CardFooter className="p-6 pt-4 mt-auto">
+                      <div className="flex items-center gap-4">
+                        <Skeleton className="w-12 h-12 rounded-full" />
+                        <div className="w-2/3 space-y-2">
+                           <Skeleton className="h-4 w-full" />
+                           <Skeleton className="h-4 w-1/2" />
+                        </div>
+                      </div>
+                    </CardFooter>
+                  </Card>
+               ))
+            ) : feedback.length > 0 ? (
+                feedback.map((fb) => (
+                  <Card key={fb.id} className="flex flex-col bg-background transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+                    <CardContent className="p-6 flex-grow space-y-4">
+                      <Quote className="h-6 w-6 text-primary/70" />
+                      <div className="flex gap-1 mb-2">
+                          {[...Array(5)].map((_, i) => (
+                              <StarIcon key={i} className={`h-5 w-5 ${i < fb.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}/>
+                          ))}
+                      </div>
+                      <blockquote className="text-lg font-medium leading-relaxed flex-grow">"{fb.story}"</blockquote>
+                    </CardContent>
+                    <CardFooter className="p-6 pt-4 mt-auto">
+                      <div className="flex items-center gap-4">
+                        <Avatar className="w-12 h-12">
+                          <AvatarImage src={`https://placehold.co/100x100.png`} alt={fb.userName} data-ai-hint="person face"/>
+                          <AvatarFallback>{fb.userName.charAt(0).toUpperCase()}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-semibold">{fb.userName}</p>
+                          <p className="text-sm text-muted-foreground">Reunited with their {fb.itemName}</p>
+                        </div>
+                      </div>
+                    </CardFooter>
+                  </Card>
+                ))
+            ) : (
+                <p className="col-span-full text-center text-muted-foreground">No testimonials yet. Be the first!</p>
+            )}
           </div>
         </div>
       </section>
