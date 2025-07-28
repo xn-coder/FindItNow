@@ -25,14 +25,15 @@ import { CalendarIcon, Loader2 } from "lucide-react";
 import { itemCategories } from "@/lib/data";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { db } from "@/lib/firebase";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, doc, updateDoc } from "firebase/firestore";
 import { sendEmail } from "@/lib/email";
 import { getUserByEmail, createUser } from "@/lib/actions";
 import { OtpDialog } from "./otp-dialog";
 import { AuthContext, AuthUser } from "@/context/auth-context";
 import { useRouter } from "next/navigation";
+import type { Item } from "@/lib/types";
 
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -56,13 +57,14 @@ const formSchema = z.object({
     .refine(
       (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
       ".jpg, .jpeg, .png and .webp files are accepted."
-    ),
+    ).or(z.string()), // Allow existing image URL (string) for edits
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
 type ReportFormProps = {
   itemType: "lost" | "found";
+  existingItem?: Item | null;
 };
 
 // Helper to convert file to base64
@@ -73,14 +75,16 @@ const toBase64 = (file: File): Promise<string> => new Promise((resolve, reject) 
     reader.onerror = error => reject(error);
 });
 
-export function ReportForm({ itemType }: ReportFormProps) {
+export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isOtpOpen, setIsOtpOpen] = useState(false);
   const [otp, setOtp] = useState("");
   const [userExists, setUserExists] = useState<boolean | null>(null);
   const [formValues, setFormValues] = useState<FormValues | null>(null);
-  const { login } = useContext(AuthContext);
+  const { user: authUser, login } = useContext(AuthContext);
   const router = useRouter();
+
+  const isEditMode = existingItem !== null;
 
   const { toast } = useToast();
   const form = useForm<FormValues>({
@@ -95,12 +99,36 @@ export function ReportForm({ itemType }: ReportFormProps) {
     },
   });
 
+  useEffect(() => {
+    if (isEditMode && existingItem) {
+        form.reset({
+            name: existingItem.name,
+            category: existingItem.category,
+            description: existingItem.description,
+            location: existingItem.location,
+            date: new Date(existingItem.date as any),
+            contact: existingItem.contact,
+            phoneNumber: existingItem.phoneNumber || '',
+            image: existingItem.imageUrl, // Keep existing image
+        });
+    }
+  }, [isEditMode, existingItem, form]);
+
+
   const generateOtp = () => {
     return Math.floor(100000 + Math.random() * 900000).toString();
   };
 
   async function handleInitialSubmit(values: FormValues) {
     setIsLoading(true);
+
+    if (isEditMode) {
+      // In edit mode, we bypass OTP and directly update
+      await handleUpdate(values);
+      setIsLoading(false);
+      return;
+    }
+
     try {
         const user = await getUserByEmail(values.contact);
         setUserExists(!!user);
@@ -139,9 +167,48 @@ export function ReportForm({ itemType }: ReportFormProps) {
             variant: "destructive",
         });
     } finally {
-        setIsLoading(false);
+        if (!isEditMode) {
+            setIsLoading(false);
+        }
     }
   }
+
+  async function handleUpdate(values: FormValues) {
+    if (!existingItem) return;
+    try {
+        let imageUrl = existingItem.imageUrl;
+        if (values.image && typeof values.image !== 'string') {
+            const imageFile = values.image[0];
+            imageUrl = await toBase64(imageFile);
+        }
+
+        const itemData = {
+            ...values,
+            imageUrl,
+            type: itemType, // ensure type is maintained
+        };
+        delete (itemData as any).image;
+
+        const docRef = doc(db, "items", existingItem.id);
+        await updateDoc(docRef, itemData);
+        
+        toast({
+            title: "Update Successful!",
+            description: "Your item details have been updated.",
+        });
+
+        router.push('/account');
+
+    } catch(error) {
+        console.error("Error updating document: ", error);
+        toast({
+            title: "Update Failed",
+            description: "There was an error updating your report. Please try again.",
+            variant: "destructive",
+        });
+    }
+  }
+
 
   async function handleOtpVerification(password?: string) {
     setIsLoading(true);
@@ -225,8 +292,8 @@ export function ReportForm({ itemType }: ReportFormProps) {
   }
 
 
-  const title = itemType === "lost" ? "Report a Lost Item" : "Report a Found Item";
-  const description = itemType === "lost"
+  const title = isEditMode ? "Edit Your Item" : itemType === "lost" ? "Report a Lost Item" : "Report a Found Item";
+  const description = isEditMode ? "Update the details of your item below." : itemType === "lost"
     ? "Fill in the details of the item you've lost. The more specific, the better!"
     : "Thank you for being a good samaritan! Please provide details of the item you found.";
 
@@ -357,10 +424,10 @@ export function ReportForm({ itemType }: ReportFormProps) {
                       <FormItem>
                         <FormLabel>Contact Email</FormLabel>
                         <FormControl>
-                          <Input type="email" placeholder="your.email@example.com" {...field} />
+                          <Input type="email" placeholder="your.email@example.com" {...field} disabled={isEditMode} />
                         </FormControl>
                         <FormDescription>
-                          This email will be used for notifications and to log in to your account.
+                          {isEditMode ? "Contact email cannot be changed." : "This email will be used for notifications and to log in to your account."}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -384,18 +451,25 @@ export function ReportForm({ itemType }: ReportFormProps) {
                  <FormField
                   control={form.control}
                   name="image"
-                  render={({ field }) => (
+                  render={({ field: { onChange, ...rest } }) => (
                     <FormItem>
                       <FormLabel>Image</FormLabel>
+                       {isEditMode && existingItem?.imageUrl && (
+                        <div className="mb-4">
+                            <p className="text-sm text-muted-foreground mb-2">Current Image:</p>
+                            <Image src={existingItem.imageUrl} alt="Current item image" width={150} height={150} className="rounded-md border"/>
+                        </div>
+                       )}
                       <FormControl>
                         <Input 
                           type="file" 
                           accept="image/png, image/jpeg, image/jpg, image/webp"
-                          onChange={(e) => field.onChange(e.target.files)}
+                          onChange={(e) => onChange(e.target.files)}
+                          {...rest}
                         />
                       </FormControl>
                        <FormDescription>
-                        Upload a picture of the item. Max file size is 5MB.
+                        {isEditMode ? "Upload a new picture to replace the current one." : "Upload a picture of the item. Max file size is 5MB."}
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -404,20 +478,23 @@ export function ReportForm({ itemType }: ReportFormProps) {
 
               <Button type="submit" size="lg" className="w-full md:w-auto shadow-lg hover:shadow-xl transition-shadow" disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Verify and Submit
+                {isEditMode ? "Save Changes" : "Verify and Submit"}
               </Button>
             </form>
           </Form>
         </CardContent>
       </Card>
-      <OtpDialog 
-          isOpen={isOtpOpen}
-          onClose={() => setIsOtpOpen(false)}
-          onVerify={handleOtpVerification}
-          expectedOtp={otp}
-          isNewUser={!userExists}
-          isLoading={isLoading}
-        />
+      {!isEditMode && (
+        <OtpDialog 
+            isOpen={isOtpOpen}
+            onClose={() => setIsOtpOpen(false)}
+            onVerify={handleOtpVerification}
+            expectedOtp={otp}
+            isNewUser={!userExists}
+            isLoading={isLoading}
+          />
+      )}
     </>
   );
 }
+
