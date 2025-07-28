@@ -1,9 +1,12 @@
+
 'use server';
 
 import { z } from 'zod';
 import { db } from './firebase';
 import { collection, addDoc, getDocs, query, where, Timestamp } from 'firebase/firestore';
 import bcrypt from 'bcryptjs';
+import { sendEmail as sendEmailJs } from './email';
+
 
 // Schema for new user creation
 const UserSchema = z.object({
@@ -16,6 +19,40 @@ const LoginSchema = z.object({
     email: z.string().email(),
     password: z.string().min(1),
 });
+
+
+// Schema for new partner creation
+const PartnerSchema = z.object({
+  businessName: z.string().min(2),
+  businessType: z.string(),
+  email: z.string().email(),
+  password: z.string().min(6),
+});
+
+const generateOtp = () => {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+};
+
+
+export async function sendOtp(email: string, subject: string) {
+    const emailJsEnabled = process.env.NEXT_PUBLIC_EMAILJS_ENABLED !== 'false';
+    let generatedOtp;
+
+    if (emailJsEnabled) {
+      generatedOtp = generateOtp();
+      await sendEmailJs({
+        to_email: email,
+        subject: subject,
+        message: `Your one-time password is: ${generatedOtp}`,
+      });
+    } else {
+      // For development/testing without EmailJS credentials
+      generatedOtp = "123456"; 
+    }
+
+    return generatedOtp;
+}
+
 
 /**
  * Creates a new user in the Firestore 'users' collection.
@@ -41,15 +78,7 @@ export async function createUser(userData: z.infer<typeof UserSchema>) {
 
   const docRef = await addDoc(collection(db, 'users'), userToStore);
 
-  const docData = (await getDocs(query(collection(db, 'users'), where('email', '==', validatedData.email)))).docs[0].data();
-
-  const { createdAt, ...rest } = docData;
-
-  return { 
-    id: docRef.id, 
-    ...rest, 
-    createdAt: createdAt instanceof Timestamp ? createdAt.toJSON() : createdAt 
-  };
+  return { id: docRef.id, email: validatedData.email };
 }
 
 /**
@@ -104,4 +133,53 @@ export async function loginUser(credentials: z.infer<typeof LoginSchema>) {
     // For now, we just return the user data (excluding password).
     const { password, ...userWithoutPassword } = user;
     return userWithoutPassword;
+}
+
+
+/**
+ * Creates a new partner in the Firestore 'partners' collection.
+ */
+export async function createPartner(partnerData: z.infer<typeof PartnerSchema>) {
+  const validatedData = PartnerSchema.parse(partnerData);
+
+  const existingPartner = await getPartnerByEmail(validatedData.email);
+  if (existingPartner) {
+    throw new Error('A partner with this email already exists.');
+  }
+
+  const hashedPassword = await bcrypt.hash(validatedData.password, 10);
+
+  const partnerToStore = {
+    email: validatedData.email.toLowerCase(),
+    password: hashedPassword,
+    businessName: validatedData.businessName,
+    businessType: validatedData.businessType,
+    createdAt: new Date(),
+  };
+
+  const docRef = await addDoc(collection(db, 'partners'), partnerToStore);
+
+  return { id: docRef.id, email: validatedData.email, businessName: validatedData.businessName };
+}
+
+/**
+ * Retrieves a partner from Firestore by their email address.
+ */
+export async function getPartnerByEmail(email: string) {
+  if (!email) return null;
+
+  const q = query(collection(db, 'partners'), where('email', '==', email.toLowerCase()));
+  const querySnapshot = await getDocs(q);
+
+  if (querySnapshot.empty) {
+    return null;
+  }
+
+  const partnerDoc = querySnapshot.docs[0];
+  const partnerData = partnerDoc.data();
+
+  const { createdAt, ...rest } = partnerData;
+  const serializedCreatedAt = createdAt instanceof Timestamp ? createdAt.toJSON() : createdAt;
+
+  return { id: partnerDoc.id, ...rest, createdAt: serializedCreatedAt };
 }

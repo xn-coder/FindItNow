@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { MapPin, Menu, Sprout, User, LogOut, Inbox, Phone } from "lucide-react";
+import { MapPin, Menu, Sprout, User, LogOut, Inbox, Phone, Building } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useState, useContext } from "react";
 import { AuthContext } from "@/context/auth-context";
@@ -54,7 +54,7 @@ export default function Header() {
               {t(link.label.toLowerCase().replace(' ', ''))}
             </Link>
           ))}
-          {user && (
+          {user && !user.isPartner && (
             <>
              <Link href="/account" className="text-sm font-medium text-foreground/70 transition-colors hover:text-primary">
                 {t('myaccount')}
@@ -63,6 +63,11 @@ export default function Header() {
                 {t('enquiries')}
             </Link>
             </>
+          )}
+           {user && user.isPartner && (
+              <Link href="/partner/dashboard" className="text-sm font-medium text-foreground/70 transition-colors hover:text-primary">
+                {t('partnerDashboardTitle')}
+            </Link>
           )}
         </nav>
 
@@ -117,7 +122,7 @@ export default function Header() {
                       {t(link.label.toLowerCase().replace(' ', ''))}
                     </Link>
                   ))}
-                  {user && (
+                  {user && !user.isPartner &&(
                     <>
                      <Link href="/account" className="flex items-center gap-3 rounded-md p-2 text-base font-medium hover:bg-muted" onClick={() => setMobileMenuOpen(false)}>
                       <User className="h-5 w-5 text-primary" />
@@ -128,6 +133,12 @@ export default function Header() {
                       {t('enquiries')}
                     </Link>
                     </>
+                  )}
+                   {user && user.isPartner &&(
+                     <Link href="/partner/dashboard" className="flex items-center gap-3 rounded-md p-2 text-base font-medium hover:bg-muted" onClick={() => setMobileMenuOpen(false)}>
+                      <Building className="h-5 w-5 text-primary" />
+                      {t('partnerDashboardTitle')}
+                    </Link>
                   )}
                 </nav>
                 <div className="mt-8 flex flex-col gap-2">

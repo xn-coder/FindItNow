@@ -1,3 +1,4 @@
+
 "use client";
 
 import { createContext, useState, useEffect, ReactNode } from 'react';
@@ -5,6 +6,8 @@ import { createContext, useState, useEffect, ReactNode } from 'react';
 export type AuthUser = {
     id: string;
     email: string;
+    isPartner?: boolean;
+    businessName?: string;
     // You can add other user properties here
 };
 
