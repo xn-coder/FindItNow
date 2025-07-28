@@ -15,9 +15,14 @@ import { Loader2 } from 'lucide-react';
 import { db } from '@/lib/firebase';
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
+const phoneRegex = new RegExp(
+  /^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/
+);
+
 const claimFormSchema = z.object({
   fullName: z.string().min(2, 'Full name is required.'),
   email: z.string().email('Please enter a valid email address.'),
+  phoneNumber: z.string().regex(phoneRegex, 'Invalid Number!').optional().or(z.literal('')),
   proof: z.string().min(20, 'Please provide a detailed description as proof of ownership (at least 20 characters).'),
 });
 
@@ -34,6 +39,7 @@ export function ClaimForm({ item }: ClaimFormProps) {
     defaultValues: {
       fullName: '',
       email: '',
+      phoneNumber: '',
       proof: '',
     },
   });
@@ -47,6 +53,7 @@ export function ClaimForm({ item }: ClaimFormProps) {
             itemOwnerId: item.userId,
             fullName: values.fullName,
             email: values.email,
+            phoneNumber: values.phoneNumber,
             proof: values.proof,
             submittedAt: serverTimestamp(),
             status: 'open',
@@ -102,6 +109,19 @@ export function ClaimForm({ item }: ClaimFormProps) {
             )}
           />
         </div>
+         <FormField
+            control={form.control}
+            name="phoneNumber"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Contact Number (Optional)</FormLabel>
+                <FormControl>
+                  <Input type="tel" placeholder="+1 123-456-7890" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         <FormField
           control={form.control}
           name="proof"
