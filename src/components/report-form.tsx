@@ -34,6 +34,7 @@ import { OtpDialog } from "./otp-dialog";
 import { AuthContext, AuthUser } from "@/context/auth-context";
 import { useRouter } from "next/navigation";
 import type { Item } from "@/lib/types";
+import Image from "next/image";
 
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
