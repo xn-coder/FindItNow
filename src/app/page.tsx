@@ -225,7 +225,7 @@ export default function Home() {
                     <CardFooter className="p-6 pt-4 mt-auto">
                       <div className="flex items-center gap-4">
                         <Avatar className="w-12 h-12">
-                          <AvatarImage src={`https://placehold.co/100x100.png`} alt={fb.userName} data-ai-hint="person face"/>
+                          <AvatarImage src="" alt={fb.userName} data-ai-hint="person face"/>
                           <AvatarFallback>{fb.userName.charAt(0).toUpperCase()}</AvatarFallback>
                         </Avatar>
                         <div>
