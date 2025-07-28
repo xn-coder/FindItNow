@@ -22,7 +22,7 @@ export const translations: Translations = {
     // Hero Section
     heroTitle1: "Lost or found?",
     heroSubtitle: "Our platform helps you reconnect with your lost belongings. Report lost items, browse found ones, and get reunited quickly.",
-    heroButtonLost: "Search for lost items",
+    heroButtonLost: "Report lost item",
     heroButtonFound: "Report found item",
 
     // Features Section
@@ -226,7 +226,7 @@ export const translations: Translations = {
     // Hero Section
     heroTitle1: "Verloren oder gefunden?",
     heroSubtitle: "Unsere Plattform hilft Ihnen, Ihre verlorenen Gegenstände wiederzufinden. Melden Sie verlorene Gegenstände, durchsuchen Sie gefundene und werden Sie schnell wiedervereint.",
-    heroButtonLost: "Nach verlorenen Gegenständen suchen",
+    heroButtonLost: "Verlustgegenstand melden",
     heroButtonFound: "Fundstück melden",
 
     // Features Section
@@ -430,7 +430,7 @@ export const translations: Translations = {
     // Hero Section
     heroTitle1: "Perdu ou trouvé?",
     heroSubtitle: "Notre plateforme vous aide à retrouver vos objets perdus. Signalez les objets perdus, parcourez ceux qui ont été trouvés et soyez rapidement réunis.",
-    heroButtonLost: "Rechercher des objets perdus",
+    heroButtonLost: "Signaler un objet perdu",
     heroButtonFound: "Signaler un objet trouvé",
 
     // Features Section
