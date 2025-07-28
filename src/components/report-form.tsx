@@ -90,13 +90,23 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
   const { toast } = useToast();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
+    defaultValues: isEditMode && existingItem ? {
+        name: existingItem.name,
+        category: existingItem.category,
+        description: existingItem.description,
+        location: existingItem.location,
+        date: new Date(existingItem.date as any),
+        contact: existingItem.contact,
+        phoneNumber: existingItem.phoneNumber || '',
+        image: existingItem.imageUrl,
+    } : {
       name: "",
       category: "",
       description: "",
       location: "",
-      contact: "",
+      contact: authUser?.email || "",
       phoneNumber: "",
+      image: undefined,
     },
   });
 
@@ -112,7 +122,7 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
             phoneNumber: existingItem.phoneNumber || '',
             image: existingItem.imageUrl, // Keep existing image
         });
-    } else if (authUser?.isPartner) {
+    } else if (authUser) {
         form.setValue('contact', authUser.email);
     }
   }, [isEditMode, existingItem, form, authUser]);
@@ -444,10 +454,10 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
                       <FormItem>
                         <FormLabel>Contact Email</FormLabel>
                         <FormControl>
-                          <Input type="email" placeholder="your.email@example.com" {...field} disabled={isEditMode || authUser?.isPartner} />
+                          <Input type="email" placeholder="your.email@example.com" {...field} disabled={isEditMode || !!authUser} />
                         </FormControl>
                         <FormDescription>
-                          {isEditMode ? "Contact email cannot be changed." : authUser?.isPartner ? "This is your partner account email." : "This email will be used for notifications and to log in to your account."}
+                          {isEditMode ? "Contact email cannot be changed." : authUser ? "This is your account email." : "This email will be used for notifications and to log in to your account."}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -471,13 +481,13 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
                  <FormField
                   control={form.control}
                   name="image"
-                  render={({ field: { onChange, ...rest } }) => (
+                  render={({ field: { onChange, value, ...rest } }) => (
                     <FormItem>
                       <FormLabel>Image</FormLabel>
-                       {isEditMode && existingItem?.imageUrl && (
+                       {isEditMode && typeof value === 'string' && (
                         <div className="mb-4">
                             <p className="text-sm text-muted-foreground mb-2">Current Image:</p>
-                            <Image src={existingItem.imageUrl} alt="Current item image" width={150} height={150} className="rounded-md border"/>
+                            <Image src={value} alt="Current item image" width={150} height={150} className="rounded-md border"/>
                         </div>
                        )}
                       <FormControl>
@@ -498,7 +508,7 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
 
               <Button type="submit" size="lg" className="w-full md:w-auto shadow-lg hover:shadow-xl transition-shadow" disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isEditMode ? "Save Changes" : (authUser?.isPartner ? "Submit Report" : "Verify and Submit")}
+                {isEditMode ? "Save Changes" : (authUser ? "Submit Report" : "Verify and Submit")}
               </Button>
             </form>
           </Form>
@@ -517,5 +527,3 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
     </>
   );
 }
-
-    
