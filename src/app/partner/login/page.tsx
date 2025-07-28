@@ -37,9 +37,14 @@ export default function PartnerLoginPage() {
                             <Link href="/partner/dashboard">{t('login')}</Link>
                         </Button>
                     </div>
+                     <div className="mt-4 text-center text-sm">
+                        {t('partnerNoAccount')}{" "}
+                        <Link href="/partner/register" className="underline">
+                           {t('partnerRegisterNow')}
+                        </Link>
+                    </div>
                 </CardContent>
             </Card>
         </div>
     );
 }
-
