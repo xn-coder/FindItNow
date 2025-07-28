@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -9,16 +9,71 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Building, PlusCircle, Package, Inbox } from "lucide-react";
 import { LanguageContext } from "@/context/language-context";
+import { AuthContext } from "@/context/auth-context";
+import { db } from "@/lib/firebase";
+import { collection, query, where, getDocs, Timestamp, limit, orderBy } from "firebase/firestore";
+import type { Item } from "@/lib/types";
+import { useRouter } from "next/navigation";
 
-// Mock data for demonstration
-const recentItems = [
-    { id: "1", name: "iPhone 14 Pro", category: "Electronics", status: "open", date: "2024-07-28" },
-    { id: "2", name: "Leather Wallet", category: "Wallets", status: "resolved", date: "2024-07-27" },
-    { id: "3", name: "Set of Keys", category: "Keys", status: "open", date: "2024-07-26" },
-];
 
 export default function PartnerDashboardPage() {
     const { t } = useContext(LanguageContext);
+    const { user, loading: authLoading } = useContext(AuthContext);
+    const router = useRouter();
+
+    const [itemCount, setItemCount] = useState(0);
+    const [claimCount, setClaimCount] = useState(0);
+    const [recentItems, setRecentItems] = useState<Item[]>([]);
+    const [loadingStats, setLoadingStats] = useState(true);
+
+     useEffect(() => {
+        if (!authLoading && !user) {
+            router.push('/partner/login');
+        } else if (!authLoading && user && !user.isPartner) {
+            router.push('/');
+        }
+    }, [user, authLoading, router]);
+
+    useEffect(() => {
+        const fetchDashboardData = async () => {
+            if (!user) return;
+            setLoadingStats(true);
+            
+            // Fetch total items reported by this partner
+            const itemsQuery = query(collection(db, "items"), where("userId", "==", user.id));
+            const itemsSnapshot = await getDocs(itemsQuery);
+            setItemCount(itemsSnapshot.size);
+
+            // Fetch recent items
+            const recentItemsQuery = query(itemsQuery, orderBy("createdAt", "desc"), limit(5));
+            const recentItemsSnapshot = await getDocs(recentItemsQuery);
+            const itemsData = recentItemsSnapshot.docs.map(doc => {
+                const data = doc.data();
+                return { 
+                    id: doc.id, 
+                    ...data, 
+                    date: data.date instanceof Timestamp ? data.date.toDate() : new Date(data.date) 
+                } as Item;
+            });
+            setRecentItems(itemsData);
+
+            // Fetch total open claims for this partner's items
+            const claimsQuery = query(collection(db, "claims"), where("itemOwnerId", "==", user.id), where("status", "==", "open"));
+            const claimsSnapshot = await getDocs(claimsQuery);
+            setClaimCount(claimsSnapshot.size);
+
+            setLoadingStats(false);
+        };
+
+        if (user?.isPartner) {
+            fetchDashboardData();
+        }
+    }, [user]);
+
+    if (authLoading || !user) {
+        return <div>Loading...</div>
+    }
+
 
     return (
         <div className="space-y-8">
@@ -26,7 +81,7 @@ export default function PartnerDashboardPage() {
                 <CardHeader>
                     <CardTitle className="text-3xl font-headline flex items-center gap-3">
                         <Building className="h-8 w-8 text-primary"/>
-                        {t('partnerDashboardTitle')}
+                        {user.businessName}
                     </CardTitle>
                     <CardDescription>
                         {t('partnerDashboardSubtitle')}
@@ -43,26 +98,30 @@ export default function PartnerDashboardPage() {
             </Card>
 
             <div className="grid md:grid-cols-2 gap-6">
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium">{t('partnerItemsReported')}</CardTitle>
-                        <Package className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">125</div>
-                        <p className="text-xs text-muted-foreground">{t('partnerItemsTotal')}</p>
-                    </CardContent>
-                </Card>
-                 <Card>
-                    <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium">{t('partnerOpenClaims')}</CardTitle>
-                        <Inbox className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">12</div>
-                         <p className="text-xs text-muted-foreground">{t('partnerClaimsUnresolved')}</p>
-                    </CardContent>
-                </Card>
+                <Link href="/browse" className="cursor-pointer">
+                    <Card className="hover:bg-muted">
+                        <CardHeader className="flex flex-row items-center justify-between pb-2">
+                            <CardTitle className="text-sm font-medium">{t('partnerItemsReported')}</CardTitle>
+                            <Package className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">{loadingStats ? "..." : itemCount}</div>
+                            <p className="text-xs text-muted-foreground">{t('partnerItemsTotal')}</p>
+                        </CardContent>
+                    </Card>
+                </Link>
+                 <Link href="/partner/enquiries" className="cursor-pointer">
+                    <Card className="hover:bg-muted">
+                        <CardHeader className="flex flex-row items-center justify-between pb-2">
+                            <CardTitle className="text-sm font-medium">{t('partnerOpenClaims')}</CardTitle>
+                            <Inbox className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">{loadingStats ? "..." : claimCount}</div>
+                            <p className="text-xs text-muted-foreground">{t('partnerClaimsUnresolved')}</p>
+                        </CardContent>
+                    </Card>
+                </Link>
             </div>
 
             <Card>
@@ -81,18 +140,24 @@ export default function PartnerDashboardPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {recentItems.map((item) => (
-                                <TableRow key={item.id}>
-                                    <TableCell className="font-medium">{item.name}</TableCell>
-                                    <TableCell>{item.category}</TableCell>
-                                    <TableCell>
-                                        <Badge variant={item.status === 'open' ? 'default' : 'secondary'}>
-                                            {item.status}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell>{item.date}</TableCell>
-                                </TableRow>
-                            ))}
+                            {loadingStats ? (
+                                <TableRow><TableCell colSpan={4}>Loading...</TableCell></TableRow>
+                            ) : recentItems.length > 0 ? (
+                                recentItems.map((item) => (
+                                    <TableRow key={item.id} onClick={() => router.push(`/browse?item=${item.id}`)} className="cursor-pointer">
+                                        <TableCell className="font-medium">{item.name}</TableCell>
+                                        <TableCell>{item.category}</TableCell>
+                                        <TableCell>
+                                            <Badge variant={item.status === 'open' ? 'default' : 'secondary'}>
+                                                {item.status}
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell>{(item.date as Date).toLocaleDateString()}</TableCell>
+                                    </TableRow>
+                                ))
+                            ) : (
+                                <TableRow><TableCell colSpan={4}>No items reported yet.</TableCell></TableRow>
+                            )}
                         </TableBody>
                     </Table>
                 </CardContent>
@@ -100,3 +165,5 @@ export default function PartnerDashboardPage() {
         </div>
     );
 }
+
+    

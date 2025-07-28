@@ -111,8 +111,10 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
             phoneNumber: existingItem.phoneNumber || '',
             image: existingItem.imageUrl, // Keep existing image
         });
+    } else if (authUser?.isPartner) {
+        form.setValue('contact', authUser.email);
     }
-  }, [isEditMode, existingItem, form]);
+  }, [isEditMode, existingItem, form, authUser]);
 
 
   const generateOtp = () => {
@@ -123,10 +125,16 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
     setIsLoading(true);
 
     if (isEditMode) {
-      // In edit mode, we bypass OTP and directly update
       await handleUpdate(values);
       setIsLoading(false);
       return;
+    }
+    
+    // If a partner is logged in, bypass OTP and submit directly
+    if (authUser?.isPartner) {
+        await submitItem(values, authUser.id);
+        setIsLoading(false);
+        return;
     }
 
     try {
@@ -167,7 +175,7 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
             variant: "destructive",
         });
     } finally {
-        if (!isEditMode) {
+        if (!isEditMode && !authUser?.isPartner) {
             setIsLoading(false);
         }
     }
@@ -196,8 +204,9 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
             title: "Update Successful!",
             description: "Your item details have been updated.",
         });
-
-        router.push('/account');
+        
+        const destination = authUser?.isPartner ? '/partner/dashboard' : '/account';
+        router.push(destination);
 
     } catch(error) {
         console.error("Error updating document: ", error);
@@ -237,41 +246,7 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
             throw new Error("Could not verify or create user.");
         }
         
-        const imageFile = formValues.image[0];
-        const imageUrl = await toBase64(imageFile);
-
-        const docRef = await addDoc(collection(db, "items"), {
-            type: itemType,
-            name: formValues.name,
-            category: formValues.category,
-            description: formValues.description,
-            location: formValues.location,
-            date: formValues.date,
-            contact: formValues.contact,
-            phoneNumber: formValues.phoneNumber,
-            imageUrl,
-            createdAt: serverTimestamp(),
-            lat: 40.7580,
-            lng: -73.9855,
-            userId: userId,
-            status: 'open', // New items are always open
-        });
-
-        toast({
-            title: "Report Submitted!",
-            description: `Your ${itemType} item report has been successfully submitted.`,
-            variant: "default",
-        });
-
-        const emailJsEnabled = process.env.NEXT_PUBLIC_EMAILJS_ENABLED !== 'false';
-        if(emailJsEnabled) {
-          await sendEmail({
-            to_email: formValues.contact,
-            subject: `Your ${itemType.charAt(0).toUpperCase() + itemType.slice(1)} Item Report Confirmation`,
-            message: `Hello,\n\nThis is a confirmation that your report for the following item has been submitted:\n\nItem Name: ${formValues.name}\nCategory: ${formValues.category}\nLocation: ${formValues.location}\nDate: ${format(formValues.date, "PPP")}\n\nYou can view your submission here: ${window.location.origin}/browse?item=${docRef.id}\n\nThank you for using FindItNow.`,
-          });
-        }
-
+        const docRefId = await submitItem(formValues, userId, user);
 
         login(user); // Log the user in
         
@@ -280,7 +255,7 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
         router.push("/account"); // Redirect to account page
 
     } catch (error) {
-        console.error("Error adding document: ", error);
+        console.error("Error during OTP verification: ", error);
         toast({
             title: "Submission Failed",
             description: "There was an error submitting your report. Please try again.",
@@ -290,6 +265,50 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
         setIsLoading(false);
     }
   }
+
+    async function submitItem(values: FormValues, userId: string, userToLogin?: AuthUser) {
+        const imageFile = values.image[0];
+        const imageUrl = await toBase64(imageFile);
+
+        const docRef = await addDoc(collection(db, "items"), {
+            type: itemType,
+            name: values.name,
+            category: values.category,
+            description: values.description,
+            location: values.location,
+            date: values.date,
+            contact: values.contact,
+            phoneNumber: values.phoneNumber,
+            imageUrl,
+            createdAt: serverTimestamp(),
+            lat: 40.7580,
+            lng: -73.9855,
+            userId: userId,
+            status: 'open',
+        });
+
+        toast({
+            title: "Report Submitted!",
+            description: `Your ${itemType} item report has been successfully submitted.`,
+        });
+
+        const emailJsEnabled = process.env.NEXT_PUBLIC_EMAILJS_ENABLED !== 'false';
+        if(emailJsEnabled) {
+          await sendEmail({
+            to_email: values.contact,
+            subject: `Your ${itemType.charAt(0).toUpperCase() + itemType.slice(1)} Item Report Confirmation`,
+            message: `Hello,\n\nThis is a confirmation that your report for the following item has been submitted:\n\nItem Name: ${values.name}\nCategory: ${values.category}\nLocation: ${values.location}\nDate: ${format(values.date, "PPP")}\n\nYou can view your submission here: ${window.location.origin}/browse?item=${docRef.id}\n\nThank you for using FindItNow.`,
+          });
+        }
+        
+        if (userToLogin) login(userToLogin);
+
+        // Redirect after submission
+        const destination = authUser?.isPartner ? '/partner/dashboard' : '/account';
+        router.push(destination);
+
+        return docRef.id;
+    }
 
 
   const title = isEditMode ? "Edit Your Item" : itemType === "lost" ? "Report a Lost Item" : "Report a Found Item";
@@ -424,10 +443,10 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
                       <FormItem>
                         <FormLabel>Contact Email</FormLabel>
                         <FormControl>
-                          <Input type="email" placeholder="your.email@example.com" {...field} disabled={isEditMode} />
+                          <Input type="email" placeholder="your.email@example.com" {...field} disabled={isEditMode || authUser?.isPartner} />
                         </FormControl>
                         <FormDescription>
-                          {isEditMode ? "Contact email cannot be changed." : "This email will be used for notifications and to log in to your account."}
+                          {isEditMode ? "Contact email cannot be changed." : authUser?.isPartner ? "This is your partner account email." : "This email will be used for notifications and to log in to your account."}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -478,7 +497,7 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
 
               <Button type="submit" size="lg" className="w-full md:w-auto shadow-lg hover:shadow-xl transition-shadow" disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isEditMode ? "Save Changes" : "Verify and Submit"}
+                {isEditMode ? "Save Changes" : (authUser?.isPartner ? "Submit Report" : "Verify and Submit")}
               </Button>
             </form>
           </Form>
@@ -498,3 +517,4 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
   );
 }
 
+    

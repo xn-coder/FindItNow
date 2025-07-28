@@ -180,6 +180,7 @@ export const translations: Translations = {
     partnerBusinessTypePlaceholder: "Select a type",
     partnerRegisterButton: "Create Partner Account",
     partnerHaveAccount: "Already have a partner account?",
+    partnerEnquiries: "Enquiries",
     airport: "Airport",
     mall: "Mall",
     policestation: "Police Station",
@@ -383,6 +384,7 @@ export const translations: Translations = {
     partnerBusinessTypePlaceholder: "Wählen Sie einen Typ aus",
     partnerRegisterButton: "Partnerkonto erstellen",
     partnerHaveAccount: "Haben Sie bereits ein Partnerkonto?",
+    partnerEnquiries: "Anfragen",
     airport: "Flughafen",
     mall: "Einkaufszentrum",
     policestation: "Polizeistation",
@@ -586,6 +588,7 @@ export const translations: Translations = {
     partnerBusinessTypePlaceholder: "Sélectionnez un type",
     partnerRegisterButton: "Créer un compte partenaire",
     partnerHaveAccount: "Vous avez déjà un compte partenaire?",
+    partnerEnquiries: "Demandes",
     airport: "Aéroport",
     mall: "Centre commercial",
     policestation: "Poste de police",
@@ -617,3 +620,5 @@ export const translations: Translations = {
 
 // This helps with TypeScript type safety
 export type TranslationKey = keyof typeof translations.en;
+
+    

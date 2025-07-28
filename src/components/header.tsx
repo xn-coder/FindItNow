@@ -65,9 +65,14 @@ export default function Header() {
             </>
           )}
            {user && user.isPartner && (
-              <Link href="/partner/dashboard" className="text-sm font-medium text-foreground/70 transition-colors hover:text-primary">
-                {t('partnerDashboardTitle')}
-            </Link>
+              <>
+                <Link href="/partner/dashboard" className="text-sm font-medium text-foreground/70 transition-colors hover:text-primary">
+                  {t('partnerDashboardTitle')}
+                </Link>
+                <Link href="/partner/enquiries" className="text-sm font-medium text-foreground/70 transition-colors hover:text-primary">
+                  {t('enquiries')}
+                </Link>
+              </>
           )}
         </nav>
 
@@ -135,10 +140,16 @@ export default function Header() {
                     </>
                   )}
                    {user && user.isPartner &&(
-                     <Link href="/partner/dashboard" className="flex items-center gap-3 rounded-md p-2 text-base font-medium hover:bg-muted" onClick={() => setMobileMenuOpen(false)}>
-                      <Building className="h-5 w-5 text-primary" />
-                      {t('partnerDashboardTitle')}
-                    </Link>
+                    <>
+                        <Link href="/partner/dashboard" className="flex items-center gap-3 rounded-md p-2 text-base font-medium hover:bg-muted" onClick={() => setMobileMenuOpen(false)}>
+                            <Building className="h-5 w-5 text-primary" />
+                            {t('partnerDashboardTitle')}
+                        </Link>
+                        <Link href="/partner/enquiries" className="flex items-center gap-3 rounded-md p-2 text-base font-medium hover:bg-muted" onClick={() => setMobileMenuOpen(false)}>
+                            <Inbox className="h-5 w-5 text-primary" />
+                            {t('enquiries')}
+                        </Link>
+                     </>
                   )}
                 </nav>
                 <div className="mt-8 flex flex-col gap-2">
@@ -167,3 +178,5 @@ export default function Header() {
     </header>
   );
 }
+
+    
