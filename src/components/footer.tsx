@@ -27,7 +27,7 @@ export default function Footer() {
                 <nav className="flex flex-col gap-1">
                     <Link href="/how-it-works" className="text-sm text-gray-400 hover:text-white">{t('hiwTitle')}</Link>
                     <Link href="/faq" className="text-sm text-gray-400 hover:text-white">{t('faqTitle')}</Link>
-                    <Link href="#" className="text-sm text-gray-400 hover:text-white">{t('footerPress')}</Link>
+                    <Link href="/partner/login" className="text-sm text-gray-400 hover:text-white">{t('footerForBusiness')}</Link>
                     <Link href="#" className="text-sm text-gray-400 hover:text-white">{t('footerCareers')}</Link>
                 </nav>
             </div>
