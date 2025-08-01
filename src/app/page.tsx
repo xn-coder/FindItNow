@@ -230,7 +230,7 @@ export default function Home() {
                         </Avatar>
                         <div>
                           <p className="font-semibold">{fb.userName}</p>
-                          <p className="text-sm text-muted-foreground">Reunited with their {fb.itemName}</p>
+                          <p className="text-sm text-muted-foreground">{t('reunitedWith')} {fb.itemName}</p>
                         </div>
                       </div>
                     </CardFooter>
@@ -246,3 +246,5 @@ export default function Home() {
     </div>
   );
 }
+
+    

@@ -10,6 +10,8 @@ import { Separator } from "@/components/ui/separator";
 import type { Item } from "@/lib/types";
 import { Calendar, MapPin, Search, Edit, Trash2 } from "lucide-react";
 import { Timestamp } from "firebase/firestore";
+import { useContext } from "react";
+import { LanguageContext } from "@/context/language-context";
 
 type AccountItemCardProps = {
   item: Item;
@@ -18,6 +20,7 @@ type AccountItemCardProps = {
 
 export function AccountItemCard({ item, onDelete }: AccountItemCardProps) {
   const date = item.date instanceof Timestamp ? item.date.toDate() : item.date;
+  const { t } = useContext(LanguageContext);
   
   return (
     <Card className="flex flex-col h-full overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group">
@@ -38,7 +41,7 @@ export function AccountItemCard({ item, onDelete }: AccountItemCardProps) {
             className="absolute top-3 right-3"
             variant={item.status === 'resolved' ? 'secondary' : item.type === 'lost' ? 'destructive' : 'default'}
           >
-            {item.status === 'resolved' ? 'Resolved' : item.type.charAt(0).toUpperCase() + item.type.slice(1)}
+            {item.status === 'resolved' ? t('resolved') : t(item.type)}
           </Badge>
         </div>
       </CardHeader>
@@ -52,7 +55,7 @@ export function AccountItemCard({ item, onDelete }: AccountItemCardProps) {
           </div>
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4 text-primary" />
-            <span>{date.toLocaleDateString()}</span>
+            <span>{date.toLocaleDateString(t('locale'))}</span>
           </div>
         </div>
       </CardContent>
@@ -66,10 +69,11 @@ export function AccountItemCard({ item, onDelete }: AccountItemCardProps) {
         </Button>
         <Button variant="destructive" size="sm" onClick={() => onDelete(item)}>
           <Trash2 className="mr-2 h-4 w-4" />
-          Delete
+          {t('accountDeleteItem')}
         </Button>
       </CardFooter>
     </Card>
   );
 }
 
+    

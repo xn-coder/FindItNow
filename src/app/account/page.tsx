@@ -24,12 +24,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { LanguageContext } from "@/context/language-context";
 
 
 export default function AccountPage() {
     const { user, loading: authLoading } = useContext(AuthContext);
     const router = useRouter();
     const { toast } = useToast();
+    const { t } = useContext(LanguageContext);
     const [items, setItems] = useState<Item[]>([]);
     const [loadingItems, setLoadingItems] = useState(true);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -125,10 +127,10 @@ export default function AccountPage() {
                     <CardHeader>
                         <CardTitle className="text-3xl font-headline flex items-center gap-3">
                             <User className="h-8 w-8 text-primary"/>
-                            My Account
+                            {t('accountTitle')}
                         </CardTitle>
                         <CardDescription>
-                            Welcome back! Here's an overview of your activity.
+                           {t('accountSubtitle')}
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -140,7 +142,7 @@ export default function AccountPage() {
                 </Card>
 
                 <div>
-                    <h2 className="text-2xl font-bold font-headline mb-4">My Submissions</h2>
+                    <h2 className="text-2xl font-bold font-headline mb-4">{t('accountMySubmissions')}</h2>
                      {loadingItems ? (
                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                             {Array.from({ length: 4 }).map((_, i) => (
@@ -167,8 +169,8 @@ export default function AccountPage() {
                         </div>
                     ) : (
                          <div className="text-center py-16 bg-card rounded-lg border">
-                            <p className="text-xl font-medium">You haven't submitted any items yet.</p>
-                            <p className="text-muted-foreground mt-2">Report a lost or found item to see it here.</p>
+                            <p className="text-xl font-medium">{t('accountNoSubmissions')}</p>
+                            <p className="text-muted-foreground mt-2">{t('accountNoSubmissionsDesc')}</p>
                         </div>
                     )}
                 </div>
@@ -176,10 +178,9 @@ export default function AccountPage() {
             <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogTitle>{t('accountDeleteItemConfirm')}</AlertDialogTitle>
                     <AlertDialogDescription>
-                        This action cannot be undone. This will permanently delete your
-                        item listing from our servers.
+                       {t('accountDeleteItemDesc')}
                     </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
@@ -191,3 +192,5 @@ export default function AccountPage() {
         </>
     );
 }
+
+    

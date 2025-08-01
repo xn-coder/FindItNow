@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -20,6 +20,7 @@ import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Calendar } from './ui/calendar';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import { LanguageContext } from '@/context/language-context';
 
 const foundItemFormSchema = z.object({
   finderName: z.string().min(2, 'Your name is required.'),
@@ -36,6 +37,7 @@ type FoundItemFormProps = {
 export function FoundItemForm({ item }: FoundItemFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { t } = useContext(LanguageContext);
 
   const form = useForm<z.infer<typeof foundItemFormSchema>>({
     resolver: zodResolver(foundItemFormSchema),
@@ -111,9 +113,9 @@ export function FoundItemForm({ item }: FoundItemFormProps) {
   return (
     <Card className="border-2">
       <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-headline">Have you found this item?</CardTitle>
+          <CardTitle className="text-2xl font-headline">{t('haveYouFoundThis')}</CardTitle>
           <CardDescription>
-              If you have found this item, please use the form below to contact the owner. Your email will be shared so they can reply to you.
+              {t('haveYouFoundThisDesc')}
           </CardDescription>
       </CardHeader>
       <CardContent>
@@ -125,9 +127,9 @@ export function FoundItemForm({ item }: FoundItemFormProps) {
                     name="finderName"
                     render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Your Name</FormLabel>
+                        <FormLabel>{t('foundFormYourName')}</FormLabel>
                         <FormControl>
-                        <Input placeholder="Jane Smith" {...field} />
+                        <Input placeholder={t('foundFormYourNamePlaceholder')} {...field} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -138,9 +140,9 @@ export function FoundItemForm({ item }: FoundItemFormProps) {
                     name="finderEmail"
                     render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Your Contact Email</FormLabel>
+                        <FormLabel>{t('claimFormContactEmail')}</FormLabel>
                         <FormControl>
-                        <Input type="email" placeholder="you@example.com" {...field} />
+                        <Input type="email" placeholder={t('claimFormContactEmailPlaceholder')} {...field} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -153,9 +155,9 @@ export function FoundItemForm({ item }: FoundItemFormProps) {
                     name="location"
                     render={({ field }) => (
                         <FormItem>
-                        <FormLabel>Location Found</FormLabel>
+                        <FormLabel>{t('foundFormLocationFound')}</FormLabel>
                         <FormControl>
-                            <Input placeholder="e.g., Grand Central Terminal" {...field} />
+                            <Input placeholder={t('foundFormLocationFoundPlaceholder')} {...field} />
                         </FormControl>
                         <FormMessage />
                         </FormItem>
@@ -166,7 +168,7 @@ export function FoundItemForm({ item }: FoundItemFormProps) {
                     name="date"
                     render={({ field }) => (
                         <FormItem className="flex flex-col pt-2">
-                        <FormLabel>Date Found</FormLabel>
+                        <FormLabel>{t('foundFormDateFound')}</FormLabel>
                         <Popover>
                             <PopoverTrigger asChild>
                             <FormControl>
@@ -180,7 +182,7 @@ export function FoundItemForm({ item }: FoundItemFormProps) {
                                 {field.value ? (
                                     format(field.value, "PPP")
                                 ) : (
-                                    <span>Pick a date</span>
+                                    <span>{t('reportFormPickDate')}</span>
                                 )}
                                 <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                                 </Button>
@@ -208,7 +210,7 @@ export function FoundItemForm({ item }: FoundItemFormProps) {
                 name="message"
                 render={({ field }) => (
                     <FormItem>
-                    <FormLabel>Message to Owner</FormLabel>
+                    <FormLabel>{t('foundFormMessageToOwner')}</FormLabel>
                     <FormControl>
                         <Textarea
                         rows={5}
@@ -221,7 +223,7 @@ export function FoundItemForm({ item }: FoundItemFormProps) {
                 />
                 <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Send Message
+                {t('foundFormSendMessage')}
                 </Button>
             </form>
         </Form>
@@ -229,3 +231,5 @@ export function FoundItemForm({ item }: FoundItemFormProps) {
     </Card>
   );
 }
+
+    

@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Inbox, Mail, MessageSquare, Package, User, MapPin, Calendar, CheckCircle2, Loader2, Circle, Phone } from "lucide-react";
 import { FeedbackDialog } from "@/components/feedback-dialog";
+import { LanguageContext } from "@/context/language-context";
 
 export default function EnquiriesPage() {
     const { user, loading: authLoading } = useContext(AuthContext);
@@ -22,6 +23,7 @@ export default function EnquiriesPage() {
     const [relatedItems, setRelatedItems] = useState<Record<string, Item>>({});
     const [isPending, startTransition] = useTransition();
     const { toast } = useToast();
+    const { t } = useContext(LanguageContext);
     const [feedbackClaim, setFeedbackClaim] = useState<Claim | null>(null);
 
     useEffect(() => {
@@ -145,23 +147,23 @@ export default function EnquiriesPage() {
 
     const getEnquiryTitle = (itemType?: 'lost' | 'found') => {
         if (itemType === 'lost') {
-            return 'Message from Finder';
+            return t('enquiriesMessageFromFinder');
         }
-        return 'Claim of Ownership';
+        return t('enquiriesClaimOfOwnership');
     };
 
     const getEnquiryProofLabel = (itemType?: 'lost' | 'found') => {
         if (itemType === 'lost') {
-            return 'Finder\'s Message:';
+            return t('enquiriesFindersMessage');
         }
-        return 'Proof of Ownership:';
+        return t('enquiriesProofOfOwnership');
     }
 
     const getEnquirerLabel = (itemType?: 'lost' | 'found') => {
         if (itemType === 'lost') {
-            return "Finder's Details";
+            return t('enquiriesFindersDetails');
         }
-        return "Claimant's Details";
+        return t('enquiriesClaimantsDetails');
     }
 
     return (
@@ -171,10 +173,10 @@ export default function EnquiriesPage() {
                     <CardHeader>
                         <CardTitle className="text-3xl font-headline flex items-center gap-3">
                             <Inbox className="h-8 w-8 text-primary"/>
-                            My Enquiries
+                            {t('enquiriesTitle')}
                         </CardTitle>
                         <CardDescription>
-                            Here are the open claims and messages for items you've reported.
+                            {t('enquiriesSubtitle')}
                         </CardDescription>
                     </CardHeader>
                 </Card>
@@ -210,10 +212,10 @@ export default function EnquiriesPage() {
                                         <div className="flex items-center gap-3">
                                             <Package className="h-5 w-5 text-primary"/>
                                             <h3 className="font-semibold text-lg">{item.name}</h3>
-                                            <span className="text-sm text-muted-foreground">(Item you reported as {item.type})</span>
+                                            <span className="text-sm text-muted-foreground">{t('enquiriesItemReportedAs').replace('{itemType}', t(item.type))}</span>
                                         </div>
                                         <span className="text-sm text-muted-foreground">
-                                            Received on: {enquiryDate.toLocaleDateString()}
+                                            {t('enquiriesReceivedOn').replace('{date}', enquiryDate.toLocaleDateString(t('locale')))}
                                         </span>
                                     </CardHeader>
                                     <CardContent className="p-6 grid md:grid-cols-2 gap-6">
@@ -231,15 +233,15 @@ export default function EnquiriesPage() {
                                                     <div className="flex items-start gap-3">
                                                         <MapPin className="h-5 w-5 text-muted-foreground mt-1"/>
                                                         <div>
-                                                            <p className="font-semibold">Location Reported by Finder:</p>
+                                                            <p className="font-semibold">{t('enquiriesLocationReported')}</p>
                                                             <p className="text-muted-foreground">{enquiry.location}</p>
                                                         </div>
                                                     </div>
                                                     <div className="flex items-start gap-3">
                                                         <Calendar className="h-5 w-5 text-muted-foreground mt-1"/>
                                                         <div>
-                                                            <p className="font-semibold">Date Reported by Finder:</p>
-                                                            <p className="text-muted-foreground">{foundDate.toLocaleDateString()}</p>
+                                                            <p className="font-semibold">{t('enquiriesDateReported')}</p>
+                                                            <p className="text-muted-foreground">{foundDate.toLocaleDateString(t('locale'))}</p>
                                                         </div>
                                                     </div>
                                                 </>
@@ -249,16 +251,16 @@ export default function EnquiriesPage() {
                                             <h4 className="font-semibold text-lg">{getEnquirerLabel(item.type)}</h4>
                                             <div className="flex items-center gap-3">
                                                 <User className="h-5 w-5 text-muted-foreground"/>
-                                                <p><span className="font-semibold">Name:</span> {enquiry.fullName}</p>
+                                                <p><span className="font-semibold">{t('enquiriesName')}</span> {enquiry.fullName}</p>
                                             </div>
                                             <div className="flex items-center gap-3">
                                                 <Mail className="h-5 w-5 text-muted-foreground"/>
-                                                <p><span className="font-semibold">Email:</span> {enquiry.email}</p>
+                                                <p><span className="font-semibold">{t('enquiriesEmail')}</span> {enquiry.email}</p>
                                             </div>
                                             {enquiry.phoneNumber && (
                                                 <div className="flex items-center gap-3">
                                                     <Phone className="h-5 w-5 text-muted-foreground"/>
-                                                    <p><span className="font-semibold">Phone:</span> {enquiry.phoneNumber}</p>
+                                                    <p><span className="font-semibold">{t('enquiriesPhone')}</span> {enquiry.phoneNumber}</p>
                                                 </div>
                                             )}
                                         </div>
@@ -270,7 +272,7 @@ export default function EnquiriesPage() {
                                             disabled={isPending}
                                         >
                                             {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle2 className="mr-2 h-4 w-4"/>}
-                                            Mark as Resolved
+                                            {t('enquiriesMarkAsResolved')}
                                         </Button>
                                     </CardFooter>
                                 </Card>
@@ -279,8 +281,8 @@ export default function EnquiriesPage() {
                     </div>
                 ) : (
                     <div className="text-center py-16 bg-card rounded-lg border">
-                        <p className="text-xl font-medium">No open enquiries.</p>
-                        <p className="text-muted-foreground mt-2">When someone claims your found item or messages you about a lost one, you'll see it here.</p>
+                        <p className="text-xl font-medium">{t('enquiriesNoEnquiries')}</p>
+                        <p className="text-muted-foreground mt-2">{t('enquiriesNoEnquiriesDesc')}</p>
                     </div>
                 )}
             </div>
@@ -296,3 +298,5 @@ export default function EnquiriesPage() {
         </>
     );
 }
+
+    

@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useContext } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,6 +17,7 @@ import { Timestamp } from "firebase/firestore";
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { LanguageContext } from '@/context/language-context';
 
 
 function ItemBrowser() {
@@ -24,6 +26,7 @@ function ItemBrowser() {
   const [searchTerm, setSearchTerm] = useState('');
   const [category, setCategory] = useState('all');
   const [itemType, setItemType] = useState('all');
+  const { t } = useContext(LanguageContext);
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -63,9 +66,9 @@ function ItemBrowser() {
   return (
     <div className="space-y-8">
       <div className="text-center">
-        <h1 className="text-4xl font-bold font-headline">Browse Items</h1>
+        <h1 className="text-4xl font-bold font-headline">{t('browseTitle')}</h1>
         <p className="mt-2 text-lg text-muted-foreground">
-          Find what you're looking for, or see what others have found.
+          {t('browseSubtitle')}
         </p>
       </div>
 
@@ -74,7 +77,7 @@ function ItemBrowser() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
             type="search"
-            placeholder="Search by name, description, location..."
+            placeholder={t('browseSearchPlaceholder')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10 w-full"
@@ -84,21 +87,21 @@ function ItemBrowser() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:flex md:items-center gap-4">
             <Select value={itemType} onValueChange={setItemType}>
             <SelectTrigger className="w-full md:w-[180px]">
-                <SelectValue placeholder="Item Type" />
+                <SelectValue placeholder={t('itemtype')} />
             </SelectTrigger>
             <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                <SelectItem value="lost">Lost</SelectItem>
-                <SelectItem value="found">Found</SelectItem>
+                <SelectItem value="all">{t('alltypes')}</SelectItem>
+                <SelectItem value="lost">{t('lost')}</SelectItem>
+                <SelectItem value="found">{t('found')}</SelectItem>
             </SelectContent>
             </Select>
 
             <Select value={category} onValueChange={setCategory}>
             <SelectTrigger className="w-full md:w-[180px]">
-                <SelectValue placeholder="Category" />
+                <SelectValue placeholder={t('category')} />
             </SelectTrigger>
             <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
+                <SelectItem value="all">{t('allcategories')}</SelectItem>
                 {itemCategories.map((cat) => (
                 <SelectItem key={cat} value={cat}>
                     {cat}
@@ -135,8 +138,8 @@ function ItemBrowser() {
         </div>
       ) : (
         <div className="text-center py-16 bg-card rounded-lg">
-          <p className="text-xl font-medium">No items found.</p>
-          <p className="text-muted-foreground mt-2">Try adjusting your filters or search terms.</p>
+          <p className="text-xl font-medium">{t('browseNoItems')}</p>
+          <p className="text-muted-foreground mt-2">{t('browseNoItemsDesc')}</p>
         </div>
       )}
     </div>
@@ -148,6 +151,7 @@ export default function BrowsePage() {
   const itemId = searchParams.get('item');
   const [item, setItem] = useState<Item | null | undefined>(null);
   const [loading, setLoading] = useState(true);
+  const { t } = useContext(LanguageContext);
 
   useEffect(() => {
     const fetchItem = async () => {
@@ -174,15 +178,15 @@ export default function BrowsePage() {
   if (itemId) {
     if (loading || item === null) {
       // Still loading
-      return <div>Loading...</div>;
+      return <div>{t('loading')}</div>;
     }
     if (item === undefined) {
       return (
         <div className="text-center py-16">
-          <h1 className="text-2xl font-bold">Item not found</h1>
-          <p className="text-muted-foreground mt-2">The item you are looking for does not exist.</p>
+          <h1 className="text-2xl font-bold">{t('browseItemNotFound')}</h1>
+          <p className="text-muted-foreground mt-2">{t('browseItemNotFoundDesc')}</p>
           <Button asChild className="mt-4">
-            <a href="/browse">Back to Browse</a>
+            <a href="/browse">{t('browseBackButton')}</a>
           </Button>
         </div>
       )
@@ -192,3 +196,5 @@ export default function BrowsePage() {
 
   return <ItemBrowser />;
 }
+
+    

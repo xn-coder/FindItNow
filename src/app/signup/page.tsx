@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -11,9 +12,10 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { createUser } from "@/lib/actions";
 import { useRouter } from "next/navigation";
+import { LanguageContext } from "@/context/language-context";
 
 
 const signupSchema = z.object({
@@ -25,6 +27,7 @@ export default function SignupPage() {
   const { toast } = useToast();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const { t } = useContext(LanguageContext);
 
   const form = useForm<z.infer<typeof signupSchema>>({
     resolver: zodResolver(signupSchema),
@@ -58,9 +61,9 @@ export default function SignupPage() {
     <div className="flex items-center justify-center py-12">
       <Card className="mx-auto max-w-sm w-full">
         <CardHeader>
-          <CardTitle className="text-2xl font-headline">Sign Up</CardTitle>
+          <CardTitle className="text-2xl font-headline">{t('signupTitle')}</CardTitle>
           <CardDescription>
-            Enter your information to create an account
+            {t('signupSubtitle')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -71,7 +74,7 @@ export default function SignupPage() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>{t('contactEmailLabel')}</FormLabel>
                       <FormControl>
                         <Input type="email" placeholder="m@example.com" {...field} />
                       </FormControl>
@@ -84,7 +87,7 @@ export default function SignupPage() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel>{t('loginPassword')}</FormLabel>
                       <FormControl>
                         <Input type="password" {...field} />
                       </FormControl>
@@ -94,14 +97,14 @@ export default function SignupPage() {
                 />
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Create an account
+                {t('signupButton')}
               </Button>
             </form>
           </Form>
           <div className="mt-4 text-center text-sm">
-            Already have an account?{" "}
+            {t('signupHaveAccount')}{" "}
             <Link href="/login" className="underline">
-              Login
+              {t('login')}
             </Link>
           </div>
         </CardContent>
@@ -109,3 +112,5 @@ export default function SignupPage() {
     </div>
   );
 }
+
+    

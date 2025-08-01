@@ -10,6 +10,8 @@ import { Calendar, Check, Mail, MapPin, Sparkles, User } from "lucide-react";
 import { ClaimForm } from "./claim-form";
 import { Timestamp } from "firebase/firestore";
 import { FoundItemForm } from "./found-item-form";
+import { useContext } from "react";
+import { LanguageContext } from "@/context/language-context";
 
 type ItemDetailProps = {
     item: Item;
@@ -17,6 +19,7 @@ type ItemDetailProps = {
 
 export function ItemDetail({ item }: ItemDetailProps) {
     const date = item.date instanceof Timestamp ? item.date.toDate() : item.date;
+    const { t, language } = useContext(LanguageContext);
     
     return (
         <div className="max-w-4xl mx-auto">
@@ -35,7 +38,7 @@ export function ItemDetail({ item }: ItemDetailProps) {
                             className="absolute top-4 right-4 text-sm py-1 px-3"
                             variant={item.status === 'resolved' ? 'secondary' : item.type === 'lost' ? 'destructive' : 'default'}
                          >
-                            {item.status === 'resolved' ? 'Resolved' : item.type.charAt(0).toUpperCase() + item.type.slice(1)} Item
+                            {item.status === 'resolved' ? t('resolved') : t(item.type)} Item
                         </Badge>
                     </div>
                 </div>
@@ -49,11 +52,11 @@ export function ItemDetail({ item }: ItemDetailProps) {
                     <div className="space-y-4 text-base text-muted-foreground">
                         <div className="flex items-center gap-3">
                             <MapPin className="h-5 w-5 text-primary" />
-                            <span>{item.type === 'lost' ? 'Last seen at' : 'Found at'} <strong>{item.location}</strong></span>
+                            <span>{item.type === 'lost' ? t('itemLastSeen') : t('itemFoundAt')} <strong>{item.location}</strong></span>
                         </div>
                         <div className="flex items-center gap-3">
                             <Calendar className="h-5 w-5 text-primary" />
-                            <span>{item.type === 'lost' ? 'Lost on' : 'Found on'} <strong>{date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</strong></span>
+                            <span>{item.type === 'lost' ? t('itemLostOn') : t('itemFoundOn')} <strong>{date.toLocaleDateString(t('locale'), { year: 'numeric', month: 'long', day: 'numeric' })}</strong></span>
                         </div>
                     </div>
 
@@ -67,26 +70,26 @@ export function ItemDetail({ item }: ItemDetailProps) {
                  <Card className="border-2 border-green-500/50 shadow-lg">
                     <CardHeader className="text-center">
                         <Check className="mx-auto h-8 w-8 text-green-500 mb-2" />
-                        <CardTitle className="text-2xl font-headline text-green-600">Item Resolved</CardTitle>
+                        <CardTitle className="text-2xl font-headline text-green-600">{t('itemResolvedTitle')}</CardTitle>
                         <CardDescription className="max-w-md mx-auto">
-                            This item has been successfully returned to its owner.
+                            {t('itemResolvedDesc')}
                         </CardDescription>
                     </CardHeader>
                     {item.claimantInfo && (
                     <CardContent>
                         <div className="max-w-md mx-auto bg-green-50/50 border border-green-200 p-4 rounded-lg space-y-3">
-                             <h4 className="font-semibold text-lg text-center">Claimant Information</h4>
+                             <h4 className="font-semibold text-lg text-center">{t('itemClaimantInfo')}</h4>
                              <div className="flex items-center gap-3">
                                 <User className="h-5 w-5 text-muted-foreground"/>
                                 <div>
-                                    <p className="font-semibold">Name:</p>
+                                    <p className="font-semibold">{t('itemClaimantName')}</p>
                                     <p className="text-muted-foreground">{item.claimantInfo.fullName}</p>
                                 </div>
                             </div>
                              <div className="flex items-center gap-3">
                                 <Mail className="h-5 w-5 text-muted-foreground"/>
                                 <div>
-                                    <p className="font-semibold">Email:</p>
+                                    <p className="font-semibold">{t('itemClaimantEmail')}</p>
                                     <p className="text-muted-foreground">{item.claimantInfo.email}</p>
                                 </div>
                             </div>
@@ -100,9 +103,9 @@ export function ItemDetail({ item }: ItemDetailProps) {
                         <Card className="border-2 border-primary/50 shadow-lg">
                             <CardHeader className="text-center">
                                 <Sparkles className="mx-auto h-8 w-8 text-primary mb-2" />
-                                <CardTitle className="text-2xl font-headline">Is This Your Item?</CardTitle>
+                                <CardTitle className="text-2xl font-headline">{t('isThisYourItemTitle')}</CardTitle>
                                 <CardDescription className="max-w-md mx-auto">
-                                    To claim this item, please provide some proof of ownership. This helps us ensure it gets back to the right person.
+                                    {t('isThisYourItemDesc')}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -119,3 +122,5 @@ export function ItemDetail({ item }: ItemDetailProps) {
         </div>
     );
 }
+
+    

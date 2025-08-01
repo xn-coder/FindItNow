@@ -8,6 +8,15 @@ export const translations: Translations = {
     // General
     locale: "en-US",
     lastUpdated: "Last Updated:",
+    loading: "Loading...",
+    lost: "Lost",
+    found: "Found",
+    open: "Open",
+    resolved: "Resolved",
+    category: "Category",
+    allcategories: "All Categories",
+    alltypes: "All Types",
+    itemtype: "Item Type",
 
     // Header
     browse: "Browse",
@@ -58,12 +67,7 @@ export const translations: Translations = {
     // Testimonials
     testimonialsTitle: "Loved by our users",
     testimonialsSubtitle: "Here's what people are saying about FindItNow.",
-    testimonial1Quote: "This platform is a lifesaver! I lost my wallet and got it back within a day. The process was so simple.",
-    testimonial1Role: "Happy User",
-    testimonial2Quote: "I found a phone and reported it here. The owner contacted me the same evening. So glad I could help!",
-    testimonial2Role: "Good Samaritan",
-    testimonial3Quote: "The AI matching feature is brilliant. It suggested a match for my lost keys that I never would have found on my own.",
-    testimonial3Role: "Grateful User",
+    reunitedWith: "Reunited with their",
     
     // How It Works Page
     hiwTitle: "How It Works",
@@ -152,7 +156,18 @@ export const translations: Translations = {
     contactToastSuccessDesc: "Thank you for contacting us. We'll get back to you shortly.",
     contactToastErrorTitle: "Failed to Send Message",
     contactToastErrorDesc: "There was an issue sending your message. Please try again later.",
+    
+    // Login / Signup Pages
+    loginTitle: "Login",
+    loginSubtitle: "Enter your email below to login to your account",
     loginPassword: "Password",
+    loginForgotPassword: "Forgot your password?",
+    loginNoAccount: "Don't have an account?",
+    loginButton: "Login",
+    signupTitle: "Sign Up",
+    signupSubtitle: "Enter your information to create an account",
+    signupButton: "Create an account",
+    signupHaveAccount: "Already have an account?",
 
     // Partner Pages
     partnerDashboardTitle: "Partner Dashboard",
@@ -189,6 +204,118 @@ export const translations: Translations = {
     venue: "Venue",
     otheragency: "Other Agency",
 
+    // Account Page
+    accountTitle: "My Account",
+    accountSubtitle: "Welcome back! Here's an overview of your activity.",
+    accountMySubmissions: "My Submissions",
+    accountNoSubmissions: "You haven't submitted any items yet.",
+    accountNoSubmissionsDesc: "Report a lost or found item to see it here.",
+    accountDeleteItem: "Delete Item",
+    accountDeleteItemConfirm: "Are you absolutely sure?",
+    accountDeleteItemDesc: "This action cannot be undone. This will permanently delete your item listing from our servers.",
+    
+    // Browse Page
+    browseTitle: "Browse Items",
+    browseSubtitle: "Find what you're looking for, or see what others have found.",
+    browseSearchPlaceholder: "Search by name, description, location...",
+    browseNoItems: "No items found.",
+    browseNoItemsDesc: "Try adjusting your filters or search terms.",
+    browseItemNotFound: "Item not found",
+    browseItemNotFoundDesc: "The item you are looking for does not exist.",
+    browseBackButton: "Back to Browse",
+
+    // Item Details Page
+    itemLastSeen: "Last seen at",
+    itemFoundAt: "Found at",
+    itemLostOn: "Lost on",
+    itemFoundOn: "Found on",
+    itemResolvedTitle: "Item Resolved",
+    itemResolvedDesc: "This item has been successfully returned to its owner.",
+    itemClaimantInfo: "Claimant Information",
+    itemClaimantName: "Name:",
+    itemClaimantEmail: "Email:",
+    isThisYourItemTitle: "Is This Your Item?",
+    isThisYourItemDesc: "To claim this item, please provide some proof of ownership. This helps us ensure it gets back to the right person.",
+    haveYouFoundThis: "Have you found this item?",
+    haveYouFoundThisDesc: "If you have found this item, please use the form below to contact the owner. Your email will be shared so they can reply to you.",
+    viewDetails: "View Details",
+
+    // Enquiries Page
+    enquiriesTitle: "My Enquiries",
+    enquiriesSubtitle: "Here are the open claims and messages for items you've reported.",
+    enquiriesNoEnquiries: "No open enquiries.",
+    enquiriesNoEnquiriesDesc: "When someone claims your found item or messages you about a lost one, you'll see it here.",
+    enquiriesMessageFromFinder: "Message from Finder",
+    enquiriesClaimOfOwnership: "Claim of Ownership",
+    enquiriesFindersMessage: "Finder's Message:",
+    enquiriesProofOfOwnership: "Proof of Ownership:",
+    enquiriesFindersDetails: "Finder's Details",
+    enquiriesClaimantsDetails: "Claimant's Details",
+    enquiriesItemReportedAs: "(Item you reported as {itemType})",
+    enquiriesReceivedOn: "Received on: {date}",
+    enquiriesLocationReported: "Location Reported by Finder:",
+    enquiriesDateReported: "Date Reported by Finder:",
+    enquiriesName: "Name:",
+    enquiriesEmail: "Email:",
+    enquiriesPhone: "Phone:",
+    enquiriesMarkAsResolved: "Mark as Resolved",
+
+    // Report Form
+    reportFormEditTitle: "Edit Your Item",
+    reportFormEditDesc: "Update the details of your item below.",
+    reportFormLostTitle: "Report a Lost Item",
+    reportFormLostDesc: "Fill in the details of the item you've lost. The more specific, the better!",
+    reportFormFoundTitle: "Report a Found Item",
+    reportFormFoundDesc: "Thank you for being a good samaritan! Please provide details of the item you found.",
+    reportFormItemName: "Item Name",
+    reportFormItemNamePlaceholder: "e.g., Brown Leather Wallet",
+    reportFormCategoryPlaceholder: "Select a category",
+    reportFormDesc: "Description",
+    reportFormDescPlaceholder: "Provide a detailed description of the item, including any unique features.",
+    reportFormLocation: "Location",
+    reportFormLocationLastSeen: "Location Last Seen",
+    reportFormLocationFound: "Location Found",
+    reportFormLocationPlaceholder: "e.g., Central Park, near the fountain",
+    reportFormDate: "Date",
+    reportFormDateLost: "Date Lost",
+    reportFormDateFound: "Date Found",
+    reportFormPickDate: "Pick a date",
+    reportFormContactEmail: "Contact Email",
+    reportFormContactEmailPlaceholder: "your.email@example.com",
+    reportFormContactEmailDescExisting: "Contact email cannot be changed.",
+    reportFormContactEmailDescAuth: "This is your account email.",
+    reportFormContactEmailDescNew: "This email will be used for notifications and to log in to your account.",
+    reportFormPhone: "Phone Number (Optional)",
+    reportFormPhonePlaceholder: "+1 123-456-7890",
+    reportFormImage: "Image",
+    reportFormImageDescNew: "Upload a picture of the item. Max file size is 5MB.",
+    reportFormImageDescExisting: "Upload a new picture to replace the current one.",
+    reportFormCurrentImage: "Current Image:",
+    reportFormSubmitButton: "Verify and Submit",
+    reportFormSubmitButtonAuth: "Submit Report",
+    reportFormSubmitButtonEdit: "Save Changes",
+
+    // Claim Form
+    claimFormFullName: "Full Name",
+    claimFormFullNamePlaceholder: "John Doe",
+    claimFormContactEmail: "Your Contact Email",
+    claimFormContactEmailPlaceholder: "you@example.com",
+    claimFormContactPhone: "Contact Number (Optional)",
+    claimFormContactPhonePlaceholder: "+1 123-456-7890",
+    claimFormProof: "Proof of Ownership",
+    claimFormProofPlaceholder: "Describe something unique about the item that only the owner would know (e.g., a specific scratch, the contents of the wallet, a photo on the device's lock screen).",
+    claimFormSubmitButton: "Submit Claim",
+
+    // Found Item Form
+    foundFormYourName: "Your Name",
+    foundFormYourNamePlaceholder: "Jane Smith",
+    foundFormLocationFound: "Location Found",
+    foundFormLocationFoundPlaceholder: "e.g., Grand Central Terminal",
+    foundFormDateFound: "Date Found",
+    foundFormMessageToOwner: "Message to Owner",
+    foundFormSendMessage: "Send Message",
+
+
     // Footer
     footerReuniting: "Reuniting people with their belongings.",
     footerCompany: "Company",
@@ -212,6 +339,15 @@ export const translations: Translations = {
     // General
     locale: "de-DE",
     lastUpdated: "Zuletzt aktualisiert:",
+    loading: "Wird geladen...",
+    lost: "Verloren",
+    found: "Gefunden",
+    open: "Offen",
+    resolved: "Erledigt",
+    category: "Kategorie",
+    allcategories: "Alle Kategorien",
+    alltypes: "Alle Arten",
+    itemtype: "Gegenstandsart",
 
     // Header
     browse: "Durchsuchen",
@@ -262,12 +398,7 @@ export const translations: Translations = {
     // Testimonials
     testimonialsTitle: "Von unseren Nutzern geliebt",
     testimonialsSubtitle: "Das sagen die Leute über FindItNow.",
-    testimonial1Quote: "Diese Plattform ist ein Lebensretter! Ich habe meine Brieftasche verloren und sie innerhalb eines Tages zurückbekommen. Der Prozess war so einfach.",
-    testimonial1Role: "Zufriedener Nutzer",
-    testimonial2Quote: "Ich habe hier ein Telefon gefunden und gemeldet. Der Besitzer hat mich noch am selben Abend kontaktiert. Ich bin so froh, dass ich helfen konnte!",
-    testimonial2Role: "Guter Samariter",
-    testimonial3Quote: "Die KI-Matching-Funktion ist brillant. Sie schlug eine Übereinstimmung für meine verlorenen Schlüssel vor, die ich alleine nie gefunden hätte.",
-    testimonial3Role: "Dankbarer Nutzer",
+    reunitedWith: "Wiedervereint mit {pronoun}",
 
     // How It Works Page
     hiwTitle: "So funktioniert's",
@@ -356,8 +487,19 @@ export const translations: Translations = {
     contactToastSuccessDesc: "Danke, dass Sie uns kontaktiert haben. Wir melden uns in Kürze bei Ihnen.",
     contactToastErrorTitle: "Nachricht konnte nicht gesendet werden",
     contactToastErrorDesc: "Beim Senden Ihrer Nachricht ist ein Fehler aufgetreten. Bitte versuchen Sie es später noch einmal.",
+    
+    // Login / Signup Pages
+    loginTitle: "Anmelden",
+    loginSubtitle: "Geben Sie Ihre E-Mail-Adresse ein, um sich bei Ihrem Konto anzumelden",
     loginPassword: "Passwort",
-
+    loginForgotPassword: "Passwort vergessen?",
+    loginNoAccount: "Sie haben noch kein Konto?",
+    loginButton: "Anmelden",
+    signupTitle: "Registrieren",
+    signupSubtitle: "Geben Sie Ihre Daten ein, um ein Konto zu erstellen",
+    signupButton: "Konto erstellen",
+    signupHaveAccount: "Haben Sie bereits ein Konto?",
+    
     // Partner Pages
     partnerDashboardTitle: "Partner-Dashboard",
     partnerDashboardSubtitle: "Verwalten Sie die Fundsachen Ihres Standorts effizient.",
@@ -392,6 +534,117 @@ export const translations: Translations = {
     publictransport: "Öffentliche Verkehrsmittel",
     venue: "Veranstaltungsort",
     otheragency: "Andere Agentur",
+    
+    // Account Page
+    accountTitle: "Mein Konto",
+    accountSubtitle: "Willkommen zurück! Hier ist eine Übersicht Ihrer Aktivitäten.",
+    accountMySubmissions: "Meine Einreichungen",
+    accountNoSubmissions: "Sie haben noch keine Artikel eingereicht.",
+    accountNoSubmissionsDesc: "Melden Sie einen verlorenen oder gefundenen Gegenstand, um ihn hier zu sehen.",
+    accountDeleteItem: "Artikel löschen",
+    accountDeleteItemConfirm: "Sind Sie absolut sicher?",
+    accountDeleteItemDesc: "Diese Aktion kann nicht rückgängig gemacht werden. Dadurch wird Ihr Artikeleintrag dauerhaft von unseren Servern gelöscht.",
+    
+    // Browse Page
+    browseTitle: "Gegenstände durchsuchen",
+    browseSubtitle: "Finden Sie, wonach Sie suchen, oder sehen Sie, was andere gefunden haben.",
+    browseSearchPlaceholder: "Suche nach Name, Beschreibung, Ort...",
+    browseNoItems: "Keine Artikel gefunden.",
+    browseNoItemsDesc: "Versuchen Sie, Ihre Filter oder Suchbegriffe anzupassen.",
+    browseItemNotFound: "Artikel nicht gefunden",
+    browseItemNotFoundDesc: "Der gesuchte Artikel existiert nicht.",
+    browseBackButton: "Zurück zum Durchsuchen",
+
+    // Item Details Page
+    itemLastSeen: "Zuletzt gesehen bei",
+    itemFoundAt: "Gefunden bei",
+    itemLostOn: "Verloren am",
+    itemFoundOn: "Gefunden am",
+    itemResolvedTitle: "Gegenstand zurückgegeben",
+    itemResolvedDesc: "Dieser Gegenstand wurde erfolgreich an seinen Besitzer zurückgegeben.",
+    itemClaimantInfo: "Informationen zum Anspruchsteller",
+    itemClaimantName: "Name:",
+    itemClaimantEmail: "Email:",
+    isThisYourItemTitle: "Ist das Ihr Gegenstand?",
+    isThisYourItemDesc: "Um diesen Gegenstand zu beanspruchen, geben Sie bitte einen Eigentumsnachweis an. Dies hilft uns sicherzustellen, dass er an die richtige Person zurückgegeben wird.",
+    haveYouFoundThis: "Haben Sie diesen Gegenstand gefunden?",
+    haveYouFoundThisDesc: "Wenn Sie diesen Gegenstand gefunden haben, verwenden Sie bitte das untenstehende Formular, um den Besitzer zu kontaktieren. Ihre E-Mail-Adresse wird weitergegeben, damit er Ihnen antworten kann.",
+    viewDetails: "Details anzeigen",
+
+    // Enquiries Page
+    enquiriesTitle: "Meine Anfragen",
+    enquiriesSubtitle: "Hier sind die offenen Ansprüche und Nachrichten für von Ihnen gemeldete Artikel.",
+    enquiriesNoEnquiries: "Keine offenen Anfragen.",
+    enquiriesNoEnquiriesDesc: "Wenn jemand Ihren gefundenen Gegenstand beansprucht oder Ihnen wegen eines verlorenen eine Nachricht sendet, sehen Sie es hier.",
+    enquiriesMessageFromFinder: "Nachricht vom Finder",
+    enquiriesClaimOfOwnership: "Eigentumsanspruch",
+    enquiriesFindersMessage: "Nachricht des Finders:",
+    enquiriesProofOfOwnership: "Eigentumsnachweis:",
+    enquiriesFindersDetails: "Angaben des Finders",
+    enquiriesClaimantsDetails: "Angaben des Antragstellers",
+    enquiriesItemReportedAs: "(Artikel, den Sie als {itemType} gemeldet haben)",
+    enquiriesReceivedOn: "Eingegangen am: {date}",
+    enquiriesLocationReported: "Vom Finder gemeldeter Ort:",
+    enquiriesDateReported: "Vom Finder gemeldetes Datum:",
+    enquiriesName: "Name:",
+    enquiriesEmail: "Email:",
+    enquiriesPhone: "Telefon:",
+    enquiriesMarkAsResolved: "Als erledigt markieren",
+    
+    // Report Form
+    reportFormEditTitle: "Ihren Artikel bearbeiten",
+    reportFormEditDesc: "Aktualisieren Sie die Details Ihres Artikels unten.",
+    reportFormLostTitle: "Einen verlorenen Gegenstand melden",
+    reportFormLostDesc: "Geben Sie die Details des verlorenen Gegenstands ein. Je spezifischer, desto besser!",
+    reportFormFoundTitle: "Einen gefundenen Gegenstand melden",
+    reportFormFoundDesc: "Danke, dass Sie ein guter Samariter sind! Bitte geben Sie Details zum gefundenen Gegenstand an.",
+    reportFormItemName: "Gegenstandsname",
+    reportFormItemNamePlaceholder: "z.B. Braune Lederbrieftasche",
+    reportFormCategoryPlaceholder: "Wählen Sie eine Kategorie",
+    reportFormDesc: "Beschreibung",
+    reportFormDescPlaceholder: "Geben Sie eine detaillierte Beschreibung des Artikels an, einschließlich einzigartiger Merkmale.",
+    reportFormLocation: "Ort",
+    reportFormLocationLastSeen: "Ort, an dem zuletzt gesehen",
+    reportFormLocationFound: "Fundort",
+    reportFormLocationPlaceholder: "z.B. Central Park, in der Nähe des Brunnens",
+    reportFormDate: "Datum",
+    reportFormDateLost: "Verlustdatum",
+    reportFormDateFound: "Funddatum",
+    reportFormPickDate: "Wählen Sie ein Datum",
+    reportFormContactEmail: "Kontakt-E-Mail",
+    reportFormContactEmailPlaceholder: "ihre.email@beispiel.com",
+    reportFormContactEmailDescExisting: "Kontakt-E-Mail kann nicht geändert werden.",
+    reportFormContactEmailDescAuth: "Dies ist Ihre Konto-E-Mail.",
+    reportFormContactEmailDescNew: "Diese E-Mail wird für Benachrichtigungen und zum Einloggen in Ihr Konto verwendet.",
+    reportFormPhone: "Telefonnummer (Optional)",
+    reportFormPhonePlaceholder: "+49 123 4567890",
+    reportFormImage: "Bild",
+    reportFormImageDescNew: "Laden Sie ein Bild des Artikels hoch. Maximale Dateigröße ist 5MB.",
+    reportFormImageDescExisting: "Laden Sie ein neues Bild hoch, um das aktuelle zu ersetzen.",
+    reportFormCurrentImage: "Aktuelles Bild:",
+    reportFormSubmitButton: "Überprüfen und absenden",
+    reportFormSubmitButtonAuth: "Bericht absenden",
+    reportFormSubmitButtonEdit: "Änderungen speichern",
+
+    // Claim Form
+    claimFormFullName: "Vollständiger Name",
+    claimFormFullNamePlaceholder: "Max Mustermann",
+    claimFormContactEmail: "Ihre Kontakt-E-Mail",
+    claimFormContactEmailPlaceholder: "du@beispiel.com",
+    claimFormContactPhone: "Kontaktnummer (Optional)",
+    claimFormContactPhonePlaceholder: "+49 123 4567890",
+    claimFormProof: "Eigentumsnachweis",
+    claimFormProofPlaceholder: "Beschreiben Sie etwas Einzigartiges am Gegenstand, das nur der Besitzer kennen würde (z. B. ein bestimmter Kratzer, der Inhalt der Brieftasche, ein Foto auf dem Sperrbildschirm des Geräts).",
+    claimFormSubmitButton: "Anspruch einreichen",
+
+    // Found Item Form
+    foundFormYourName: "Ihr Name",
+    foundFormYourNamePlaceholder: "Maria Musterfrau",
+    foundFormLocationFound: "Fundort",
+    foundFormLocationFoundPlaceholder: "z.B. Grand Central Terminal",
+    foundFormDateFound: "Funddatum",
+    foundFormMessageToOwner: "Nachricht an den Besitzer",
+    foundFormSendMessage: "Nachricht senden",
 
     // Footer
     footerReuniting: "Wir bringen Menschen wieder mit ihren Sachen zusammen.",
@@ -416,6 +669,15 @@ export const translations: Translations = {
     // General
     locale: "fr-FR",
     lastUpdated: "Dernière mise à jour:",
+    loading: "Chargement...",
+    lost: "Perdu",
+    found: "Trouvé",
+    open: "Ouvert",
+    resolved: "Résolu",
+    category: "Catégorie",
+    allcategories: "Toutes catégories",
+    alltypes: "Tous les types",
+    itemtype: "Type d'objet",
 
     // Header
     browse: "Parcourir",
@@ -466,12 +728,7 @@ export const translations: Translations = {
     // Testimonials
     testimonialsTitle: "Adoré par nos utilisateurs",
     testimonialsSubtitle: "Voici ce que les gens disent de FindItNow.",
-    testimonial1Quote: "Cette plateforme est une bouée de sauvetage! J'ai perdu mon portefeuille et je l'ai récupéré en un jour. Le processus était si simple.",
-    testimonial1Role: "Utilisateur heureux",
-    testimonial2Quote: "J'ai trouvé un téléphone et l'ai signalé ici. Le propriétaire m'a contacté le soir même. Tellement content d'avoir pu aider!",
-    testimonial2Role: "Bon Samaritain",
-    testimonial3Quote: "La fonction de correspondance par IA est brillante. Elle a suggéré une correspondance pour mes clés perdues que je n'aurais jamais trouvée par moi-même.",
-    testimonial3Role: "Utilisateur reconnaissant",
+    reunitedWith: "Réuni(e) avec son/sa",
 
     // How It Works Page
     hiwTitle: "Comment ça marche",
@@ -535,7 +792,7 @@ export const translations: Translations = {
     termsLiabilityContent: "FindItNow ne sera pas responsable des dommages directs, indirects, accessoires, spéciaux, consécutifs ou exemplaires, y compris, mais sans s'y limiter, les dommages pour perte de profits, de clientèle, d'utilisation, de données ou autres pertes immatérielles.",
     termsGoverningLawTitle: "6. Droit applicable",
     termsGoverningLawContent: "Ces Conditions seront régies par les lois de la juridiction dans laquelle la société est basée, sans égard à ses dispositions en matière de conflit de lois.",
-
+    
     // Contact Page
     contactTitle: "Contactez-nous",
     contactSubtitle: "Nous sommes là pour vous aider. Contactez-nous pour toute question ou commentaire.",
@@ -560,8 +817,19 @@ export const translations: Translations = {
     contactToastSuccessDesc: "Merci de nous avoir contactés. Nous vous répondrons sous peu.",
     contactToastErrorTitle: "Échec de l'envoi du message",
     contactToastErrorDesc: "Une erreur s'est produite lors de l'envoi de votre message. Veuillez réessayer plus tard.",
+    
+    // Login / Signup Pages
+    loginTitle: "Connexion",
+    loginSubtitle: "Entrez votre e-mail ci-dessous pour vous connecter à votre compte",
     loginPassword: "Mot de passe",
-
+    loginForgotPassword: "Mot de passe oublié?",
+    loginNoAccount: "Vous n'avez pas de compte?",
+    loginButton: "Connexion",
+    signupTitle: "S'inscrire",
+    signupSubtitle: "Entrez vos informations pour créer un compte",
+    signupButton: "Créer un compte",
+    signupHaveAccount: "Vous avez déjà un compte?",
+    
     // Partner Pages
     partnerDashboardTitle: "Tableau de bord partenaire",
     partnerDashboardSubtitle: "Gérez efficacement les objets trouvés de votre établissement.",
@@ -596,6 +864,117 @@ export const translations: Translations = {
     publictransport: "Transport public",
     venue: "Lieu",
     otheragency: "Autre agence",
+    
+    // Account Page
+    accountTitle: "Mon Compte",
+    accountSubtitle: "Content de vous revoir! Voici un aperçu de votre activité.",
+    accountMySubmissions: "Mes soumissions",
+    accountNoSubmissions: "Vous n'avez encore soumis aucun article.",
+    accountNoSubmissionsDesc: "Signalez un objet perdu ou trouvé pour le voir ici.",
+    accountDeleteItem: "Supprimer l'article",
+    accountDeleteItemConfirm: "Êtes-vous absolument sûr?",
+    accountDeleteItemDesc: "Cette action est irréversible. Votre annonce sera définitivement supprimée de nos serveurs.",
+    
+    // Browse Page
+    browseTitle: "Parcourir les objets",
+    browseSubtitle: "Trouvez ce que vous cherchez, ou voyez ce que d'autres ont trouvé.",
+    browseSearchPlaceholder: "Rechercher par nom, description, lieu...",
+    browseNoItems: "Aucun article trouvé.",
+    browseNoItemsDesc: "Essayez d'ajuster vos filtres ou termes de recherche.",
+    browseItemNotFound: "Article non trouvé",
+    browseItemNotFoundDesc: "L'article que vous recherchez n'existe pas.",
+    browseBackButton: "Retour à la recherche",
+
+    // Item Details Page
+    itemLastSeen: "Dernier emplacement connu",
+    itemFoundAt: "Trouvé à",
+    itemLostOn: "Perdu le",
+    itemFoundOn: "Trouvé le",
+    itemResolvedTitle: "Objet résolu",
+    itemResolvedDesc: "Cet objet a été retourné avec succès à son propriétaire.",
+    itemClaimantInfo: "Informations sur le demandeur",
+    itemClaimantName: "Nom:",
+    itemClaimantEmail: "Email:",
+    isThisYourItemTitle: "Est-ce votre objet ?",
+    isThisYourItemDesc: "Pour réclamer cet objet, veuillez fournir une preuve de propriété. Cela nous aide à nous assurer qu'il est rendu à la bonne personne.",
+    haveYouFoundThis: "Avez-vous trouvé cet objet?",
+    haveYouFoundThisDesc: "Si vous avez trouvé cet objet, veuillez utiliser le formulaire ci-dessous pour contacter le propriétaire. Votre e-mail sera partagé pour qu'il puisse vous répondre.",
+    viewDetails: "Voir les détails",
+
+    // Enquiries Page
+    enquiriesTitle: "Mes demandes",
+    enquiriesSubtitle: "Voici les réclamations et messages ouverts pour les articles que vous avez signalés.",
+    enquiriesNoEnquiries: "Aucune demande ouverte.",
+    enquiriesNoEnquiriesDesc: "Lorsque quelqu'un réclame votre objet trouvé ou vous envoie un message à propos d'un objet perdu, vous le verrez ici.",
+    enquiriesMessageFromFinder: "Message du trouveur",
+    enquiriesClaimOfOwnership: "Réclamation de propriété",
+    enquiriesFindersMessage: "Message du trouveur :",
+    enquiriesProofOfOwnership: "Preuve de propriété :",
+    enquiriesFindersDetails: "Coordonnées du trouveur",
+    enquiriesClaimantsDetails: "Coordonnées du demandeur",
+    enquiriesItemReportedAs: "(Objet que vous avez signalé comme {itemType})",
+    enquiriesReceivedOn: "Reçu le : {date}",
+    enquiriesLocationReported: "Lieu signalé par le trouveur :",
+    enquiriesDateReported: "Date signalée par le trouveur :",
+    enquiriesName: "Nom:",
+    enquiriesEmail: "Email:",
+    enquiriesPhone: "Téléphone:",
+    enquiriesMarkAsResolved: "Marquer comme résolu",
+    
+    // Report Form
+    reportFormEditTitle: "Modifier votre article",
+    reportFormEditDesc: "Mettez à jour les détails de votre article ci-dessous.",
+    reportFormLostTitle: "Signaler un objet perdu",
+    reportFormLostDesc: "Remplissez les détails de l'objet que vous avez perdu. Plus c'est précis, mieux c'est !",
+    reportFormFoundTitle: "Signaler un objet trouvé",
+    reportFormFoundDesc: "Merci d'être un bon samaritain ! Veuillez fournir les détails de l'objet que vous avez trouvé.",
+    reportFormItemName: "Nom de l'objet",
+    reportFormItemNamePlaceholder: "ex: Portefeuille en cuir marron",
+    reportFormCategoryPlaceholder: "Sélectionnez une catégorie",
+    reportFormDesc: "Description",
+    reportFormDescPlaceholder: "Fournissez une description détaillée de l'article, y compris les caractéristiques uniques.",
+    reportFormLocation: "Emplacement",
+    reportFormLocationLastSeen: "Dernier emplacement connu",
+    reportFormLocationFound: "Lieu de la découverte",
+    reportFormLocationPlaceholder: "ex: Central Park, près de la fontaine",
+    reportFormDate: "Date",
+    reportFormDateLost: "Date de perte",
+    reportFormDateFound: "Date de découverte",
+    reportFormPickDate: "Choisissez une date",
+    reportFormContactEmail: "Email de contact",
+    reportFormContactEmailPlaceholder: "votre.email@exemple.com",
+    reportFormContactEmailDescExisting: "L'e-mail de contact ne peut pas être modifié.",
+    reportFormContactEmailDescAuth: "Ceci est l'e-mail de votre compte.",
+    reportFormContactEmailDescNew: "Cet e-mail sera utilisé pour les notifications et pour vous connecter à votre compte.",
+    reportFormPhone: "Numéro de téléphone (Facultatif)",
+    reportFormPhonePlaceholder: "+33 1 23 45 67 89",
+    reportFormImage: "Image",
+    reportFormImageDescNew: "Téléchargez une photo de l'article. Taille maximale du fichier : 5 Mo.",
+    reportFormImageDescExisting: "Téléchargez une nouvelle photo pour remplacer l'actuelle.",
+    reportFormCurrentImage: "Image actuelle :",
+    reportFormSubmitButton: "Vérifier et soumettre",
+    reportFormSubmitButtonAuth: "Soumettre le rapport",
+    reportFormSubmitButtonEdit: "Enregistrer les modifications",
+    
+    // Claim Form
+    claimFormFullName: "Nom complet",
+    claimFormFullNamePlaceholder: "Jean Dupont",
+    claimFormContactEmail: "Votre e-mail de contact",
+    claimFormContactEmailPlaceholder: "vous@exemple.com",
+    claimFormContactPhone: "Numéro de contact (Facultatif)",
+    claimFormContactPhonePlaceholder: "+33 1 23 45 67 89",
+    claimFormProof: "Preuve de propriété",
+    claimFormProofPlaceholder: "Décrivez quelque chose d'unique sur l'article que seul le propriétaire connaîtrait (par exemple, une rayure spécifique, le contenu du portefeuille, une photo sur l'écran de verrouillage de l'appareil).",
+    claimFormSubmitButton: "Soumettre la réclamation",
+
+    // Found Item Form
+    foundFormYourName: "Votre Nom",
+    foundFormYourNamePlaceholder: "Marie Martin",
+    foundFormLocationFound: "Lieu de découverte",
+    foundFormLocationFoundPlaceholder: "ex: Gare de Lyon",
+    foundFormDateFound: "Date de découverte",
+    foundFormMessageToOwner: "Message au propriétaire",
+    foundFormSendMessage: "Envoyer le message",
 
     // Footer
     footerReuniting: "Réunir les gens avec leurs biens.",
@@ -620,5 +999,7 @@ export const translations: Translations = {
 
 // This helps with TypeScript type safety
 export type TranslationKey = keyof typeof translations.en;
+
+    
 
     

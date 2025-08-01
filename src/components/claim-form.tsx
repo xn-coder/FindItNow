@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -14,6 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { db } from '@/lib/firebase';
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { LanguageContext } from '@/context/language-context';
 
 const phoneRegex = new RegExp(
   /^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/
@@ -33,6 +34,7 @@ type ClaimFormProps = {
 export function ClaimForm({ item }: ClaimFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { t } = useContext(LanguageContext);
 
   const form = useForm<z.infer<typeof claimFormSchema>>({
     resolver: zodResolver(claimFormSchema),
@@ -87,9 +89,9 @@ export function ClaimForm({ item }: ClaimFormProps) {
             name="fullName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Full Name</FormLabel>
+                <FormLabel>{t('claimFormFullName')}</FormLabel>
                 <FormControl>
-                  <Input placeholder="John Doe" {...field} />
+                  <Input placeholder={t('claimFormFullNamePlaceholder')} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -100,9 +102,9 @@ export function ClaimForm({ item }: ClaimFormProps) {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Your Contact Email</FormLabel>
+                <FormLabel>{t('claimFormContactEmail')}</FormLabel>
                 <FormControl>
-                  <Input type="email" placeholder="you@example.com" {...field} />
+                  <Input type="email" placeholder={t('claimFormContactEmailPlaceholder')} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -114,9 +116,9 @@ export function ClaimForm({ item }: ClaimFormProps) {
             name="phoneNumber"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Contact Number (Optional)</FormLabel>
+                <FormLabel>{t('claimFormContactPhone')}</FormLabel>
                 <FormControl>
-                  <Input type="tel" placeholder="+1 123-456-7890" {...field} />
+                  <Input type="tel" placeholder={t('claimFormContactPhonePlaceholder')} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -127,11 +129,11 @@ export function ClaimForm({ item }: ClaimFormProps) {
           name="proof"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Proof of Ownership</FormLabel>
+              <FormLabel>{t('claimFormProof')}</FormLabel>
               <FormControl>
                 <Textarea
                   rows={5}
-                  placeholder="Describe something unique about the item that only the owner would know (e.g., a specific scratch, the contents of the wallet, a photo on the device's lock screen)."
+                  placeholder={t('claimFormProofPlaceholder')}
                   {...field}
                 />
               </FormControl>
@@ -141,9 +143,11 @@ export function ClaimForm({ item }: ClaimFormProps) {
         />
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Submit Claim
+          {t('claimFormSubmitButton')}
         </Button>
       </form>
     </Form>
   );
 }
+
+    

@@ -35,6 +35,7 @@ import { AuthContext, AuthUser } from "@/context/auth-context";
 import { useRouter } from "next/navigation";
 import type { Item } from "@/lib/types";
 import Image from "next/image";
+import { LanguageContext } from "@/context/language-context";
 
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -83,6 +84,7 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
   const [userExists, setUserExists] = useState<boolean | null>(null);
   const [formValues, setFormValues] = useState<FormValues | null>(null);
   const { user: authUser, login } = useContext(AuthContext);
+  const { t } = useContext(LanguageContext);
   const router = useRouter();
 
   const isEditMode = existingItem !== null;
@@ -322,10 +324,10 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
     }
 
 
-  const title = isEditMode ? "Edit Your Item" : itemType === "lost" ? "Report a Lost Item" : "Report a Found Item";
-  const description = isEditMode ? "Update the details of your item below." : itemType === "lost"
-    ? "Fill in the details of the item you've lost. The more specific, the better!"
-    : "Thank you for being a good samaritan! Please provide details of the item you found.";
+  const title = isEditMode ? t('reportFormEditTitle') : itemType === "lost" ? t('reportFormLostTitle') : t('reportFormFoundTitle');
+  const description = isEditMode ? t('reportFormEditDesc') : itemType === "lost"
+    ? t('reportFormLostDesc')
+    : t('reportFormFoundDesc');
 
   return (
     <>
@@ -343,9 +345,9 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Item Name</FormLabel>
+                      <FormLabel>{t('reportFormItemName')}</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g., Brown Leather Wallet" {...field} />
+                        <Input placeholder={t('reportFormItemNamePlaceholder')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -356,11 +358,11 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
                   name="category"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Category</FormLabel>
+                      <FormLabel>{t('category')}</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select a category" />
+                            <SelectValue placeholder={t('reportFormCategoryPlaceholder')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -380,9 +382,9 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description</FormLabel>
+                    <FormLabel>{t('reportFormDesc')}</FormLabel>
                     <FormControl>
-                      <Textarea rows={4} placeholder="Provide a detailed description of the item, including any unique features." {...field} />
+                      <Textarea rows={4} placeholder={t('reportFormDescPlaceholder')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -395,9 +397,9 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
                   name="location"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Location {itemType === "lost" ? "Last Seen" : "Found"}</FormLabel>
+                      <FormLabel>{itemType === "lost" ? t('reportFormLocationLastSeen') : t('reportFormLocationFound')}</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g., Central Park, near the fountain" {...field} />
+                        <Input placeholder={t('reportFormLocationPlaceholder')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -408,7 +410,7 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
                   name="date"
                   render={({ field }) => (
                     <FormItem className="flex flex-col pt-2">
-                      <FormLabel>Date {itemType === "lost" ? "Lost" : "Found"}</FormLabel>
+                      <FormLabel>{itemType === "lost" ? t('reportFormDateLost') : t('reportFormDateFound')}</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
@@ -422,7 +424,7 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
                               {field.value ? (
                                 format(field.value, "PPP")
                               ) : (
-                                <span>Pick a date</span>
+                                <span>{t('reportFormPickDate')}</span>
                               )}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
@@ -452,12 +454,12 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
                     name="contact"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Contact Email</FormLabel>
+                        <FormLabel>{t('reportFormContactEmail')}</FormLabel>
                         <FormControl>
-                          <Input type="email" placeholder="your.email@example.com" {...field} disabled={isEditMode || !!authUser} />
+                          <Input type="email" placeholder={t('reportFormContactEmailPlaceholder')} {...field} disabled={isEditMode || !!authUser} />
                         </FormControl>
                         <FormDescription>
-                          {isEditMode ? "Contact email cannot be changed." : authUser ? "This is your account email." : "This email will be used for notifications and to log in to your account."}
+                          {isEditMode ? t('reportFormContactEmailDescExisting') : authUser ? t('reportFormContactEmailDescAuth') : t('reportFormContactEmailDescNew')}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -468,9 +470,9 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
                     name="phoneNumber"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Phone Number (Optional)</FormLabel>
+                        <FormLabel>{t('reportFormPhone')}</FormLabel>
                         <FormControl>
-                          <Input type="tel" placeholder="+1 123-456-7890" {...field} />
+                          <Input type="tel" placeholder={t('reportFormPhonePlaceholder')} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -483,10 +485,10 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
                   name="image"
                   render={({ field: { onChange, value, ...rest } }) => (
                     <FormItem>
-                      <FormLabel>Image</FormLabel>
+                      <FormLabel>{t('reportFormImage')}</FormLabel>
                        {isEditMode && typeof value === 'string' && (
                         <div className="mb-4">
-                            <p className="text-sm text-muted-foreground mb-2">Current Image:</p>
+                            <p className="text-sm text-muted-foreground mb-2">{t('reportFormCurrentImage')}</p>
                             <Image src={value} alt="Current item image" width={150} height={150} className="rounded-md border"/>
                         </div>
                        )}
@@ -499,7 +501,7 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
                         />
                       </FormControl>
                        <FormDescription>
-                        {isEditMode ? "Upload a new picture to replace the current one." : "Upload a picture of the item. Max file size is 5MB."}
+                        {isEditMode ? t('reportFormImageDescExisting') : t('reportFormImageDescNew')}
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -508,7 +510,7 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
 
               <Button type="submit" size="lg" className="w-full md:w-auto shadow-lg hover:shadow-xl transition-shadow" disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isEditMode ? "Save Changes" : (authUser ? "Submit Report" : "Verify and Submit")}
+                {isEditMode ? t('reportFormSubmitButtonEdit') : (authUser ? t('reportFormSubmitButtonAuth') : t('reportFormSubmitButton'))}
               </Button>
             </form>
           </Form>
@@ -527,3 +529,5 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
     </>
   );
 }
+
+    
