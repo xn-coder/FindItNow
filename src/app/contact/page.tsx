@@ -52,7 +52,7 @@ export default function ContactPage() {
             const emailJsEnabled = process.env.NEXT_PUBLIC_EMAILJS_ENABLED !== 'false';
             if (emailJsEnabled) {
                 await sendEmail({
-                    to_email: "your_support_email@example.com", // Your support email
+                    to_email: process.env.NEXT_PUBLIC_CONTACT_FORM_RECEIVER_EMAIL || "your_support_email@example.com",
                     subject: `Contact Form: ${values.subject}`,
                     message: `
                         You have received a new message from your website contact form.
