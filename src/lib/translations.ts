@@ -18,6 +18,18 @@ export const translations: Translations = {
     alltypes: "All Types",
     itemtype: "Item Type",
 
+    // Categories
+    electronics: "Electronics",
+    wallets: "Wallets",
+    keys: "Keys",
+    accessories: "Accessories",
+    bags: "Bags",
+    clothing: "Clothing",
+    bottles: "Bottles",
+    toys: "Toys",
+    documents: "Documents",
+    other: "Other",
+
     // Header
     browse: "Browse",
     mapview: "Map View",
@@ -348,6 +360,18 @@ export const translations: Translations = {
     allcategories: "Alle Kategorien",
     alltypes: "Alle Arten",
     itemtype: "Gegenstandsart",
+    
+    // Categories
+    electronics: "Elektronik",
+    wallets: "Brieftaschen",
+    keys: "Schlüssel",
+    accessories: "Accessoires",
+    bags: "Taschen",
+    clothing: "Kleidung",
+    bottles: "Flaschen",
+    toys: "Spielzeug",
+    documents: "Dokumente",
+    other: "Anderes",
 
     // Header
     browse: "Durchsuchen",
@@ -678,6 +702,18 @@ export const translations: Translations = {
     allcategories: "Toutes catégories",
     alltypes: "Tous les types",
     itemtype: "Type d'objet",
+
+    // Categories
+    electronics: "Électronique",
+    wallets: "Portefeuilles",
+    keys: "Clés",
+    accessories: "Accessoires",
+    bags: "Sacs",
+    clothing: "Vêtements",
+    bottles: "Bouteilles",
+    toys: "Jouets",
+    documents: "Documents",
+    other: "Autre",
 
     // Header
     browse: "Parcourir",

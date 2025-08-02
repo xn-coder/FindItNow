@@ -104,7 +104,7 @@ function ItemBrowser() {
                 <SelectItem value="all">{t('allcategories')}</SelectItem>
                 {itemCategories.map((cat) => (
                 <SelectItem key={cat} value={cat}>
-                    {cat}
+                    {t(cat as any)}
                 </SelectItem>
                 ))}
             </SelectContent>

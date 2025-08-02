@@ -45,7 +45,7 @@ export function ItemDetail({ item }: ItemDetailProps) {
 
                 <div className="space-y-6">
                     <div>
-                        <Badge variant="secondary" className="mb-2 font-medium">{item.category}</Badge>
+                        <Badge variant="secondary" className="mb-2 font-medium">{t(item.category as any)}</Badge>
                         <h1 className="text-3xl md:text-4xl font-bold font-headline">{item.name}</h1>
                     </div>
 
@@ -122,5 +122,3 @@ export function ItemDetail({ item }: ItemDetailProps) {
         </div>
     );
 }
-
-    

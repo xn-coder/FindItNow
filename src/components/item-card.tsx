@@ -41,7 +41,7 @@ export function ItemCard({ item }: ItemCardProps) {
         </div>
       </CardHeader>
       <CardContent className="p-4 flex-grow">
-        <Badge variant="secondary" className="mb-2 font-normal">{item.category}</Badge>
+        <Badge variant="secondary" className="mb-2 font-normal">{t(item.category as any)}</Badge>
         <CardTitle className="text-lg font-headline mb-2">{item.name}</CardTitle>
         <div className="space-y-2 text-sm text-muted-foreground">
           <div className="flex items-center gap-2">
@@ -66,5 +66,3 @@ export function ItemCard({ item }: ItemCardProps) {
     </Card>
   );
 }
-
-    

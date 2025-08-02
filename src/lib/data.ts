@@ -88,14 +88,14 @@ export const mockItems: Item[] = [
 ];
 
 export const itemCategories = [
-  "Electronics",
-  "Wallets",
-  "Keys",
-  "Accessories",
-  "Bags",
-  "Clothing",
-  "Bottles",
-  "Toys",
-  "Documents",
-  "Other"
+  "electronics",
+  "wallets",
+  "keys",
+  "accessories",
+  "bags",
+  "clothing",
+  "bottles",
+  "toys",
+  "documents",
+  "other"
 ];

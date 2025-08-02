@@ -367,7 +367,9 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
                         </FormControl>
                         <SelectContent>
                           {itemCategories.map(cat => (
-                            <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                            <SelectItem key={cat} value={cat}>
+                              {t(cat as any)}
+                            </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -529,5 +531,3 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
     </>
   );
 }
-
-    
