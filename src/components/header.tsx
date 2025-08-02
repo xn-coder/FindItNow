@@ -10,6 +10,7 @@ import { AuthContext } from "@/context/auth-context";
 import { useRouter } from "next/navigation";
 import { LanguageContext } from "@/context/language-context";
 import { cn } from "@/lib/utils";
+import { Separator } from "./ui/separator";
 
 
 const allNavLinks = [
@@ -153,11 +154,32 @@ export default function Header() {
                   )}
                 </nav>
                 <div className="mt-8 flex flex-col gap-2">
+                    <div className="flex justify-around items-center p-2 mb-4 bg-muted rounded-md">
+                        {languages.map((lang) => (
+                            <Button
+                                key={lang.code}
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                    setLanguage(lang.code as 'en' | 'de' | 'fr');
+                                    // optional: close menu on language change
+                                    // setMobileMenuOpen(false); 
+                                }}
+                                className={cn(
+                                    "text-base",
+                                    language === lang.code ? "text-primary font-bold" : "text-foreground/70"
+                                )}
+                            >
+                                {lang.name}
+                            </Button>
+                        ))}
+                    </div>
                   <Button asChild>
                     <Link href="/report-lost" onClick={() => setMobileMenuOpen(false)}>{t('heroButtonLost')}</Link>
                   </Button>
                   <Button asChild variant="outline">
                     <Link href="/report-found" onClick={() => setMobileMenuOpen(false)}>{t('heroButtonFound')}</Link>
+
                   </Button>
                   {user ? (
                     <Button variant="ghost" className="mt-4 flex items-center gap-3" onClick={() => { handleLogout(); setMobileMenuOpen(false); }}>
@@ -178,5 +200,3 @@ export default function Header() {
     </header>
   );
 }
-
-    
