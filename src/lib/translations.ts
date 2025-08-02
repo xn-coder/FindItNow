@@ -79,7 +79,7 @@ export const translations: Translations = {
     // Testimonials
     testimonialsTitle: "Loved by our users",
     testimonialsSubtitle: "Here's what people are saying about FindItNow.",
-    reunitedWith: "Reunited with their",
+    reunitedWith: "Reunited with their {itemName}",
     
     // How It Works Page
     hiwTitle: "How It Works",
@@ -422,7 +422,7 @@ export const translations: Translations = {
     // Testimonials
     testimonialsTitle: "Von unseren Nutzern geliebt",
     testimonialsSubtitle: "Das sagen die Leute über FindItNow.",
-    reunitedWith: "Wiedervereint mit {pronoun}",
+    reunitedWith: "Wiedervereint mit: {itemName}",
 
     // How It Works Page
     hiwTitle: "So funktioniert's",
@@ -764,7 +764,7 @@ export const translations: Translations = {
     // Testimonials
     testimonialsTitle: "Adoré par nos utilisateurs",
     testimonialsSubtitle: "Voici ce que les gens disent de FindItNow.",
-    reunitedWith: "Réuni(e) avec son/sa",
+    reunitedWith: "Réuni(e) avec son/sa {itemName}",
 
     // How It Works Page
     hiwTitle: "Comment ça marche",
@@ -1039,3 +1039,4 @@ export type TranslationKey = keyof typeof translations.en;
     
 
     
+
