@@ -33,39 +33,35 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const translateFeedback = async () => {
-      if (feedback.length === 0) return;
-
-      if (language === 'en') {
-        setTranslatedFeedback({}); // Clear translations if language is English
-        return;
-      }
-
-      const newTranslations: Record<string, string> = {};
-      const promises: Promise<void>[] = [];
-
-      for (const fb of feedback) {
-        if (fb.story && !translatedFeedback[fb.id]) { // Only translate if not already translated for the current language session
-          promises.push(
-            translateText({ text: fb.story, targetLanguage: language })
-              .then(translatedStory => {
-                newTranslations[fb.id] = translatedStory;
-              })
-          );
+    async function translateAllFeedback() {
+        if (language === 'en') {
+            setTranslatedFeedback({});
+            return;
         }
-      }
 
-      if (promises.length > 0) {
-        await Promise.all(promises);
-        setTranslatedFeedback(prev => ({ ...prev, ...newTranslations }));
-      }
-    };
-
-    if (language !== 'en') {
-        translateFeedback();
-    } else {
-        setTranslatedFeedback({});
+        const newTranslations: Record<string, string> = {};
+        for (const fb of feedback) {
+            // Only translate if it's not already in the state for the current language
+            if (fb.story && !translatedFeedback[fb.id]) {
+                try {
+                    const translatedStory = await translateText({ text: fb.story, targetLanguage: language });
+                    newTranslations[fb.id] = translatedStory;
+                } catch (error) {
+                    console.error(`Could not translate feedback ${fb.id}:`, error);
+                    // Store original story on error to prevent re-trying
+                    newTranslations[fb.id] = fb.story; 
+                }
+            }
+        }
+        if (Object.keys(newTranslations).length > 0) {
+            setTranslatedFeedback(prev => ({ ...prev, ...newTranslations }));
+        }
     }
+
+    if (feedback.length > 0) {
+        translateAllFeedback();
+    }
+
   }, [feedback, language]);
 
 
