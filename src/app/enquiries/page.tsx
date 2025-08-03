@@ -5,7 +5,7 @@ import { useContext, useEffect, useState, useTransition } from "react";
 import { AuthContext } from "@/context/auth-context";
 import { useRouter } from "next/navigation";
 import { db } from "@/lib/firebase";
-import { collection, getDocs, query, where, orderBy, doc, getDoc, Timestamp, updateDoc } from "firebase/firestore";
+import { collection, getDocs, query, where, orderBy, doc, getDoc, Timestamp, updateDoc, writeBatch } from "firebase/firestore";
 import type { Claim, Item } from "@/lib/types";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -86,15 +86,11 @@ export default function EnquiriesPage() {
     const handleMarkAsResolved = (claim: Claim) => {
         startTransition(async () => {
             try {
-                // Update the claim status
-                const claimRef = doc(db, "claims", claim.id);
-                await updateDoc(claimRef, {
-                    status: 'resolved'
-                });
-                
+                const batch = writeBatch(db);
+
                 // Update the item status
                 const itemRef = doc(db, "items", claim.itemId);
-                await updateDoc(itemRef, {
+                batch.update(itemRef, {
                     status: 'resolved',
                     claimantInfo: {
                         fullName: claim.fullName,
@@ -102,14 +98,28 @@ export default function EnquiriesPage() {
                     }
                 });
 
+                // Find all open claims for this item and mark them as resolved
+                const claimsQuery = query(
+                    collection(db, "claims"),
+                    where("itemId", "==", claim.itemId),
+                    where("status", "==", "open")
+                );
+                const claimsSnapshot = await getDocs(claimsQuery);
+                claimsSnapshot.forEach(claimDoc => {
+                    batch.update(claimDoc.ref, { status: 'resolved' });
+                });
+
+                await batch.commit();
+
                 toast({
                     title: "Enquiry Resolved",
-                    description: "You've marked this enquiry as resolved.",
+                    description: "You've marked this item as resolved. All related enquiries have been closed.",
                 });
                 
-                // Refresh the list by removing the resolved item from state
-                setEnquiries(prev => prev.filter(e => e.id !== claim.id));
+                // Refresh the list by removing all enquiries for the resolved item
+                setEnquiries(prev => prev.filter(e => e.itemId !== claim.itemId));
                 setFeedbackClaim(claim);
+
             } catch (error) {
                 console.error("Error resolving enquiry: ", error);
                 toast({
@@ -298,5 +308,3 @@ export default function EnquiriesPage() {
         </>
     );
 }
-
-    
