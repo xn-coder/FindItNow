@@ -34,34 +34,29 @@ export default function Home() {
 
   useEffect(() => {
     async function translateAllFeedback() {
-        if (language === 'en') {
-            setTranslatedFeedback({}); // Clear translations when switching to English
-            return;
+      if (language === 'en') {
+        setTranslatedFeedback({}); // Clear translations for English
+        return;
+      }
+      
+      const newTranslations: Record<string, string> = {};
+      for (const fb of feedback) {
+        if (fb.story) {
+          try {
+            const translatedStory = await translateText({ text: fb.story, targetLanguage: language });
+            newTranslations[fb.id] = translatedStory;
+          } catch (error) {
+            console.error(`Could not translate feedback ${fb.id}:`, error);
+            newTranslations[fb.id] = fb.story; // Fallback to original
+          }
         }
-
-        const newTranslations: Record<string, string> = {};
-        for (const fb of feedback) {
-            // Only translate if it's not already in the state for the current language
-            if (fb.story && !translatedFeedback[fb.id]) {
-                try {
-                    const translatedStory = await translateText({ text: fb.story, targetLanguage: language });
-                    newTranslations[fb.id] = translatedStory;
-                } catch (error) {
-                    console.error(`Could not translate feedback ${fb.id}:`, error);
-                    // Store original story on error to prevent re-trying
-                    newTranslations[fb.id] = fb.story; 
-                }
-            }
-        }
-        if (Object.keys(newTranslations).length > 0) {
-            setTranslatedFeedback(prev => ({ ...prev, ...newTranslations }));
-        }
+      }
+      setTranslatedFeedback(newTranslations);
     }
 
     if (feedback.length > 0) {
-        translateAllFeedback();
+      translateAllFeedback();
     }
-
   }, [feedback, language]);
 
 
@@ -281,3 +276,5 @@ export default function Home() {
     </div>
   );
 }
+
+    

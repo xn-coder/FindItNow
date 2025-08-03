@@ -66,3 +66,5 @@ export async function translateText(input: TranslateRequest): Promise<string> {
         return input.text;
     }
 }
+
+    
