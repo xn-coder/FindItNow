@@ -14,10 +14,12 @@ import { LanguageContext } from '@/context/language-context';
 import type { Feedback } from '@/lib/types';
 import { getRecentFeedback } from '@/lib/actions';
 import { Skeleton } from '@/components/ui/skeleton';
+import { translateText } from '@/ai/translate-flow';
 
 export default function Home() {
-  const { t } = useContext(LanguageContext);
+  const { t, language } = useContext(LanguageContext);
   const [feedback, setFeedback] = useState<Feedback[]>([]);
+  const [translatedFeedback, setTranslatedFeedback] = useState<Record<string, string>>({});
   const [loadingFeedback, setLoadingFeedback] = useState(true);
 
   useEffect(() => {
@@ -29,6 +31,27 @@ export default function Home() {
     };
     fetchFeedback();
   }, []);
+
+  useEffect(() => {
+      const translateFeedback = async () => {
+          if (language === 'en' || feedback.length === 0) {
+              setTranslatedFeedback({}); // Clear translations if language is English
+              return;
+          };
+
+          const newTranslations: Record<string, string> = {};
+          for (const fb of feedback) {
+              if (fb.story) {
+                  const translatedStory = await translateText({ text: fb.story, targetLanguage: language });
+                  newTranslations[fb.id] = translatedStory;
+              }
+          }
+          setTranslatedFeedback(newTranslations);
+      };
+
+      translateFeedback();
+  }, [feedback, language]);
+
 
   return (
     <div className="space-y-16">
@@ -220,17 +243,17 @@ export default function Home() {
                               <StarIcon key={i} className={`h-5 w-5 ${i < fb.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}/>
                           ))}
                       </div>
-                      <blockquote className="text-lg font-medium leading-relaxed flex-grow">"{fb.story}"</blockquote>
+                      <blockquote className="text-lg font-medium leading-relaxed flex-grow">"{translatedFeedback[fb.id] || fb.story}"</blockquote>
                     </CardContent>
                     <CardFooter className="p-6 pt-4 mt-auto">
                       <div className="flex items-center gap-4">
                         <Avatar className="w-12 h-12">
                           <AvatarImage src="" alt={fb.userName} data-ai-hint="person face"/>
-                          <AvatarFallback>{fb.userName.charAt(0).toUpperCase()}</AvatarFallback>
+                          <AvatarFallback>{fb.userName?.charAt(0).toUpperCase()}</AvatarFallback>
                         </Avatar>
                         <div>
                           <p className="font-semibold">{fb.userName}</p>
-                          <p className="text-sm text-muted-foreground">{t('reunitedWith').replace('{itemName}', fb.itemName)}</p>
+                          <p className="text-sm text-muted-foreground">{t('reunitedWith', {itemName: fb.itemName})}</p>
                         </div>
                       </div>
                     </CardFooter>

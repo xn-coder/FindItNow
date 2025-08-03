@@ -1042,10 +1042,20 @@ export const translations: Translations = {
 };
 
 // This helps with TypeScript type safety
+// A helper function to replace placeholders like {itemName}
+function formatTranslation(str: string, params: Record<string, string>): string {
+    let formatted = str;
+    for (const key in params) {
+        formatted = formatted.replace(new RegExp(`\\{${key}\\}`, 'g'), params[key]);
+    }
+    return formatted;
+}
+
 export type TranslationKey = keyof typeof translations.en;
 
-    
-
-    
-
-
+export const getTranslator = (language: 'en' | 'de' | 'fr') => {
+    return (key: TranslationKey, params?: Record<string, string>): string => {
+        const translation = translations[language][key] || translations['en'][key] || key;
+        return params ? formatTranslation(translation, params) : translation;
+    };
+};

@@ -2,14 +2,14 @@
 "use client";
 
 import { createContext, useState, useEffect, ReactNode, useCallback } from 'react';
-import { translations, TranslationKey } from '@/lib/translations';
+import { translations, TranslationKey, getTranslator } from '@/lib/translations';
 
 type Language = 'en' | 'de' | 'fr';
 
 type LanguageContextType = {
   language: Language;
   setLanguage: (language: Language) => void;
-  t: (key: TranslationKey) => string;
+  t: (key: TranslationKey, params?: Record<string, string>) => string;
 };
 
 export const LanguageContext = createContext<LanguageContextType>({
@@ -44,9 +44,7 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
     setLanguage(lang);
   };
   
-  const t = useCallback((key: TranslationKey): string => {
-    return translations[language][key] || translations['en'][key] || key;
-  }, [language]);
+  const t = useCallback(getTranslator(language), [language]);
 
   const value = {
     language,
