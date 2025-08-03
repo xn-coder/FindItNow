@@ -6,11 +6,10 @@
  *
  * - translateText - A function that handles the text translation process.
  */
-import { genkit } from 'genkit';
+import { genkit, AIMessage } from 'genkit';
 import { googleAI } from '@genkit-ai/googleai';
 import { z } from 'zod';
 
-// Initialize Genkit and configure the Google AI plugin
 const ai = genkit({
   plugins: [
     googleAI({
@@ -18,9 +17,8 @@ const ai = genkit({
       // apiKey: process.env.GEMINI_API_KEY,
     }),
   ],
-  logLevel: 'debug',
-  enableTracingAndMetrics: true,
 });
+
 
 // Define the input schema for our translation flow
 const TranslateRequestSchema = z.object({

@@ -33,25 +33,39 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-      const translateFeedback = async () => {
-          if (language === 'en' || feedback.length === 0) {
-              setTranslatedFeedback({}); // Clear translations if language is English
-              return;
-          };
+    const translateFeedback = async () => {
+      if (feedback.length === 0) return;
 
-          const newTranslations: Record<string, string> = {};
-          for (const fb of feedback) {
-              if (fb.story && (!translatedFeedback[fb.id])) { // Only translate if not already translated
-                  const translatedStory = await translateText({ text: fb.story, targetLanguage: language });
-                  newTranslations[fb.id] = translatedStory;
-              }
-          }
-          setTranslatedFeedback(prev => ({...prev, ...newTranslations}));
-      };
-
-      if (language !== 'en') {
-        translateFeedback();
+      if (language === 'en') {
+        setTranslatedFeedback({}); // Clear translations if language is English
+        return;
       }
+
+      const newTranslations: Record<string, string> = {};
+      const promises: Promise<void>[] = [];
+
+      for (const fb of feedback) {
+        if (fb.story && !translatedFeedback[fb.id]) { // Only translate if not already translated for the current language session
+          promises.push(
+            translateText({ text: fb.story, targetLanguage: language })
+              .then(translatedStory => {
+                newTranslations[fb.id] = translatedStory;
+              })
+          );
+        }
+      }
+
+      if (promises.length > 0) {
+        await Promise.all(promises);
+        setTranslatedFeedback(prev => ({ ...prev, ...newTranslations }));
+      }
+    };
+
+    if (language !== 'en') {
+        translateFeedback();
+    } else {
+        setTranslatedFeedback({});
+    }
   }, [feedback, language]);
 
 
