@@ -41,15 +41,17 @@ export default function Home() {
 
           const newTranslations: Record<string, string> = {};
           for (const fb of feedback) {
-              if (fb.story) {
+              if (fb.story && (!translatedFeedback[fb.id])) { // Only translate if not already translated
                   const translatedStory = await translateText({ text: fb.story, targetLanguage: language });
                   newTranslations[fb.id] = translatedStory;
               }
           }
-          setTranslatedFeedback(newTranslations);
+          setTranslatedFeedback(prev => ({...prev, ...newTranslations}));
       };
 
-      translateFeedback();
+      if (language !== 'en') {
+        translateFeedback();
+      }
   }, [feedback, language]);
 
 
