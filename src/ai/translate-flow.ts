@@ -5,19 +5,17 @@
  * @fileOverview An AI-powered text translation flow.
  * - translateText - A function that handles the text translation process.
  */
-import { genkit, AIMessage } from 'genkit';
+import { genkit } from 'genkit';
 import { googleAI } from '@genkit-ai/googleai';
 import { z } from 'zod';
 
-// Initialize Genkit with the Google AI plugin
+// Initialize Genkit with the Google AI plugin.
+// The GEMINI_API_KEY environment variable is used automatically.
 const ai = genkit({
   plugins: [
-    googleAI({
-      // The API key is set in the environment variables.
-    }),
+    googleAI(),
   ],
 });
-
 
 // Define the input schema for our translation flow
 const TranslateRequestSchema = z.object({
@@ -47,13 +45,17 @@ const translateFlow = ai.defineFlow(
     });
 
     // Return the translated text
-    return llmResponse.text();
+    return llmResponse.text;
   }
 );
 
 // Define an exported wrapper function to be used in client components
 export async function translateText(input: TranslateRequest): Promise<string> {
     try {
+        if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY === 'your_api_key_here') {
+            console.warn("Translation skipped: GEMINI_API_KEY is not configured.");
+            return input.text;
+        }
         // Validate input at the edge for type safety
         const validatedInput = TranslateRequestSchema.parse(input);
         // Execute the flow and return the result

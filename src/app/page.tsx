@@ -35,7 +35,7 @@ export default function Home() {
   useEffect(() => {
     async function translateAllFeedback() {
         if (language === 'en') {
-            setTranslatedFeedback({});
+            setTranslatedFeedback({}); // Clear translations when switching to English
             return;
         }
 
@@ -255,7 +255,7 @@ export default function Home() {
                               <StarIcon key={i} className={`h-5 w-5 ${i < fb.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}/>
                           ))}
                       </div>
-                      <blockquote className="text-lg font-medium leading-relaxed flex-grow">"{translatedFeedback[fb.id] || fb.story}"</blockquote>
+                      <blockquote className="text-lg font-medium leading-relaxed flex-grow">"{language === 'en' ? fb.story : (translatedFeedback[fb.id] || fb.story)}"</blockquote>
                     </CardContent>
                     <CardFooter className="p-6 pt-4 mt-auto">
                       <div className="flex items-center gap-4">
