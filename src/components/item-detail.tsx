@@ -18,7 +18,7 @@ type ItemDetailProps = {
 };
 
 export function ItemDetail({ item }: ItemDetailProps) {
-    const date = item.date instanceof Timestamp ? item.date.toDate() : item.date;
+    const date = item.date instanceof Timestamp ? item.date.toDate() : new Date(item.date);
     const { t, language } = useContext(LanguageContext);
     
     return (

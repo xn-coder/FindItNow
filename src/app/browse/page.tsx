@@ -18,15 +18,17 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { LanguageContext } from '@/context/language-context';
+import { translateText } from '@/ai/translate-flow';
 
 
 function ItemBrowser() {
   const [items, setItems] = useState<Item[]>([]);
+  const [translatedItems, setTranslatedItems] = useState<Record<string, Partial<Item>>>({});
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [category, setCategory] = useState('all');
   const [itemType, setItemType] = useState('all');
-  const { t } = useContext(LanguageContext);
+  const { t, language } = useContext(LanguageContext);
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -49,11 +51,45 @@ function ItemBrowser() {
     fetchItems();
   }, []);
 
+  useEffect(() => {
+    async function translateItems() {
+      if (language === 'en' || items.length === 0) {
+        setTranslatedItems({});
+        return;
+      }
+      
+      const newTranslations: Record<string, Partial<Item>> = {};
+      for (const item of items) {
+        try {
+          const [translatedName, translatedDescription] = await Promise.all([
+            translateText({ text: item.name, targetLanguage: language }),
+            translateText({ text: item.description, targetLanguage: language }),
+          ]);
+          newTranslations[item.id] = { name: translatedName, description: translatedDescription };
+        } catch (error) {
+          console.error(`Could not translate item ${item.id}:`, error);
+          newTranslations[item.id] = { name: item.name, description: item.description }; // Fallback
+        }
+      }
+      setTranslatedItems(newTranslations);
+    }
+    translateItems();
+  }, [items, language]);
+
+
   const filteredItems = useMemo(() => {
     return items.filter((item) => {
+      const originalName = item.name.toLowerCase();
+      const originalDescription = item.description.toLowerCase();
+      const translatedName = translatedItems[item.id]?.name?.toLowerCase() || '';
+      const translatedDescription = translatedItems[item.id]?.description?.toLowerCase() || '';
+      const lowerSearchTerm = searchTerm.toLowerCase();
+
       const matchesSearch =
-        item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        originalName.includes(lowerSearchTerm) ||
+        originalDescription.includes(lowerSearchTerm) ||
+        (translatedName && translatedName.includes(lowerSearchTerm)) ||
+        (translatedDescription && translatedDescription.includes(lowerSearchTerm)) ||
         item.location.toLowerCase().includes(searchTerm.toLowerCase());
       
       const matchesCategory = category === 'all' || item.category === category;
@@ -61,7 +97,7 @@ function ItemBrowser() {
 
       return matchesSearch && matchesCategory && matchesType;
     });
-  }, [items, searchTerm, category, itemType]);
+  }, [items, translatedItems, searchTerm, category, itemType]);
 
   return (
     <div className="space-y-8">
@@ -133,7 +169,14 @@ function ItemBrowser() {
       ) : filteredItems.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredItems.map((item: Item) => (
-            <ItemCard key={item.id} item={item} />
+            <ItemCard 
+              key={item.id} 
+              item={{
+                ...item,
+                name: translatedItems[item.id]?.name || item.name,
+                description: translatedItems[item.id]?.description || item.description,
+              }}
+            />
           ))}
         </div>
       ) : (
@@ -150,8 +193,9 @@ export default function BrowsePage() {
   const searchParams = useSearchParams();
   const itemId = searchParams.get('item');
   const [item, setItem] = useState<Item | null | undefined>(null);
+  const [translatedItem, setTranslatedItem] = useState<Partial<Item> | null>(null);
   const [loading, setLoading] = useState(true);
-  const { t } = useContext(LanguageContext);
+  const { t, language } = useContext(LanguageContext);
 
   useEffect(() => {
     const fetchItem = async () => {
@@ -163,7 +207,8 @@ export default function BrowsePage() {
         if (docSnap.exists()) {
           const data = docSnap.data();
           const date = data.date instanceof Timestamp ? data.date.toDate() : new Date(data.date);
-          setItem({ id: docSnap.id, ...data, date } as Item);
+          const fetchedItem = { id: docSnap.id, ...data, date } as Item;
+          setItem(fetchedItem);
         } else {
           setItem(undefined); // Not found
         }
@@ -174,6 +219,26 @@ export default function BrowsePage() {
       fetchItem();
     }
   }, [itemId]);
+
+  useEffect(() => {
+    async function translateItem() {
+      if (item && language !== 'en') {
+        try {
+          const [translatedName, translatedDescription] = await Promise.all([
+            translateText({ text: item.name, targetLanguage: language }),
+            translateText({ text: item.description, targetLanguage: language }),
+          ]);
+          setTranslatedItem({ name: translatedName, description: translatedDescription });
+        } catch (error) {
+          console.error(`Could not translate item ${item.id}:`, error);
+          setTranslatedItem({ name: item.name, description: item.description }); // Fallback
+        }
+      } else {
+        setTranslatedItem(null); // Clear translation for English or if no item
+      }
+    }
+    translateItem();
+  }, [item, language]);
 
   if (itemId) {
     if (loading || item === null) {
@@ -191,10 +256,15 @@ export default function BrowsePage() {
         </div>
       )
     }
-    return <ItemDetail item={item} />;
+    
+    const displayItem = {
+      ...item,
+      name: translatedItem?.name || item.name,
+      description: translatedItem?.description || item.description,
+    };
+
+    return <ItemDetail item={displayItem} />;
   }
 
   return <ItemBrowser />;
 }
-
-    
