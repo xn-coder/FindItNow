@@ -326,7 +326,9 @@ export const translations: Translations = {
     foundFormDateFound: "Date Found",
     foundFormMessageToOwner: "Message to Owner",
     foundFormSendMessage: "Send Message",
-
+    
+    // Feedback
+    feedbackDefaultStory: "I'm so happy I got my {itemName} back! The process was...",
 
     // Footer
     footerReuniting: "Reuniting people with their belongings.",
@@ -670,6 +672,9 @@ export const translations: Translations = {
     foundFormMessageToOwner: "Nachricht an den Besitzer",
     foundFormSendMessage: "Nachricht senden",
 
+    // Feedback
+    feedbackDefaultStory: "Ich bin so glücklich, dass ich mein(e) {itemName} zurückbekommen habe! Der Prozess war...",
+
     // Footer
     footerReuniting: "Wir bringen Menschen wieder mit ihren Sachen zusammen.",
     footerCompany: "Unternehmen",
@@ -1012,6 +1017,9 @@ export const translations: Translations = {
     foundFormMessageToOwner: "Message au propriétaire",
     foundFormSendMessage: "Envoyer le message",
 
+    // Feedback
+    feedbackDefaultStory: "Je suis si heureux/se d'avoir retrouvé mon/ma {itemName} ! Le processus a été...",
+
     // Footer
     footerReuniting: "Réunir les gens avec leurs biens.",
     footerCompany: "Entreprise",
@@ -1039,4 +1047,5 @@ export type TranslationKey = keyof typeof translations.en;
     
 
     
+
 

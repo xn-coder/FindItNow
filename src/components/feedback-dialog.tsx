@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -23,6 +23,7 @@ import type { Claim, Item } from '@/lib/types';
 import type { AuthUser } from '@/context/auth-context';
 import { submitFeedback } from '@/lib/actions';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from './ui/form';
+import { LanguageContext } from '@/context/language-context';
 
 const feedbackSchema = z.object({
   rating: z.number().min(1, 'Please select a rating.').max(5),
@@ -40,12 +41,13 @@ type FeedbackDialogProps = {
 export function FeedbackDialog({ isOpen, onClose, claim, item, user }: FeedbackDialogProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { t } = useContext(LanguageContext);
   
   const form = useForm<z.infer<typeof feedbackSchema>>({
     resolver: zodResolver(feedbackSchema),
     defaultValues: {
       rating: 0,
-      story: `I'm so happy I got my ${item.name} back! The process was...`,
+      story: t('feedbackDefaultStory').replace('{itemName}', item.name),
     },
   });
 
