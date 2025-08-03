@@ -47,12 +47,23 @@ export function FeedbackDialog({ isOpen, onClose, claim, item, user }: FeedbackD
     resolver: zodResolver(feedbackSchema),
     defaultValues: {
       rating: 0,
-      story: t('feedbackDefaultStory').replace('{itemName}', item.name),
+      story: "",
     },
   });
 
-  const { watch, setValue } = form;
+  const { watch, setValue, reset } = form;
   const rating = watch('rating');
+
+  // Set default value for story when item is available and translations are ready
+  React.useEffect(() => {
+    if (item && t) {
+      reset({
+        rating: 0,
+        story: t('feedbackDefaultStory', { itemName: item.name }),
+      });
+    }
+  }, [item, t, reset]);
+
 
   async function onSubmit(values: z.infer<typeof feedbackSchema>) {
     setIsLoading(true);
@@ -77,16 +88,16 @@ export function FeedbackDialog({ isOpen, onClose, claim, item, user }: FeedbackD
       await submitFeedback(feedbackData);
       
       toast({
-        title: 'Thank you for your feedback!',
-        description: 'Your story will help inspire others.',
+        title: t('feedbackToastSuccessTitle'),
+        description: t('feedbackToastSuccessDesc'),
       });
       onClose();
     } catch (error) {
       console.error("Error submitting feedback:", error);
       toast({
         variant: 'destructive',
-        title: 'Error',
-        description: 'Could not submit your feedback. Please try again.',
+        title: t('feedbackToastErrorTitle'),
+        description: t('feedbackToastErrorDesc'),
       });
     } finally {
       setIsLoading(false);
@@ -97,9 +108,9 @@ export function FeedbackDialog({ isOpen, onClose, claim, item, user }: FeedbackD
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Success! How was your experience?</DialogTitle>
+          <DialogTitle>{t('feedbackTitle')}</DialogTitle>
           <DialogDescription>
-            You've marked the enquiry for "{item.name}" as resolved. Please take a moment to share your feedback.
+            {t('feedbackDesc', {itemName: item.name})}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -109,7 +120,7 @@ export function FeedbackDialog({ isOpen, onClose, claim, item, user }: FeedbackD
               name="rating"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Your Rating</FormLabel>
+                  <FormLabel>{t('feedbackRatingLabel')}</FormLabel>
                    <FormControl>
                       <div className="flex items-center gap-2">
                           {[...Array(5)].map((_, i) => (
@@ -133,11 +144,11 @@ export function FeedbackDialog({ isOpen, onClose, claim, item, user }: FeedbackD
               name="story"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Your Success Story</FormLabel>
+                  <FormLabel>{t('feedbackStoryLabel')}</FormLabel>
                    <FormControl>
                       <Textarea
                           rows={4}
-                          placeholder="Tell us how you were reunited with your item..."
+                          placeholder={t('feedbackStoryPlaceholder')}
                           {...field}
                       />
                    </FormControl>
@@ -147,11 +158,11 @@ export function FeedbackDialog({ isOpen, onClose, claim, item, user }: FeedbackD
             />
             <DialogFooter>
               <Button type="button" variant="outline" onClick={onClose} disabled={isLoading}>
-                Skip
+                {t('feedbackSkipButton')}
               </Button>
               <Button type="submit" disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Submit Feedback
+                {t('feedbackSubmitButton')}
               </Button>
             </DialogFooter>
           </form>

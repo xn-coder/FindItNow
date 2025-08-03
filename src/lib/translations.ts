@@ -330,8 +330,19 @@ export const translations: Translations = {
     foundFormMessageToOwner: "Message to Owner",
     foundFormSendMessage: "Send Message",
     
-    // Feedback
+    // Feedback Dialog
+    feedbackTitle: "Success! How was your experience?",
+    feedbackDesc: "You've marked the enquiry for \"{itemName}\" as resolved. Please take a moment to share your feedback.",
+    feedbackRatingLabel: "Your Rating",
+    feedbackStoryLabel: "Your Success Story",
+    feedbackStoryPlaceholder: "Tell us how you were reunited with your item...",
     feedbackDefaultStory: "I'm so happy I got my {itemName} back! The process was...",
+    feedbackSkipButton: "Skip",
+    feedbackSubmitButton: "Submit Feedback",
+    feedbackToastSuccessTitle: "Thank you for your feedback!",
+    feedbackToastSuccessDesc: "Your story will help inspire others.",
+    feedbackToastErrorTitle: "Error",
+    feedbackToastErrorDesc: "Could not submit your feedback. Please try again.",
 
     // Footer
     footerReuniting: "Reuniting people with their belongings.",
@@ -678,8 +689,19 @@ export const translations: Translations = {
     foundFormMessageToOwner: "Nachricht an den Besitzer",
     foundFormSendMessage: "Nachricht senden",
 
-    // Feedback
+    // Feedback Dialog
+    feedbackTitle: "Erfolg! Wie war Ihre Erfahrung?",
+    feedbackDesc: "Sie haben die Anfrage für \"{itemName}\" als erledigt markiert. Bitte nehmen Sie sich einen Moment Zeit, um Ihr Feedback zu teilen.",
+    feedbackRatingLabel: "Ihre Bewertung",
+    feedbackStoryLabel: "Ihre Erfolgsgeschichte",
+    feedbackStoryPlaceholder: "Erzählen Sie uns, wie Sie Ihren Gegenstand wiederbekommen haben...",
     feedbackDefaultStory: "Ich bin so glücklich, dass ich mein(e) {itemName} zurückbekommen habe! Der Prozess war...",
+    feedbackSkipButton: "Überspringen",
+    feedbackSubmitButton: "Feedback senden",
+    feedbackToastSuccessTitle: "Danke für Ihr Feedback!",
+    feedbackToastSuccessDesc: "Ihre Geschichte wird andere inspirieren.",
+    feedbackToastErrorTitle: "Fehler",
+    feedbackToastErrorDesc: "Ihr Feedback konnte nicht übermittelt werden. Bitte versuchen Sie es erneut.",
 
     // Footer
     footerReuniting: "Wir bringen Menschen wieder mit ihren Sachen zusammen.",
@@ -1026,8 +1048,19 @@ export const translations: Translations = {
     foundFormMessageToOwner: "Message au propriétaire",
     foundFormSendMessage: "Envoyer le message",
 
-    // Feedback
+    // Feedback Dialog
+    feedbackTitle: "Succès ! Quelle a été votre expérience ?",
+    feedbackDesc: "Vous avez marqué la demande pour \"{itemName}\" comme résolue. Veuillez prendre un moment pour partager vos commentaires.",
+    feedbackRatingLabel: "Votre évaluation",
+    feedbackStoryLabel: "Votre histoire de réussite",
+    feedbackStoryPlaceholder: "Racontez-nous comment vous avez retrouvé votre objet...",
     feedbackDefaultStory: "Je suis si heureux/se d'avoir retrouvé mon/ma {itemName} ! Le processus a été...",
+    feedbackSkipButton: "Passer",
+    feedbackSubmitButton: "Envoyer les commentaires",
+    feedbackToastSuccessTitle: "Merci pour vos commentaires !",
+    feedbackToastSuccessDesc: "Votre histoire inspirera les autres.",
+    feedbackToastErrorTitle: "Erreur",
+    feedbackToastErrorDesc: "Impossible d'envoyer vos commentaires. Veuillez réessayer.",
 
     // Footer
     footerReuniting: "Réunir les gens avec leurs biens.",
