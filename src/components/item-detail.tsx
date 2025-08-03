@@ -38,7 +38,7 @@ export function ItemDetail({ item }: ItemDetailProps) {
                             className="absolute top-4 right-4 text-sm py-1 px-3"
                             variant={item.status === 'resolved' ? 'secondary' : item.type === 'lost' ? 'destructive' : 'default'}
                          >
-                            {item.status === 'resolved' ? t('resolved') : t(item.type)} Item
+                            {t(item.status as any) === "Open" ? t(item.type === 'lost' ? 'lostItem' : 'found') : t(item.status as any)}
                         </Badge>
                     </div>
                 </div>

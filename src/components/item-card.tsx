@@ -36,7 +36,7 @@ export function ItemCard({ item }: ItemCardProps) {
             className="absolute top-3 right-3"
             variant={item.status === 'resolved' ? 'secondary' : item.type === 'lost' ? 'destructive' : 'default'}
           >
-            {item.status === 'resolved' ? t('resolved') : t(item.type)}
+            {t(item.status as any) === "Open" ? t(item.type) : t(item.status as any)}
           </Badge>
         </div>
       </CardHeader>
