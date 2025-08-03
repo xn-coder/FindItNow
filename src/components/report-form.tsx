@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,6 +20,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import { enUS, de, fr } from "date-fns/locale";
 import { CalendarIcon, Loader2 } from "lucide-react";
 import { itemCategories } from "@/lib/data";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -84,10 +84,17 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
   const [userExists, setUserExists] = useState<boolean | null>(null);
   const [formValues, setFormValues] = useState<FormValues | null>(null);
   const { user: authUser, login } = useContext(AuthContext);
-  const { t } = useContext(LanguageContext);
+  const { t, language } = useContext(LanguageContext);
   const router = useRouter();
 
   const isEditMode = existingItem !== null;
+
+  const locales = {
+    en: enUS,
+    de: de,
+    fr: fr,
+  };
+  const currentLocale = locales[language];
 
   const { toast } = useToast();
   const form = useForm<FormValues>({
@@ -424,7 +431,7 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
                               )}
                             >
                               {field.value ? (
-                                format(field.value, "PPP")
+                                format(field.value, "PPP", { locale: currentLocale })
                               ) : (
                                 <span>{t('reportFormPickDate')}</span>
                               )}
@@ -435,6 +442,7 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
                         <PopoverContent className="w-auto p-0" align="start">
                           <Calendar
                             mode="single"
+                            locale={currentLocale}
                             selected={field.value}
                             onSelect={field.onChange}
                             disabled={(date) =>
