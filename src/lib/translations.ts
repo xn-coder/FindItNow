@@ -180,7 +180,10 @@ export const translations: Translations = {
     signupSubtitle: "Enter your information to create an account",
     signupButton: "Create an account",
     signupHaveAccount: "Already have an account?",
-
+    forgotPasswordTitle: "Forgot Password",
+    forgotPasswordSubtitle: "Enter your email and we'll send you an OTP to reset your password.",
+    forgotPasswordButton: "Send OTP",
+    
     // Partner Pages
     partnerDashboardTitle: "Partner Dashboard",
     partnerDashboardSubtitle: "Manage your venue's lost and found items efficiently.",
@@ -215,7 +218,7 @@ export const translations: Translations = {
     publictransport: "Public Transport",
     venue: "Venue",
     otheragency: "Other Agency",
-
+    
     // Account Page
     accountTitle: "My Account",
     accountSubtitle: "Welcome back! Here's an overview of your activity.",
@@ -525,6 +528,9 @@ export const translations: Translations = {
     signupSubtitle: "Geben Sie Ihre Daten ein, um ein Konto zu erstellen",
     signupButton: "Konto erstellen",
     signupHaveAccount: "Haben Sie bereits ein Konto?",
+    forgotPasswordTitle: "Passwort vergessen",
+    forgotPasswordSubtitle: "Geben Sie Ihre E-Mail-Adresse ein und wir senden Ihnen ein OTP, um Ihr Passwort zurückzusetzen.",
+    forgotPasswordButton: "OTP senden",
     
     // Partner Pages
     partnerDashboardTitle: "Partner-Dashboard",
@@ -870,6 +876,9 @@ export const translations: Translations = {
     signupSubtitle: "Entrez vos informations pour créer un compte",
     signupButton: "Créer un compte",
     signupHaveAccount: "Vous avez déjà un compte?",
+    forgotPasswordTitle: "Mot de passe oublié",
+    forgotPasswordSubtitle: "Entrez votre e-mail et nous vous enverrons un OTP pour réinitialiser votre mot de passe.",
+    forgotPasswordButton: "Envoyer l'OTP",
     
     // Partner Pages
     partnerDashboardTitle: "Tableau de bord partenaire",

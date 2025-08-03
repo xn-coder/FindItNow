@@ -3,7 +3,7 @@
 
 import { z } from 'zod';
 import { db } from './firebase';
-import { collection, addDoc, getDocs, query, where, Timestamp, limit, orderBy, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, where, Timestamp, limit, orderBy, serverTimestamp, doc, updateDoc } from 'firebase/firestore';
 import bcrypt from 'bcryptjs';
 import { sendEmail as sendEmailJs } from './email';
 
@@ -45,6 +45,16 @@ const FeedbackSchema = z.object({
     finderName: z.string(),
     itemId: z.string(),
 });
+
+const PasswordResetRequestSchema = z.object({
+    email: z.string().email(),
+});
+
+const UpdatePasswordSchema = z.object({
+    email: z.string().email(),
+    password: z.string().min(6, "Password must be at least 6 characters."),
+});
+
 
 
 const generateOtp = () => {
@@ -267,4 +277,42 @@ export async function getRecentFeedback() {
     });
     
     return feedbackData;
+}
+
+/**
+ * Initiates a password reset request by sending an OTP.
+ */
+export async function requestPasswordReset(data: z.infer<typeof PasswordResetRequestSchema>) {
+    const validatedData = PasswordResetRequestSchema.parse(data);
+
+    const user = await getUserByEmail(validatedData.email);
+    if (!user) {
+        throw new Error('No user found with this email address.');
+    }
+
+    // A user exists, so we send an OTP
+    const otp = await sendOtp(validatedData.email, "Your FindItNow Password Reset Code");
+    return otp;
+}
+
+
+/**
+ * Updates a user's password in Firestore.
+ */
+export async function updateUserPassword(data: z.infer<typeof UpdatePasswordSchema>) {
+    const validatedData = UpdatePasswordSchema.parse(data);
+
+    const user = await getUserByEmail(validatedData.email);
+    if (!user) {
+        throw new Error('User not found.');
+    }
+
+    const hashedPassword = await bcrypt.hash(validatedData.password, 10);
+    const userRef = doc(db, 'users', user.id);
+
+    await updateDoc(userRef, {
+        password: hashedPassword,
+    });
+
+    return { success: true };
 }

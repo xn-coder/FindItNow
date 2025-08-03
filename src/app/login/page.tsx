@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { useState, useContext } from "react";
@@ -96,7 +95,7 @@ export default function LoginPage() {
                   <FormItem>
                      <div className="flex items-center">
                         <FormLabel>{t('loginPassword')}</FormLabel>
-                        <Link href="#" className="ml-auto inline-block text-sm underline">
+                        <Link href="/forgot-password" className="ml-auto inline-block text-sm underline">
                             {t('loginForgotPassword')}
                         </Link>
                     </div>
@@ -124,5 +123,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
-    

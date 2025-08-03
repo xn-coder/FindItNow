@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -67,7 +68,7 @@ export function OtpDialog({ isOpen, onClose, onVerify, expectedOtp, isNewUser, i
           <DialogTitle>Email Verification</DialogTitle>
           <DialogDescription>
             {isNewUser
-              ? 'Enter the OTP we sent to your email and set a password for your new account.'
+              ? 'Enter the OTP we sent to your email. If you are creating a new account, you will also need to set a password.'
               : 'Enter the OTP we sent to your email to confirm your submission.'}
           </DialogDescription>
         </DialogHeader>
@@ -113,7 +114,7 @@ export function OtpDialog({ isOpen, onClose, onVerify, expectedOtp, isNewUser, i
           </Button>
           <Button onClick={handleVerify} disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Verify & Submit
+            Verify
           </Button>
         </DialogFooter>
       </DialogContent>
