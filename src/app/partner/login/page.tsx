@@ -144,7 +144,12 @@ export default function PartnerLoginPage() {
                                     name="password"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>{t('loginPassword')}</FormLabel>
+                                             <div className="flex items-center">
+                                                <FormLabel>{t('loginPassword')}</FormLabel>
+                                                <Link href="/partner/forgot-password" className="ml-auto inline-block text-sm underline">
+                                                    {t('loginForgotPassword')}
+                                                </Link>
+                                            </div>
                                             <FormControl>
                                                 <Input type="password" {...field} />
                                             </FormControl>

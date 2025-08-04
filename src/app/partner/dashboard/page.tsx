@@ -14,16 +14,21 @@ import { db } from "@/lib/firebase";
 import { collection, query, where, getDocs, Timestamp, limit, orderBy } from "firebase/firestore";
 import type { Item } from "@/lib/types";
 import { useRouter } from "next/navigation";
+import { translateText } from "@/ai/translate-flow";
 
+type TranslatedItem = Item & {
+    translatedName?: string;
+    translatedCategory?: string;
+}
 
 export default function PartnerDashboardPage() {
-    const { t } = useContext(LanguageContext);
+    const { t, language } = useContext(LanguageContext);
     const { user, loading: authLoading } = useContext(AuthContext);
     const router = useRouter();
 
     const [itemCount, setItemCount] = useState(0);
     const [claimCount, setClaimCount] = useState(0);
-    const [recentItems, setRecentItems] = useState<Item[]>([]);
+    const [recentItems, setRecentItems] = useState<TranslatedItem[]>([]);
     const [loadingStats, setLoadingStats] = useState(true);
 
      useEffect(() => {
@@ -39,15 +44,13 @@ export default function PartnerDashboardPage() {
             if (!user) return;
             setLoadingStats(true);
             
-            // Fetch total items reported by this partner
             const itemsQuery = query(collection(db, "items"), where("userId", "==", user.id));
             const itemsSnapshot = await getDocs(itemsQuery);
             setItemCount(itemsSnapshot.size);
 
-            // Fetch recent items
             const recentItemsQuery = query(itemsQuery, orderBy("createdAt", "desc"), limit(5));
             const recentItemsSnapshot = await getDocs(recentItemsQuery);
-            const itemsData = recentItemsSnapshot.docs.map(doc => {
+            let itemsData = recentItemsSnapshot.docs.map(doc => {
                 const data = doc.data();
                 return { 
                     id: doc.id, 
@@ -55,9 +58,19 @@ export default function PartnerDashboardPage() {
                     date: data.date instanceof Timestamp ? data.date.toDate() : new Date(data.date) 
                 } as Item;
             });
+
+            if (language !== 'en') {
+                itemsData = await Promise.all(itemsData.map(async (item) => {
+                    const [translatedName, translatedCategory] = await Promise.all([
+                        translateText({ text: item.name, targetLanguage: language }),
+                        translateText({ text: t(item.category as any), targetLanguage: language })
+                    ]);
+                    return { ...item, translatedName, translatedCategory };
+                }));
+            }
+            
             setRecentItems(itemsData);
 
-            // Fetch total open claims for this partner's items
             const claimsQuery = query(collection(db, "claims"), where("itemOwnerId", "==", user.id), where("status", "==", "open"));
             const claimsSnapshot = await getDocs(claimsQuery);
             setClaimCount(claimsSnapshot.size);
@@ -68,7 +81,7 @@ export default function PartnerDashboardPage() {
         if (user?.isPartner) {
             fetchDashboardData();
         }
-    }, [user]);
+    }, [user, language, t]);
 
     if (authLoading || !user) {
         return <div>Loading...</div>
@@ -145,14 +158,14 @@ export default function PartnerDashboardPage() {
                             ) : recentItems.length > 0 ? (
                                 recentItems.map((item) => (
                                     <TableRow key={item.id} onClick={() => router.push(`/browse?item=${item.id}`)} className="cursor-pointer">
-                                        <TableCell className="font-medium">{item.name}</TableCell>
-                                        <TableCell>{item.category}</TableCell>
+                                        <TableCell className="font-medium">{item.translatedName || item.name}</TableCell>
+                                        <TableCell>{item.translatedCategory || t(item.category as any)}</TableCell>
                                         <TableCell>
                                             <Badge variant={item.status === 'open' ? 'default' : 'secondary'}>
-                                                {item.status}
+                                                {t(item.status as any)}
                                             </Badge>
                                         </TableCell>
-                                        <TableCell>{(item.date as Date).toLocaleDateString()}</TableCell>
+                                        <TableCell>{(item.date as Date).toLocaleDateString(t('locale'))}</TableCell>
                                     </TableRow>
                                 ))
                             ) : (
@@ -165,5 +178,3 @@ export default function PartnerDashboardPage() {
         </div>
     );
 }
-
-    
