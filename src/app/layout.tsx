@@ -5,19 +5,13 @@ import Header from '@/components/header';
 import Footer from '@/components/footer';
 import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/context/auth-context';
-import { I18nextProvider } from 'react-i18next';
-import i18n from '@/lib/i18n';
+import { I18nProvider } from '@/components/providers';
 import { Suspense } from 'react';
 
 export const metadata: Metadata = {
   title: 'FindItNow',
   description: 'A modern platform to help you find your lost items.',
 };
-
-function I18nProvider({ children }: { children: React.ReactNode }) {
-  "use client";
-  return <I18nextProvider i18n={i18n}>{children}</I18nextProvider>;
-}
 
 export default function RootLayout({
   children,
