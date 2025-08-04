@@ -20,6 +20,7 @@ import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Calendar } from './ui/calendar';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import { enUS, de, fr } from "date-fns/locale";
 import { LanguageContext } from '@/context/language-context';
 
 const foundItemFormSchema = z.object({
@@ -37,7 +38,14 @@ type FoundItemFormProps = {
 export function FoundItemForm({ item }: FoundItemFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const { t } = useContext(LanguageContext);
+  const { t, language } = useContext(LanguageContext);
+
+  const locales = {
+    en: enUS,
+    de: de,
+    fr: fr,
+  };
+  const currentLocale = locales[language];
 
   const form = useForm<z.infer<typeof foundItemFormSchema>>({
     resolver: zodResolver(foundItemFormSchema),
@@ -180,7 +188,7 @@ export function FoundItemForm({ item }: FoundItemFormProps) {
                                 )}
                                 >
                                 {field.value ? (
-                                    format(field.value, "PPP")
+                                    format(field.value, "PPP", { locale: currentLocale })
                                 ) : (
                                     <span>{t('reportFormPickDate')}</span>
                                 )}
@@ -196,6 +204,7 @@ export function FoundItemForm({ item }: FoundItemFormProps) {
                                 disabled={(date) =>
                                 date > new Date() || date < new Date("2000-01-01")
                                 }
+                                locale={currentLocale}
                                 initialFocus
                             />
                             </PopoverContent>
