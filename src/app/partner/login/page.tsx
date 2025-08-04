@@ -46,16 +46,9 @@ export default function PartnerLoginPage() {
         setIsLoading(true);
         try {
             const partner = await loginPartner(values);
-            if (!partner) {
-                toast({
-                    variant: "destructive",
-                    title: "Login Failed",
-                    description: "Invalid credentials.",
-                });
-                setIsLoading(false);
-                return;
-            }
-
+            // This check is important. loginPartner will throw an error if not found, which we catch below.
+            // If it returns successfully, we can proceed with OTP.
+            
             setFormValues(values);
             const generatedOtp = await sendOtp(values.email, "Your FindItNow Partner Login Code");
             setOtp(generatedOtp);
@@ -68,7 +61,7 @@ export default function PartnerLoginPage() {
             toast({
                 variant: "destructive",
                 title: "Login Failed",
-                description: error.message || "An unexpected error occurred.",
+                description: error.message || "Invalid credentials or an unexpected error occurred.",
             });
         } finally {
             setIsLoading(false);
