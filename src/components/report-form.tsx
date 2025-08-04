@@ -80,10 +80,16 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
     contact: z.string().email(t('validation.emailInvalid')),
     phoneNumber: z.string().regex(phoneRegex, t('validation.phoneInvalid')).optional().or(z.literal('')),
     image: z.any()
-      .refine((files) => files?.length == 1, t('validation.imageRequired'))
-      .refine((files) => files?.[0]?.size <= MAX_FILE_SIZE, t('validation.imageSize'))
+      .refine((files) => isEditMode || files?.length == 1, t('validation.imageRequired'))
+      .refine((files) => {
+          if (!files?.[0]) return isEditMode;
+          return files[0].size <= MAX_FILE_SIZE;
+      }, t('validation.imageSize'))
       .refine(
-        (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
+        (files) => {
+            if (!files?.[0]) return isEditMode;
+            return ACCEPTED_IMAGE_TYPES.includes(files[0].type);
+        },
         t('validation.imageType')
       ).or(z.string()), // Allow existing image URL (string) for edits
   });
@@ -507,7 +513,7 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
                             </div>
                         )}
                         <FormControl>
-                            <div className="flex items-center gap-4">
+                             <div className="flex items-center gap-4">
                                 <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
                                     {t('chooseFile')}
                                 </Button>
@@ -553,5 +559,7 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
     </>
   );
 }
+
+    
 
     
