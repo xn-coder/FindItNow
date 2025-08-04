@@ -69,9 +69,8 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
   const router = useRouter();
 
   const isEditMode = existingItem !== null;
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const formSchema = z.object({
+  const reportFormSchema = z.object({
     name: z.string().min(3, t('validation.itemNameMin')).max(50),
     category: z.string({ required_error: t('validation.categoryRequired') }),
     description: z.string().min(10, t('validation.descriptionMin')).max(500),
@@ -94,7 +93,7 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
       ).or(z.string()), // Allow existing image URL (string) for edits
   });
 
-  type FormValues = z.infer<typeof formSchema>;
+  type FormValues = z.infer<typeof reportFormSchema>;
   const [formValues, setFormValues] = useState<FormValues | null>(null);
 
   const locales = {
@@ -106,7 +105,7 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
 
   const { toast } = useToast();
   const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(reportFormSchema),
     defaultValues: isEditMode && existingItem ? {
         name: existingItem.name,
         category: existingItem.category,
@@ -505,35 +504,35 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
                     name="image"
                     render={({ field: { onChange, value, ...rest } }) => (
                         <FormItem>
-                        <FormLabel>{t('reportFormImage')}</FormLabel>
-                        {isEditMode && typeof value === 'string' && (
-                            <div className="mb-4">
-                                <p className="text-sm text-muted-foreground mb-2">{t('reportFormCurrentImage')}</p>
-                                <Image src={value} alt="Current item image" width={150} height={150} className="rounded-md border"/>
-                            </div>
-                        )}
-                        <FormControl>
-                             <div className="flex items-center gap-4">
-                                <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
-                                    {t('chooseFile')}
-                                </Button>
-                                <span className="text-sm text-muted-foreground">
-                                    {watchedImage?.[0]?.name || t('noFileChosen')}
-                                </span>
-                                <Input 
-                                    type="file" 
-                                    className="hidden"
-                                    ref={fileInputRef}
-                                    accept="image/png, image/jpeg, image/jpg, image/webp"
-                                    onChange={(e) => onChange(e.target.files)}
-                                    {...rest}
-                                />
-                            </div>
-                        </FormControl>
-                        <FormDescription>
-                            {isEditMode ? t('reportFormImageDescExisting') : t('reportFormImageDescNew')}
-                        </FormDescription>
-                        <FormMessage />
+                          <FormLabel>{t('reportFormImage')}</FormLabel>
+                          {isEditMode && typeof value === 'string' && (
+                              <div className="mb-4">
+                                  <p className="text-sm text-muted-foreground mb-2">{t('reportFormCurrentImage')}</p>
+                                  <Image src={value} alt="Current item image" width={150} height={150} className="rounded-md border"/>
+                              </div>
+                          )}
+                          <div className="flex items-center gap-4">
+                              <label htmlFor="image-upload" className="cursor-pointer bg-outline border border-input rounded-md px-4 py-2 text-sm font-medium hover:bg-accent">
+                                {t('chooseFile')}
+                              </label>
+                              <span className="text-sm text-muted-foreground">
+                                  {watchedImage?.[0]?.name || t('noFileChosen')}
+                              </span>
+                          </div>
+                          <FormControl>
+                              <input 
+                                  type="file" 
+                                  id="image-upload"
+                                  className="hidden"
+                                  accept="image/png, image/jpeg, image/jpg, image/webp"
+                                  onChange={(e) => onChange(e.target.files)}
+                                  {...rest}
+                              />
+                          </FormControl>
+                          <FormDescription>
+                              {isEditMode ? t('reportFormImageDescExisting') : t('reportFormImageDescNew')}
+                          </FormDescription>
+                          <FormMessage />
                         </FormItem>
                     )}
                     />
@@ -559,7 +558,5 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
     </>
   );
 }
-
-    
 
     
