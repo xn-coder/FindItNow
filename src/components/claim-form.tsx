@@ -20,13 +20,6 @@ const phoneRegex = new RegExp(
   /^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/
 );
 
-const claimFormSchema = z.object({
-  fullName: z.string().min(2, 'Full name is required.'),
-  email: z.string().email('Please enter a valid email address.'),
-  phoneNumber: z.string().regex(phoneRegex, 'Invalid Number!').optional().or(z.literal('')),
-  proof: z.string().min(20, 'Please provide a detailed description as proof of ownership (at least 20 characters).'),
-});
-
 type ClaimFormProps = {
   item: Item;
 };
@@ -35,6 +28,13 @@ export function ClaimForm({ item }: ClaimFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { t } = useTranslation();
+
+  const claimFormSchema = z.object({
+    fullName: z.string().min(2, t('validation.nameRequired')),
+    email: z.string().email(t('validation.emailInvalid')),
+    phoneNumber: z.string().regex(phoneRegex, t('validation.phoneInvalid')).optional().or(z.literal('')),
+    proof: z.string().min(20, t('validation.proofMin')),
+  });
 
   const form = useForm<z.infer<typeof claimFormSchema>>({
     resolver: zodResolver(claimFormSchema),
@@ -149,5 +149,3 @@ export function ClaimForm({ item }: ClaimFormProps) {
     </Form>
   );
 }
-
-    

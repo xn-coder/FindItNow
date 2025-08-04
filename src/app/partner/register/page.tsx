@@ -19,16 +19,6 @@ import { OtpDialog } from "@/components/otp-dialog";
 import { AuthContext } from "@/context/auth-context";
 import { useTranslation } from "react-i18next";
 
-
-const partnerRegisterSchema = z.object({
-  businessName: z.string().min(2, "Business name is required."),
-  businessType: z.string({ required_error: "Please select a business type." }),
-  email: z.string().email("Please enter a valid email address."),
-  password: z.string().min(6, "Password must be at least 6 characters."),
-});
-
-type FormValues = z.infer<typeof partnerRegisterSchema>;
-
 const businessTypes = [
     "Airport",
     "Mall",
@@ -44,6 +34,15 @@ export default function PartnerRegisterPage() {
     const { toast } = useToast();
     const router = useRouter();
     const { login } = useContext(AuthContext);
+
+    const partnerRegisterSchema = z.object({
+        businessName: z.string().min(2, t('validation.businessNameRequired')),
+        businessType: z.string({ required_error: t('validation.businessTypeRequired') }),
+        email: z.string().email(t('validation.emailInvalid')),
+        password: z.string().min(6, t('validation.passwordMin')),
+    });
+
+    type FormValues = z.infer<typeof partnerRegisterSchema>;
 
     const [isLoading, setIsLoading] = useState(false);
     const [isOtpOpen, setIsOtpOpen] = useState(false);

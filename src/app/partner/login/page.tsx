@@ -18,12 +18,6 @@ import { OtpDialog } from "@/components/otp-dialog";
 import { AuthContext } from "@/context/auth-context";
 import { useTranslation } from "react-i18next";
 
-const partnerLoginSchema = z.object({
-  email: z.string().email("Please enter a valid email address."),
-  password: z.string().min(1, "Password is required."),
-});
-
-
 export default function PartnerLoginPage() {
     const { t } = useTranslation();
     const { toast } = useToast();
@@ -33,6 +27,11 @@ export default function PartnerLoginPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [isOtpOpen, setIsOtpOpen] = useState(false);
     const [otp, setOtp] = useState("");
+    
+    const partnerLoginSchema = z.object({
+        email: z.string().email(t('validation.emailInvalid')),
+        password: z.string().min(1, t('validation.passwordRequired')),
+    });
     const [formValues, setFormValues] = useState<z.infer<typeof partnerLoginSchema> | null>(null);
 
     const form = useForm<z.infer<typeof partnerLoginSchema>>({

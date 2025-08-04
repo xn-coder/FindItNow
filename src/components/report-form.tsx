@@ -46,25 +46,6 @@ const phoneRegex = new RegExp(
   /^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/
 );
 
-const formSchema = z.object({
-  name: z.string().min(3, "Item name must be at least 3 characters.").max(50),
-  category: z.string({ required_error: "Please select a category." }),
-  description: z.string().min(10, "Description must be at least 10 characters.").max(500),
-  location: z.string().min(3, "Location must be at least 3 characters.").max(100),
-  date: z.date({ required_error: "A date is required." }),
-  contact: z.string().email("Please enter a valid email address."),
-  phoneNumber: z.string().regex(phoneRegex, 'Invalid Number!').optional().or(z.literal('')),
-  image: z.any()
-    .refine((files) => files?.length == 1, "Image is required.")
-    .refine((files) => files?.[0]?.size <= MAX_FILE_SIZE, `Max file size is 5MB.`)
-    .refine(
-      (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
-      ".jpg, .jpeg, .png and .webp files are accepted."
-    ).or(z.string()), // Allow existing image URL (string) for edits
-});
-
-type FormValues = z.infer<typeof formSchema>;
-
 type ReportFormProps = {
   itemType: "lost" | "found";
   existingItem?: Item | null;
@@ -83,12 +64,31 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
   const [isOtpOpen, setIsOtpOpen] = useState(false);
   const [otp, setOtp] = useState("");
   const [userExists, setUserExists] = useState<boolean | null>(null);
-  const [formValues, setFormValues] = useState<FormValues | null>(null);
   const { user: authUser, login } = useContext(AuthContext);
   const { t, i18n } = useTranslation();
   const router = useRouter();
 
   const isEditMode = existingItem !== null;
+
+  const formSchema = z.object({
+    name: z.string().min(3, t('validation.itemNameMin')).max(50),
+    category: z.string({ required_error: t('validation.categoryRequired') }),
+    description: z.string().min(10, t('validation.descriptionMin')).max(500),
+    location: z.string().min(3, t('validation.locationMin')).max(100),
+    date: z.date({ required_error: t('validation.dateRequired') }),
+    contact: z.string().email(t('validation.emailInvalid')),
+    phoneNumber: z.string().regex(phoneRegex, t('validation.phoneInvalid')).optional().or(z.literal('')),
+    image: z.any()
+      .refine((files) => files?.length == 1, t('validation.imageRequired'))
+      .refine((files) => files?.[0]?.size <= MAX_FILE_SIZE, t('validation.imageSize'))
+      .refine(
+        (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
+        t('validation.imageType')
+      ).or(z.string()), // Allow existing image URL (string) for edits
+  });
+
+  type FormValues = z.infer<typeof formSchema>;
+  const [formValues, setFormValues] = useState<FormValues | null>(null);
 
   const locales = {
     en: enUS,

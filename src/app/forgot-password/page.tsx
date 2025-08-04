@@ -16,15 +16,15 @@ import { requestPasswordReset, updateUserPassword } from "@/lib/actions";
 import { OtpDialog } from "@/components/otp-dialog";
 import { useTranslation } from "react-i18next";
 
-const forgotPasswordSchema = z.object({
-  email: z.string().email("Please enter a valid email address."),
-});
-
 export default function ForgotPasswordPage() {
   const { toast } = useToast();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const { t } = useTranslation();
+
+  const forgotPasswordSchema = z.object({
+    email: z.string().email(t('validation.emailInvalid')),
+  });
 
   const [isOtpOpen, setIsOtpOpen] = useState(false);
   const [otp, setOtp] = useState("");

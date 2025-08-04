@@ -23,18 +23,17 @@ import Link from "next/link";
 import { sendEmail } from "@/lib/email";
 import { useTranslation } from "react-i18next";
 
-const contactFormSchema = z.object({
-  name: z.string().min(2, "Name is required."),
-  email: z.string().email("Please enter a valid email address."),
-  subject: z.string().min(5, "Subject must be at least 5 characters."),
-  message: z.string().min(10, "Message must be at least 10 characters long.").max(1000, "Message must be less than 1000 characters."),
-});
-
-
 export default function ContactPage() {
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
     const { t } = useTranslation();
+
+    const contactFormSchema = z.object({
+      name: z.string().min(2, t('validation.nameRequired')),
+      email: z.string().email(t('validation.emailInvalid')),
+      subject: z.string().min(5, t('validation.subjectMin')),
+      message: z.string().min(10, t('validation.messageMin')).max(1000, t('validation.messageMax')),
+    });
 
     const form = useForm<z.infer<typeof contactFormSchema>>({
         resolver: zodResolver(contactFormSchema),

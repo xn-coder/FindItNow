@@ -17,18 +17,17 @@ import { useRouter } from "next/navigation";
 import { AuthContext, AuthUser } from "@/context/auth-context";
 import { useTranslation } from "react-i18next";
 
-
-const loginSchema = z.object({
-  email: z.string().email("Please enter a valid email address."),
-  password: z.string().min(1, "Password is required."),
-});
-
 export default function LoginPage() {
   const { toast } = useToast();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useContext(AuthContext);
   const { t } = useTranslation();
+
+  const loginSchema = z.object({
+    email: z.string().email(t('validation.emailInvalid')),
+    password: z.string().min(1, t('validation.passwordRequired')),
+  });
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),

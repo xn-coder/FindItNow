@@ -25,11 +25,6 @@ import { submitFeedback } from '@/lib/actions';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from './ui/form';
 import { useTranslation } from 'react-i18next';
 
-const feedbackSchema = z.object({
-  rating: z.number().min(1, 'Please select a rating.').max(5),
-  story: z.string().min(10, 'Please share a bit more about your experience.').max(500),
-});
-
 type FeedbackDialogProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -42,6 +37,11 @@ export function FeedbackDialog({ isOpen, onClose, claim, item, user }: FeedbackD
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { t } = useTranslation();
+
+  const feedbackSchema = z.object({
+    rating: z.number().min(1, t('validation.ratingRequired')).max(5),
+    story: z.string().min(10, t('validation.storyMin')).max(500, t('validation.storyMax')),
+  });
   
   const form = useForm<z.infer<typeof feedbackSchema>>({
     resolver: zodResolver(feedbackSchema),

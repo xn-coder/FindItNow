@@ -24,13 +24,9 @@ import { enUS, de, fr } from "date-fns/locale";
 import { useTranslation } from 'react-i18next';
 import { translateText } from '@/ai/translate-flow';
 
-const foundItemFormSchema = z.object({
-  finderName: z.string().min(2, 'Your name is required.'),
-  finderEmail: z.string().email('Please enter a valid email address.'),
-  message: z.string().min(10, 'Please provide a message for the owner (at least 10 characters).'),
-  location: z.string().min(3, "Location must be at least 3 characters.").max(100),
-  date: z.date({ required_error: "A date is required." }),
-});
+const phoneRegex = new RegExp(
+  /^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/
+);
 
 type FoundItemFormProps = {
   item: Item;
@@ -40,6 +36,14 @@ export function FoundItemForm({ item }: FoundItemFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { t, i18n } = useTranslation();
+
+  const foundItemFormSchema = z.object({
+    finderName: z.string().min(2, t('validation.nameRequired')),
+    finderEmail: z.string().email(t('validation.emailInvalid')),
+    message: z.string().min(10, t('validation.messageMin')),
+    location: z.string().min(3, t('validation.locationMin')).max(100),
+    date: z.date({ required_error: t('validation.dateRequired') }),
+  });
 
   const locales = {
     en: enUS,

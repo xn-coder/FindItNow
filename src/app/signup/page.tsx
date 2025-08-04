@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
@@ -17,17 +16,16 @@ import { createUser } from "@/lib/actions";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 
-
-const signupSchema = z.object({
-  email: z.string().email("Please enter a valid email address."),
-  password: z.string().min(6, "Password must be at least 6 characters."),
-});
-
 export default function SignupPage() {
   const { toast } = useToast();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const { t } = useTranslation();
+
+  const signupSchema = z.object({
+    email: z.string().email(t('validation.emailInvalid')),
+    password: z.string().min(6, t('validation.passwordMin')),
+  });
 
   const form = useForm<z.infer<typeof signupSchema>>({
     resolver: zodResolver(signupSchema),
@@ -112,5 +110,3 @@ export default function SignupPage() {
     </div>
   );
 }
-
-    
