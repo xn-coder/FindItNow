@@ -9,7 +9,7 @@ import { z } from 'zod';
 const ai = genkit({
   plugins: [
     googleAI({
-      // apiKey: process.env.GEMINI_API_KEY, // Uncomment if you have the key in .env
+      // apiKey: process.env.GEMINI_API_KEY, // The API key is set in the environment
     }),
   ],
   logLevel: 'debug',
@@ -23,6 +23,8 @@ const TranslationInputSchema = z.object({
 
 const TranslationOutputSchema = z.string();
 
+// In-memory cache for translations
+const translationCache = new Map<string, string>();
 
 const translatePrompt = ai.definePrompt({
     name: 'translatePrompt',
@@ -45,23 +47,32 @@ const translateFlow = ai.defineFlow(
   },
   async ({ text, targetLanguage }) => {
     
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      console.warn("GEMINI_API_KEY is not set. Skipping translation.");
-      return text; // Return original text if API key is missing
-    }
-    
-    // Simple check to avoid translating if the language is English
-    if (targetLanguage.toLowerCase().startsWith('en')) {
+    // Simple check to avoid translating if the language is English or text is empty
+    if (targetLanguage.toLowerCase().startsWith('en') || !text) {
         return text;
     }
-    if (!text) {
-        return "";
+
+    const cacheKey = `${targetLanguage}:${text}`;
+    if (translationCache.has(cacheKey)) {
+        console.log(`Cache hit for: ${cacheKey}`);
+        return translationCache.get(cacheKey) as string;
+    }
+     console.log(`Cache miss for: ${cacheKey}`);
+
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      console.warn("GEMINI_API_KEY is not set. Skipping real translation.");
+      return text; // Return original text if API key is missing
     }
 
     try {
         const { output } = await translatePrompt({ text, targetLanguage });
-        return output as string;
+        const translatedText = output as string;
+
+        // Store the result in the cache
+        translationCache.set(cacheKey, translatedText);
+
+        return translatedText;
 
     } catch (error) {
         console.error(`Translation failed for text: "${text}"`, error);
