@@ -14,9 +14,10 @@ import { collection, query, where, getDocs, Timestamp, limit, orderBy } from "fi
 import type { Item } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
+import { translateText } from "@/ai/translate-flow";
 
 export default function PartnerDashboardPage() {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const { user, loading: authLoading } = useContext(AuthContext);
     const router = useRouter();
 
@@ -52,9 +53,22 @@ export default function PartnerDashboardPage() {
                     date: data.date instanceof Timestamp ? data.date.toDate() : new Date(data.date) 
                 } as Item;
             });
-            
-            setRecentItems(itemsData);
 
+            if (i18n.language !== 'en') {
+                const translatedItems = await Promise.all(
+                    itemsData.map(async (item) => {
+                        const [translatedName, translatedCategory] = await Promise.all([
+                            translateText(item.name, i18n.language),
+                            translateText(item.category, i18n.language),
+                        ]);
+                        return { ...item, name: translatedName, category: translatedCategory };
+                    })
+                );
+                setRecentItems(translatedItems);
+            } else {
+                 setRecentItems(itemsData);
+            }
+            
             const claimsQuery = query(collection(db, "claims"), where("itemOwnerId", "==", user.id), where("status", "==", "open"));
             const claimsSnapshot = await getDocs(claimsQuery);
             setClaimCount(claimsSnapshot.size);
@@ -65,7 +79,7 @@ export default function PartnerDashboardPage() {
         if (user?.isPartner) {
             fetchDashboardData();
         }
-    }, [user]);
+    }, [user, i18n.language]);
 
     if (authLoading || !user) {
         return <div>Loading...</div>
@@ -143,7 +157,7 @@ export default function PartnerDashboardPage() {
                                 recentItems.map((item) => (
                                     <TableRow key={item.id} onClick={() => router.push(`/browse?item=${item.id}`)} className="cursor-pointer">
                                         <TableCell className="font-medium">{item.name}</TableCell>
-                                        <TableCell>{t(item.category)}</TableCell>
+                                        <TableCell>{t(item.category as any)}</TableCell>
                                         <TableCell>
                                             <Badge variant={item.status === 'open' ? 'default' : 'secondary'}>
                                                 {t(item.status as any)}

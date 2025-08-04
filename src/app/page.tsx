@@ -14,21 +14,34 @@ import type { Feedback } from '@/lib/types';
 import { getRecentFeedback } from '@/lib/actions';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useTranslation } from 'react-i18next';
+import { translateText } from '@/ai/translate-flow';
 
 export default function Home() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [feedback, setFeedback] = useState<Feedback[]>([]);
   const [loadingFeedback, setLoadingFeedback] = useState(true);
 
-  useEffect(() => {
-    const fetchFeedback = async () => {
-      setLoadingFeedback(true);
-      const recentFeedback = await getRecentFeedback();
+  const fetchAndTranslateFeedback = async (language: string) => {
+    setLoadingFeedback(true);
+    const recentFeedback = await getRecentFeedback();
+
+    if (language !== 'en') {
+      const translatedFeedback = await Promise.all(
+        recentFeedback.map(async (fb) => {
+          const translatedStory = await translateText(fb.story, language);
+          return { ...fb, story: translatedStory };
+        })
+      );
+      setFeedback(translatedFeedback);
+    } else {
       setFeedback(recentFeedback);
-      setLoadingFeedback(false);
-    };
-    fetchFeedback();
-  }, []);
+    }
+    setLoadingFeedback(false);
+  };
+
+  useEffect(() => {
+    fetchAndTranslateFeedback(i18n.language);
+  }, [i18n.language]);
 
 
   return (

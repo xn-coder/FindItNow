@@ -18,6 +18,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useTranslation } from 'react-i18next';
+import { translateText } from '@/ai/translate-flow';
 
 
 function ItemBrowser() {
@@ -26,28 +27,41 @@ function ItemBrowser() {
   const [searchTerm, setSearchTerm] = useState('');
   const [category, setCategory] = useState('all');
   const [itemType, setItemType] = useState('all');
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
+  const fetchAndTranslateItems = async (language: string) => {
+    setLoading(true);
+    const q = query(
+      collection(db, "items"),
+      where("status", "==", "open")
+    );
+    const querySnapshot = await getDocs(q);
+    const itemsData = querySnapshot.docs.map(doc => {
+      const data = doc.data();
+      const date = data.date instanceof Timestamp ? data.date.toDate() : new Date(data.date);
+      return { id: doc.id, ...data, date } as Item;
+    });
+
+    if (language !== 'en') {
+        const translatedItems = await Promise.all(
+            itemsData.map(async (item) => {
+                const [translatedName, translatedDescription] = await Promise.all([
+                    translateText(item.name, language),
+                    translateText(item.description, language)
+                ]);
+                return { ...item, name: translatedName, description: translatedDescription };
+            })
+        );
+        setItems(translatedItems);
+    } else {
+        setItems(itemsData);
+    }
+    setLoading(false);
+  };
+  
   useEffect(() => {
-    const fetchItems = async () => {
-      setLoading(true);
-      const q = query(
-        collection(db, "items"), 
-        where("status", "==", "open")
-      );
-      const querySnapshot = await getDocs(q);
-      const itemsData = querySnapshot.docs.map(doc => {
-        const data = doc.data();
-        const date = data.date instanceof Timestamp ? data.date.toDate() : new Date(data.date);
-        return { id: doc.id, ...data, date } as Item;
-      });
-      
-      setItems(itemsData);
-      setLoading(false);
-    };
-
-    fetchItems();
-  }, []);
+    fetchAndTranslateItems(i18n.language);
+  }, [i18n.language]);
 
 
   const filteredItems = useMemo(() => {
@@ -157,10 +171,10 @@ export default function BrowsePage() {
   const itemId = searchParams.get('item');
   const [item, setItem] = useState<Item | null | undefined>(null);
   const [loading, setLoading] = useState(true);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   useEffect(() => {
-    const fetchItem = async () => {
+    const fetchAndTranslateItem = async () => {
       if (itemId) {
         setLoading(true);
         const docRef = doc(db, "items", itemId);
@@ -169,8 +183,18 @@ export default function BrowsePage() {
         if (docSnap.exists()) {
           const data = docSnap.data();
           const date = data.date instanceof Timestamp ? data.date.toDate() : new Date(data.date);
-          const fetchedItem = { id: docSnap.id, ...data, date } as Item;
+          let fetchedItem = { id: docSnap.id, ...data, date } as Item;
+          
+          if (i18n.language !== 'en') {
+             const [translatedName, translatedDescription, translatedLocation] = await Promise.all([
+                translateText(fetchedItem.name, i18n.language),
+                translateText(fetchedItem.description, i18n.language),
+                translateText(fetchedItem.location, i18n.language)
+            ]);
+            fetchedItem = { ...fetchedItem, name: translatedName, description: translatedDescription, location: translatedLocation };
+          }
           setItem(fetchedItem);
+
         } else {
           setItem(undefined); // Not found
         }
@@ -178,9 +202,9 @@ export default function BrowsePage() {
       }
     };
     if (itemId) {
-        fetchItem();
+        fetchAndTranslateItem();
     }
-  }, [itemId]);
+  }, [itemId, i18n.language]);
 
   if (itemId) {
     if (loading || item === null) {

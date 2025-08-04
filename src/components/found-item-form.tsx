@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -22,6 +22,7 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { enUS, de, fr } from "date-fns/locale";
 import { useTranslation } from 'react-i18next';
+import { translateText } from '@/ai/translate-flow';
 
 const foundItemFormSchema = z.object({
   finderName: z.string().min(2, 'Your name is required.'),
@@ -53,9 +54,22 @@ export function FoundItemForm({ item }: FoundItemFormProps) {
       finderName: '',
       finderEmail: '',
       location: '',
-      message: t('foundFormDefaultMessage', { itemName: item.name }),
+      message: '',
     },
   });
+
+  useEffect(() => {
+    const setDefaultMessage = async () => {
+        const defaultText = `I believe I have found your ${item.name}. Please describe it to confirm.`;
+        if (i18n.language !== 'en') {
+            const translatedMessage = await translateText(defaultText, i18n.language);
+            form.setValue('message', translatedMessage);
+        } else {
+            form.setValue('message', defaultText);
+        }
+    };
+    setDefaultMessage();
+  }, [item.name, i18n.language, form]);
 
   async function onSubmit(values: z.infer<typeof foundItemFormSchema>) {
     setIsLoading(true);
