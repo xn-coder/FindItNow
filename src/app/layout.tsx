@@ -4,12 +4,18 @@ import Header from '@/components/header';
 import Footer from '@/components/footer';
 import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/context/auth-context';
-import { LanguageProvider } from '@/context/language-context';
+import { I18nextProvider } from 'react-i18next';
+import i18n from '@/lib/i18n';
+import { Suspense } from 'react';
 
 export const metadata: Metadata = {
   title: 'FindItNow',
   description: 'A modern platform to help you find your lost items.',
 };
+
+function I18nProvider({ children }: { children: React.ReactNode }) {
+  return <I18nextProvider i18n={i18n}>{children}</I18nextProvider>;
+}
 
 export default function RootLayout({
   children,
@@ -27,18 +33,20 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased">
-        <AuthProvider>
-          <LanguageProvider>
-            <div className="flex flex-col min-h-screen">
-              <Header />
-              <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {children}
-              </main>
-              <Footer />
-            </div>
-            <Toaster />
-          </LanguageProvider>
-        </AuthProvider>
+        <Suspense fallback={<div>Loading...</div>}>
+          <I18nProvider>
+            <AuthProvider>
+              <div className="flex flex-col min-h-screen">
+                <Header />
+                <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                  {children}
+                </main>
+                <Footer />
+              </div>
+              <Toaster />
+            </AuthProvider>
+          </I18nProvider>
+        </Suspense>
       </body>
     </html>
   );

@@ -1,11 +1,10 @@
 
 "use client";
 
-import { useContext } from "react";
-import { LanguageContext } from "@/context/language-context";
+import { useTranslation } from "react-i18next";
 
 export default function PrivacyPolicyPage() {
-  const { t } = useContext(LanguageContext);
+  const { t } = useTranslation();
   const lastUpdatedDate = new Date().toLocaleDateString(t('locale'), { year: 'numeric', month: 'long', day: 'numeric' });
 
   return (

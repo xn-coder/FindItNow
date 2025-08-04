@@ -24,14 +24,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { LanguageContext } from "@/context/language-context";
+import { useTranslation } from "react-i18next";
 
 
 export default function AccountPage() {
     const { user, loading: authLoading } = useContext(AuthContext);
     const router = useRouter();
     const { toast } = useToast();
-    const { t } = useContext(LanguageContext);
+    const { t } = useTranslation();
     const [items, setItems] = useState<Item[]>([]);
     const [loadingItems, setLoadingItems] = useState(true);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);

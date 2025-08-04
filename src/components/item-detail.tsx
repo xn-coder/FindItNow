@@ -10,8 +10,7 @@ import { Calendar, Check, Mail, MapPin, Sparkles, User } from "lucide-react";
 import { ClaimForm } from "./claim-form";
 import { Timestamp } from "firebase/firestore";
 import { FoundItemForm } from "./found-item-form";
-import { useContext } from "react";
-import { LanguageContext } from "@/context/language-context";
+import { useTranslation } from "react-i18next";
 
 type ItemDetailProps = {
     item: Item;
@@ -19,7 +18,7 @@ type ItemDetailProps = {
 
 export function ItemDetail({ item }: ItemDetailProps) {
     const date = item.date instanceof Timestamp ? item.date.toDate() : new Date(item.date);
-    const { t, language } = useContext(LanguageContext);
+    const { t } = useTranslation();
     
     return (
         <div className="max-w-4xl mx-auto">

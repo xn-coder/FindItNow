@@ -8,8 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import type { Item } from "@/lib/types";
 import { Calendar, MapPin, Search } from "lucide-react";
 import { Timestamp } from "firebase/firestore";
-import { useContext } from "react";
-import { LanguageContext } from "@/context/language-context";
+import { useTranslation } from "react-i18next";
 
 type ItemCardProps = {
   item: Item;
@@ -17,7 +16,7 @@ type ItemCardProps = {
 
 export function ItemCard({ item }: ItemCardProps) {
   const date = item.date instanceof Timestamp ? item.date.toDate() : item.date;
-  const { t } = useContext(LanguageContext);
+  const { t } = useTranslation();
   
   return (
     <Card className="flex flex-col h-full overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group">
@@ -50,7 +49,7 @@ export function ItemCard({ item }: ItemCardProps) {
           </div>
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4 text-primary" />
-            <span>{date.toLocaleDateString(t('locale'))}</span>
+            <span>{date.toLocaleDateString()}</span>
           </div>
         </div>
       </CardContent>

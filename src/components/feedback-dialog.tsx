@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -23,7 +23,7 @@ import type { Claim, Item } from '@/lib/types';
 import type { AuthUser } from '@/context/auth-context';
 import { submitFeedback } from '@/lib/actions';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from './ui/form';
-import { LanguageContext } from '@/context/language-context';
+import { useTranslation } from 'react-i18next';
 
 const feedbackSchema = z.object({
   rating: z.number().min(1, 'Please select a rating.').max(5),
@@ -41,7 +41,7 @@ type FeedbackDialogProps = {
 export function FeedbackDialog({ isOpen, onClose, claim, item, user }: FeedbackDialogProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const { t } = useContext(LanguageContext);
+  const { t } = useTranslation();
   
   const form = useForm<z.infer<typeof feedbackSchema>>({
     resolver: zodResolver(feedbackSchema),
@@ -54,9 +54,8 @@ export function FeedbackDialog({ isOpen, onClose, claim, item, user }: FeedbackD
   const { watch, setValue, reset } = form;
   const rating = watch('rating');
 
-  // Set default value for story when item is available and translations are ready
-  React.useEffect(() => {
-    if (item && t) {
+  useEffect(() => {
+    if (item) {
       reset({
         rating: 0,
         story: t('feedbackDefaultStory', { itemName: item.name }),

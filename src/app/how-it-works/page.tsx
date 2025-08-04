@@ -3,11 +3,10 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Search, Edit, Bell, Users } from "lucide-react";
-import { useContext } from "react";
-import { LanguageContext } from "@/context/language-context";
+import { useTranslation } from "react-i18next";
 
 export default function HowItWorksPage() {
-  const { t } = useContext(LanguageContext);
+  const { t } = useTranslation();
 
   return (
     <div className="space-y-12">

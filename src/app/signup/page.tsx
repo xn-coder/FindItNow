@@ -12,10 +12,10 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
-import { useState, useContext } from "react";
+import { useState } from "react";
 import { createUser } from "@/lib/actions";
 import { useRouter } from "next/navigation";
-import { LanguageContext } from "@/context/language-context";
+import { useTranslation } from "react-i18next";
 
 
 const signupSchema = z.object({
@@ -27,7 +27,7 @@ export default function SignupPage() {
   const { toast } = useToast();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const { t } = useContext(LanguageContext);
+  const { t } = useTranslation();
 
   const form = useForm<z.infer<typeof signupSchema>>({
     resolver: zodResolver(signupSchema),

@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Inbox, Mail, MessageSquare, Package, User, MapPin, Calendar, CheckCircle2, Loader2, Circle, Phone } from "lucide-react";
 import { FeedbackDialog } from "@/components/feedback-dialog";
-import { LanguageContext } from "@/context/language-context";
+import { useTranslation } from "react-i18next";
 
 export default function EnquiriesPage() {
     const { user, loading: authLoading } = useContext(AuthContext);
@@ -23,7 +23,7 @@ export default function EnquiriesPage() {
     const [relatedItems, setRelatedItems] = useState<Record<string, Item>>({});
     const [isPending, startTransition] = useTransition();
     const { toast } = useToast();
-    const { t } = useContext(LanguageContext);
+    const { t } = useTranslation();
     const [feedbackClaim, setFeedbackClaim] = useState<Claim | null>(null);
 
     useEffect(() => {
@@ -222,10 +222,10 @@ export default function EnquiriesPage() {
                                         <div className="flex items-center gap-3">
                                             <Package className="h-5 w-5 text-primary"/>
                                             <h3 className="font-semibold text-lg">{item.name}</h3>
-                                            <span className="text-sm text-muted-foreground">{t('enquiriesItemReportedAs').replace('{itemType}', t(item.type))}</span>
+                                            <span className="text-sm text-muted-foreground">{t('enquiriesItemReportedAs', { itemType: t(item.type) })}</span>
                                         </div>
                                         <span className="text-sm text-muted-foreground">
-                                            {t('enquiriesReceivedOn').replace('{date}', enquiryDate.toLocaleDateString(t('locale')))}
+                                            {t('enquiriesReceivedOn', { date: enquiryDate.toLocaleDateString() })}
                                         </span>
                                     </CardHeader>
                                     <CardContent className="p-6 grid md:grid-cols-2 gap-6">
@@ -251,7 +251,7 @@ export default function EnquiriesPage() {
                                                         <Calendar className="h-5 w-5 text-muted-foreground mt-1"/>
                                                         <div>
                                                             <p className="font-semibold">{t('enquiriesDateReported')}</p>
-                                                            <p className="text-muted-foreground">{foundDate.toLocaleDateString(t('locale'))}</p>
+                                                            <p className="text-muted-foreground">{foundDate.toLocaleDateString()}</p>
                                                         </div>
                                                     </div>
                                                 </>

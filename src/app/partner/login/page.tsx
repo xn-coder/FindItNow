@@ -7,7 +7,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Building, Loader2 } from "lucide-react";
-import { LanguageContext } from "@/context/language-context";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,6 +16,7 @@ import { useRouter } from "next/navigation";
 import { getPartnerByEmail, sendOtp, loginPartner } from "@/lib/actions";
 import { OtpDialog } from "@/components/otp-dialog";
 import { AuthContext } from "@/context/auth-context";
+import { useTranslation } from "react-i18next";
 
 const partnerLoginSchema = z.object({
   email: z.string().email("Please enter a valid email address."),
@@ -25,7 +25,7 @@ const partnerLoginSchema = z.object({
 
 
 export default function PartnerLoginPage() {
-    const { t } = useContext(LanguageContext);
+    const { t } = useTranslation();
     const { toast } = useToast();
     const router = useRouter();
     const { login } = useContext(AuthContext);

@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useContext } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -14,7 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { db } from '@/lib/firebase';
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { LanguageContext } from '@/context/language-context';
+import { useTranslation } from 'react-i18next';
 
 const phoneRegex = new RegExp(
   /^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/
@@ -34,7 +34,7 @@ type ClaimFormProps = {
 export function ClaimForm({ item }: ClaimFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const { t } = useContext(LanguageContext);
+  const { t } = useTranslation();
 
   const form = useForm<z.infer<typeof claimFormSchema>>({
     resolver: zodResolver(claimFormSchema),

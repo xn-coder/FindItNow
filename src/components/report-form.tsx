@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -35,7 +36,7 @@ import { AuthContext, AuthUser } from "@/context/auth-context";
 import { useRouter } from "next/navigation";
 import type { Item } from "@/lib/types";
 import Image from "next/image";
-import { LanguageContext } from "@/context/language-context";
+import { useTranslation } from "react-i18next";
 
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -84,7 +85,7 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
   const [userExists, setUserExists] = useState<boolean | null>(null);
   const [formValues, setFormValues] = useState<FormValues | null>(null);
   const { user: authUser, login } = useContext(AuthContext);
-  const { t, language } = useContext(LanguageContext);
+  const { t, i18n } = useTranslation();
   const router = useRouter();
 
   const isEditMode = existingItem !== null;
@@ -94,7 +95,7 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
     de: de,
     fr: fr,
   };
-  const currentLocale = locales[language];
+  const currentLocale = locales[i18n.language as 'en' | 'de' | 'fr'];
 
   const { toast } = useToast();
   const form = useForm<FormValues>({
@@ -442,12 +443,12 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
                         <PopoverContent className="w-auto p-0" align="start">
                           <Calendar
                             mode="single"
-                            locale={currentLocale}
                             selected={field.value}
                             onSelect={field.onChange}
                             disabled={(date) =>
                               date > new Date() || date < new Date("2000-01-01")
                             }
+                            locale={currentLocale}
                             initialFocus
                           />
                         </PopoverContent>

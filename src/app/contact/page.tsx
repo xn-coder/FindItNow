@@ -17,11 +17,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { useState, useContext } from "react";
+import { useState } from "react";
 import { Loader2, Mail, Phone, MessageSquare, Twitter, Linkedin, Facebook } from "lucide-react";
 import Link from "next/link";
 import { sendEmail } from "@/lib/email";
-import { LanguageContext } from "@/context/language-context";
+import { useTranslation } from "react-i18next";
 
 const contactFormSchema = z.object({
   name: z.string().min(2, "Name is required."),
@@ -34,7 +34,7 @@ const contactFormSchema = z.object({
 export default function ContactPage() {
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
-    const { t } = useContext(LanguageContext);
+    const { t } = useTranslation();
 
     const form = useForm<z.infer<typeof contactFormSchema>>({
         resolver: zodResolver(contactFormSchema),

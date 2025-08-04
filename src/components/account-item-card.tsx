@@ -10,8 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import type { Item } from "@/lib/types";
 import { Calendar, MapPin, Search, Edit, Trash2 } from "lucide-react";
 import { Timestamp } from "firebase/firestore";
-import { useContext } from "react";
-import { LanguageContext } from "@/context/language-context";
+import { useTranslation } from "react-i18next";
 
 type AccountItemCardProps = {
   item: Item;
@@ -20,7 +19,7 @@ type AccountItemCardProps = {
 
 export function AccountItemCard({ item, onDelete }: AccountItemCardProps) {
   const date = item.date instanceof Timestamp ? item.date.toDate() : item.date;
-  const { t } = useContext(LanguageContext);
+  const { t } = useTranslation();
   
   return (
     <Card className="flex flex-col h-full overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group">
@@ -55,7 +54,7 @@ export function AccountItemCard({ item, onDelete }: AccountItemCardProps) {
           </div>
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4 text-primary" />
-            <span>{date.toLocaleDateString(t('locale'))}</span>
+            <span>{date.toLocaleDateString()}</span>
           </div>
         </div>
       </CardContent>

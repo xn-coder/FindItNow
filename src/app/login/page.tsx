@@ -15,7 +15,7 @@ import { useState, useContext } from "react";
 import { loginUser } from "@/lib/actions";
 import { useRouter } from "next/navigation";
 import { AuthContext, AuthUser } from "@/context/auth-context";
-import { LanguageContext } from "@/context/language-context";
+import { useTranslation } from "react-i18next";
 
 
 const loginSchema = z.object({
@@ -28,7 +28,7 @@ export default function LoginPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useContext(AuthContext);
-  const { t } = useContext(LanguageContext);
+  const { t } = useTranslation();
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),

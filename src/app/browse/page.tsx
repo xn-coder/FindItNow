@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo, useEffect, useContext, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,48 +17,19 @@ import { Timestamp } from "firebase/firestore";
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { LanguageContext } from '@/context/language-context';
-import { translateText } from '@/ai/translate-flow';
+import { useTranslation } from 'react-i18next';
 
-// We create a new type that can hold both original and translated content
-type DisplayableItem = Item & {
-  displayName: string;
-  displayDescription: string;
-};
 
 function ItemBrowser() {
-  const [items, setItems] = useState<DisplayableItem[]>([]);
+  const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [category, setCategory] = useState('all');
   const [itemType, setItemType] = useState('all');
-  const { t, language } = useContext(LanguageContext);
-
-  const translateAllItems = useCallback(async (itemsToTranslate: Item[], targetLanguage: string) => {
-    if (targetLanguage === 'en') {
-        return itemsToTranslate.map(item => ({...item, displayName: item.name, displayDescription: item.description}));
-    }
-
-    const translatedItems = await Promise.all(
-      itemsToTranslate.map(async (item) => {
-        try {
-          const [translatedName, translatedDescription] = await Promise.all([
-            translateText({ text: item.name, targetLanguage }),
-            translateText({ text: item.description, targetLanguage }),
-          ]);
-          return { ...item, displayName: translatedName, displayDescription: translatedDescription };
-        } catch (error) {
-          console.error(`Could not translate item ${item.id}:`, error);
-          // Fallback to original text if translation fails
-          return { ...item, displayName: item.name, displayDescription: item.description };
-        }
-      })
-    );
-    return translatedItems;
-  }, []);
+  const { t } = useTranslation();
 
   useEffect(() => {
-    const fetchAndTranslateItems = async () => {
+    const fetchItems = async () => {
       setLoading(true);
       const q = query(
         collection(db, "items"), 
@@ -71,13 +42,12 @@ function ItemBrowser() {
         return { id: doc.id, ...data, date } as Item;
       });
       
-      const displayItems = await translateAllItems(itemsData, language);
-      setItems(displayItems);
+      setItems(itemsData);
       setLoading(false);
     };
 
-    fetchAndTranslateItems();
-  }, [language, translateAllItems]);
+    fetchItems();
+  }, []);
 
 
   const filteredItems = useMemo(() => {
@@ -85,8 +55,8 @@ function ItemBrowser() {
       const lowerSearchTerm = searchTerm.toLowerCase();
 
       const matchesSearch =
-        item.displayName.toLowerCase().includes(lowerSearchTerm) ||
-        item.displayDescription.toLowerCase().includes(lowerSearchTerm) ||
+        item.name.toLowerCase().includes(lowerSearchTerm) ||
+        item.description.toLowerCase().includes(lowerSearchTerm) ||
         item.location.toLowerCase().includes(lowerSearchTerm);
       
       const matchesCategory = category === 'all' || item.category === category;
@@ -165,14 +135,10 @@ function ItemBrowser() {
         </div>
       ) : filteredItems.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredItems.map((item: DisplayableItem) => (
+          {filteredItems.map((item: Item) => (
             <ItemCard 
               key={item.id} 
-              item={{
-                ...item,
-                name: item.displayName,
-                description: item.displayDescription,
-              }}
+              item={item}
             />
           ))}
         </div>
@@ -189,28 +155,12 @@ function ItemBrowser() {
 export default function BrowsePage() {
   const searchParams = useSearchParams();
   const itemId = searchParams.get('item');
-  const [item, setItem] = useState<DisplayableItem | null | undefined>(null);
+  const [item, setItem] = useState<Item | null | undefined>(null);
   const [loading, setLoading] = useState(true);
-  const { t, language } = useContext(LanguageContext);
-
-  const translateSingleItem = useCallback(async (itemToTranslate: Item, targetLanguage: string) => {
-    if (targetLanguage === 'en') {
-        return {...itemToTranslate, displayName: itemToTranslate.name, displayDescription: itemToTranslate.description};
-    }
-    try {
-        const [translatedName, translatedDescription] = await Promise.all([
-        translateText({ text: itemToTranslate.name, targetLanguage }),
-        translateText({ text: itemToTranslate.description, targetLanguage }),
-        ]);
-        return { ...itemToTranslate, displayName: translatedName, displayDescription: translatedDescription };
-    } catch (error) {
-        console.error(`Could not translate item ${itemToTranslate.id}:`, error);
-        return { ...itemToTranslate, displayName: itemToTranslate.name, displayDescription: itemToTranslate.description }; // Fallback
-    }
-  }, []);
+  const { t } = useTranslation();
 
   useEffect(() => {
-    const fetchAndTranslateItem = async () => {
+    const fetchItem = async () => {
       if (itemId) {
         setLoading(true);
         const docRef = doc(db, "items", itemId);
@@ -220,9 +170,7 @@ export default function BrowsePage() {
           const data = docSnap.data();
           const date = data.date instanceof Timestamp ? data.date.toDate() : new Date(data.date);
           const fetchedItem = { id: docSnap.id, ...data, date } as Item;
-          
-          const displayItem = await translateSingleItem(fetchedItem, language);
-          setItem(displayItem);
+          setItem(fetchedItem);
         } else {
           setItem(undefined); // Not found
         }
@@ -230,9 +178,9 @@ export default function BrowsePage() {
       }
     };
     if (itemId) {
-        fetchAndTranslateItem();
+        fetchItem();
     }
-  }, [itemId, language, translateSingleItem]);
+  }, [itemId]);
 
   if (itemId) {
     if (loading || item === null) {
@@ -251,13 +199,7 @@ export default function BrowsePage() {
       )
     }
     
-    const displayItem = {
-      ...item,
-      name: item.displayName,
-      description: item.displayDescription,
-    };
-
-    return <ItemDetail item={displayItem} />;
+    return <ItemDetail item={item} />;
   }
 
   return <ItemBrowser />;

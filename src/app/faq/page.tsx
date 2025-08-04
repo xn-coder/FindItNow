@@ -2,17 +2,16 @@
 "use client";
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { LanguageContext } from "@/context/language-context";
-import { useContext } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function FaqPage() {
-  const { t } = useContext(LanguageContext);
+  const { t } = useTranslation();
   return (
     <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
             <h1 className="text-4xl font-bold font-headline">{t('faqTitle')}</h1>
             <p className="mt-2 text-lg text-muted-foreground">
-                Have questions? We've got answers.
+                {t('faqSubtitle')}
             </p>
         </div>
         

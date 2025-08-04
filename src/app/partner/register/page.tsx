@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Building, Loader2 } from "lucide-react";
-import { LanguageContext } from "@/context/language-context";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,6 +17,7 @@ import { useRouter } from "next/navigation";
 import { createPartner, getPartnerByEmail, sendOtp } from "@/lib/actions";
 import { OtpDialog } from "@/components/otp-dialog";
 import { AuthContext } from "@/context/auth-context";
+import { useTranslation } from "react-i18next";
 
 
 const partnerRegisterSchema = z.object({
@@ -40,7 +40,7 @@ const businessTypes = [
 ];
 
 export default function PartnerRegisterPage() {
-    const { t } = useContext(LanguageContext);
+    const { t } = useTranslation();
     const { toast } = useToast();
     const router = useRouter();
     const { login } = useContext(AuthContext);

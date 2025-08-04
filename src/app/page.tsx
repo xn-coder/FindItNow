@@ -9,51 +9,26 @@ import Image from 'next/image';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { AppStoreIcon, GooglePlayIcon, SecureReportsIcon, VerifiedUsersIcon, FastMatchingIcon, StarIcon } from '@/components/icons';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useContext, useEffect, useState, useCallback } from 'react';
-import { LanguageContext } from '@/context/language-context';
+import { useEffect, useState, useCallback } from 'react';
 import type { Feedback } from '@/lib/types';
 import { getRecentFeedback } from '@/lib/actions';
 import { Skeleton } from '@/components/ui/skeleton';
-import { translateText } from '@/ai/translate-flow';
-
-type TranslatedFeedback = Feedback & {
-  translatedStory: string;
-};
+import { useTranslation } from 'react-i18next';
 
 export default function Home() {
-  const { t, language } = useContext(LanguageContext);
-  const [feedback, setFeedback] = useState<TranslatedFeedback[]>([]);
+  const { t } = useTranslation();
+  const [feedback, setFeedback] = useState<Feedback[]>([]);
   const [loadingFeedback, setLoadingFeedback] = useState(true);
 
-  const translateAllFeedback = useCallback(async (feedbackToTranslate: Feedback[], targetLanguage: string) => {
-    if (targetLanguage === 'en') {
-      return feedbackToTranslate.map(fb => ({...fb, translatedStory: fb.story}));
-    }
-
-    const translatedFeedback = await Promise.all(
-      feedbackToTranslate.map(async (fb) => {
-        try {
-          const translatedStory = await translateText({ text: fb.story, targetLanguage });
-          return { ...fb, translatedStory };
-        } catch (error) {
-          console.error(`Could not translate feedback ${fb.id}:`, error);
-          return { ...fb, translatedStory: fb.story }; // Fallback
-        }
-      })
-    );
-    return translatedFeedback;
-  }, []);
-
   useEffect(() => {
-    const fetchAndTranslateFeedback = async () => {
+    const fetchFeedback = async () => {
       setLoadingFeedback(true);
       const recentFeedback = await getRecentFeedback();
-      const translated = await translateAllFeedback(recentFeedback, language);
-      setFeedback(translated);
+      setFeedback(recentFeedback);
       setLoadingFeedback(false);
     };
-    fetchAndTranslateFeedback();
-  }, [language, translateAllFeedback]);
+    fetchFeedback();
+  }, []);
 
 
   return (
@@ -246,7 +221,7 @@ export default function Home() {
                               <StarIcon key={i} className={`h-5 w-5 ${i < fb.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}/>
                           ))}
                       </div>
-                      <blockquote className="text-lg font-medium leading-relaxed flex-grow">"{fb.translatedStory}"</blockquote>
+                      <blockquote className="text-lg font-medium leading-relaxed flex-grow">"{fb.story}"</blockquote>
                     </CardContent>
                     <CardFooter className="p-6 pt-4 mt-auto">
                       <div className="flex items-center gap-4">
@@ -272,5 +247,3 @@ export default function Home() {
     </div>
   );
 }
-
-    

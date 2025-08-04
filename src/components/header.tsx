@@ -8,7 +8,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { useState, useContext } from "react";
 import { AuthContext } from "@/context/auth-context";
 import { useRouter } from "next/navigation";
-import { LanguageContext } from "@/context/language-context";
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { Separator } from "./ui/separator";
 
@@ -27,7 +27,7 @@ const navLinks = process.env.NEXT_PUBLIC_MAP_ENABLED === 'false'
 export default function Header() {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, logout } = useContext(AuthContext);
-  const { language, setLanguage, t } = useContext(LanguageContext);
+  const { t, i18n } = useTranslation();
   const router = useRouter();
 
   const handleLogout = () => {
@@ -40,6 +40,10 @@ export default function Header() {
     { code: 'en', name: 'EN' },
     { code: 'fr', name: 'FR' },
   ]
+
+  const changeLanguage = (lang: string) => {
+    i18n.changeLanguage(lang);
+  }
 
   return (
     <header className="bg-card/80 backdrop-blur-lg sticky top-0 z-50 border-b">
@@ -82,10 +86,10 @@ export default function Header() {
                 {languages.map((lang) => (
                     <button
                         key={lang.code}
-                        onClick={() => setLanguage(lang.code as 'en' | 'de' | 'fr')}
+                        onClick={() => changeLanguage(lang.code)}
                         className={cn(
                             "hover:text-primary",
-                            language === lang.code ? "text-primary font-bold underline underline-offset-4" : "text-foreground/70"
+                            i18n.language === lang.code ? "text-primary font-bold underline underline-offset-4" : "text-foreground/70"
                         )}
                     >
                         {lang.name}
@@ -161,13 +165,11 @@ export default function Header() {
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => {
-                                    setLanguage(lang.code as 'en' | 'de' | 'fr');
-                                    // optional: close menu on language change
-                                    // setMobileMenuOpen(false); 
+                                    changeLanguage(lang.code);
                                 }}
                                 className={cn(
                                     "text-base",
-                                    language === lang.code ? "text-primary font-bold" : "text-foreground/70"
+                                    i18n.language === lang.code ? "text-primary font-bold" : "text-foreground/70"
                                 )}
                             >
                                 {lang.name}

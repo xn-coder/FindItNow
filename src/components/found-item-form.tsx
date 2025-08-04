@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useContext } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -21,7 +21,7 @@ import { Calendar } from './ui/calendar';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { enUS, de, fr } from "date-fns/locale";
-import { LanguageContext } from '@/context/language-context';
+import { useTranslation } from 'react-i18next';
 
 const foundItemFormSchema = z.object({
   finderName: z.string().min(2, 'Your name is required.'),
@@ -38,14 +38,14 @@ type FoundItemFormProps = {
 export function FoundItemForm({ item }: FoundItemFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const { t, language } = useContext(LanguageContext);
+  const { t, i18n } = useTranslation();
 
   const locales = {
     en: enUS,
     de: de,
     fr: fr,
   };
-  const currentLocale = locales[language];
+  const currentLocale = locales[i18n.language as 'en' | 'de' | 'fr'];
 
   const form = useForm<z.infer<typeof foundItemFormSchema>>({
     resolver: zodResolver(foundItemFormSchema),
@@ -204,8 +204,8 @@ export function FoundItemForm({ item }: FoundItemFormProps) {
                                 disabled={(date) =>
                                 date > new Date() || date < new Date("2000-01-01")
                                 }
-                                locale={currentLocale}
                                 initialFocus
+                                locale={currentLocale}
                             />
                             </PopoverContent>
                         </Popover>

@@ -3,13 +3,12 @@
 
 import Link from "next/link"
 import { Sprout } from "lucide-react"
-import { useContext } from "react";
-import { LanguageContext } from "@/context/language-context";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
+import { useTranslation } from "react-i18next";
 
 export default function Footer() {
-  const { t } = useContext(LanguageContext);
+  const { t } = useTranslation();
   
   return (
     <footer className="bg-gray-900 text-gray-300">

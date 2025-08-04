@@ -8,27 +8,21 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Building, PlusCircle, Package, Inbox } from "lucide-react";
-import { LanguageContext } from "@/context/language-context";
 import { AuthContext } from "@/context/auth-context";
 import { db } from "@/lib/firebase";
 import { collection, query, where, getDocs, Timestamp, limit, orderBy } from "firebase/firestore";
 import type { Item } from "@/lib/types";
 import { useRouter } from "next/navigation";
-import { translateText } from "@/ai/translate-flow";
-
-type TranslatedItem = Item & {
-    translatedName?: string;
-    translatedCategory?: string;
-}
+import { useTranslation } from "react-i18next";
 
 export default function PartnerDashboardPage() {
-    const { t, language } = useContext(LanguageContext);
+    const { t } = useTranslation();
     const { user, loading: authLoading } = useContext(AuthContext);
     const router = useRouter();
 
     const [itemCount, setItemCount] = useState(0);
     const [claimCount, setClaimCount] = useState(0);
-    const [recentItems, setRecentItems] = useState<TranslatedItem[]>([]);
+    const [recentItems, setRecentItems] = useState<Item[]>([]);
     const [loadingStats, setLoadingStats] = useState(true);
 
      useEffect(() => {
@@ -58,16 +52,6 @@ export default function PartnerDashboardPage() {
                     date: data.date instanceof Timestamp ? data.date.toDate() : new Date(data.date) 
                 } as Item;
             });
-
-            if (language !== 'en') {
-                itemsData = await Promise.all(itemsData.map(async (item) => {
-                    const [translatedName, translatedCategory] = await Promise.all([
-                        translateText({ text: item.name, targetLanguage: language }),
-                        translateText({ text: t(item.category as any), targetLanguage: language })
-                    ]);
-                    return { ...item, translatedName, translatedCategory };
-                }));
-            }
             
             setRecentItems(itemsData);
 
@@ -81,7 +65,7 @@ export default function PartnerDashboardPage() {
         if (user?.isPartner) {
             fetchDashboardData();
         }
-    }, [user, language, t]);
+    }, [user]);
 
     if (authLoading || !user) {
         return <div>Loading...</div>
@@ -158,14 +142,14 @@ export default function PartnerDashboardPage() {
                             ) : recentItems.length > 0 ? (
                                 recentItems.map((item) => (
                                     <TableRow key={item.id} onClick={() => router.push(`/browse?item=${item.id}`)} className="cursor-pointer">
-                                        <TableCell className="font-medium">{item.translatedName || item.name}</TableCell>
-                                        <TableCell>{item.translatedCategory || t(item.category as any)}</TableCell>
+                                        <TableCell className="font-medium">{item.name}</TableCell>
+                                        <TableCell>{t(item.category)}</TableCell>
                                         <TableCell>
                                             <Badge variant={item.status === 'open' ? 'default' : 'secondary'}>
                                                 {t(item.status as any)}
                                             </Badge>
                                         </TableCell>
-                                        <TableCell>{(item.date as Date).toLocaleDateString(t('locale'))}</TableCell>
+                                        <TableCell>{(item.date as Date).toLocaleDateString()}</TableCell>
                                     </TableRow>
                                 ))
                             ) : (
