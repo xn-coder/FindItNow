@@ -329,6 +329,7 @@ export const translations: Translations = {
     foundFormLocationFoundPlaceholder: "e.g., Grand Central Terminal",
     foundFormDateFound: "Date Found",
     foundFormMessageToOwner: "Message to Owner",
+    foundFormDefaultMessage: "Hi, I believe I have found your \"{itemName}\". Please contact me to arrange its return.",
     foundFormSendMessage: "Send Message",
     
     // Feedback Dialog
@@ -689,6 +690,7 @@ export const translations: Translations = {
     foundFormLocationFoundPlaceholder: "z.B. Grand Central Terminal",
     foundFormDateFound: "Funddatum",
     foundFormMessageToOwner: "Nachricht an den Besitzer",
+    foundFormDefaultMessage: "Hallo, ich glaube, ich habe Ihr(e) \"{itemName}\" gefunden. Bitte kontaktieren Sie mich, um die Rückgabe zu arrangieren.",
     foundFormSendMessage: "Nachricht senden",
 
     // Feedback Dialog
@@ -1049,6 +1051,7 @@ export const translations: Translations = {
     foundFormLocationFoundPlaceholder: "ex: Gare de Lyon",
     foundFormDateFound: "Date de découverte",
     foundFormMessageToOwner: "Message au propriétaire",
+    foundFormDefaultMessage: "Bonjour, je pense avoir trouvé votre \"{itemName}\". Veuillez me contacter pour organiser sa restitution.",
     foundFormSendMessage: "Envoyer le message",
 
     // Feedback Dialog

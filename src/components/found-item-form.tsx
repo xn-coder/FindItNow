@@ -45,7 +45,7 @@ export function FoundItemForm({ item }: FoundItemFormProps) {
       finderName: '',
       finderEmail: '',
       location: '',
-      message: `Hi, I believe I have found your "${item.name}". Please contact me to arrange its return.`,
+      message: t('foundFormDefaultMessage', { itemName: item.name }),
     },
   });
 
@@ -231,5 +231,3 @@ export function FoundItemForm({ item }: FoundItemFormProps) {
     </Card>
   );
 }
-
-    
