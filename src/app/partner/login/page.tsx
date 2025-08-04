@@ -45,9 +45,16 @@ export default function PartnerLoginPage() {
     async function onSubmit(values: z.infer<typeof partnerLoginSchema>) {
         setIsLoading(true);
         try {
-            const partner = await loginPartner(values);
-            // This check is important. loginPartner will throw an error if not found, which we catch below.
-            // If it returns successfully, we can proceed with OTP.
+            const result = await loginPartner(values);
+
+            if (result.error) {
+                toast({
+                    variant: "destructive",
+                    title: "Login Failed",
+                    description: result.error,
+                });
+                return;
+            }
             
             setFormValues(values);
             const generatedOtp = await sendOtp(values.email, "Your FindItNow Partner Login Code");
@@ -61,7 +68,7 @@ export default function PartnerLoginPage() {
             toast({
                 variant: "destructive",
                 title: "Login Failed",
-                description: error.message || "Invalid credentials or an unexpected error occurred.",
+                description: "An unexpected error occurred.",
             });
         } finally {
             setIsLoading(false);

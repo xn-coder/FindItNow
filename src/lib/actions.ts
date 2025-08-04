@@ -223,22 +223,21 @@ export async function loginPartner(credentials: z.infer<typeof PartnerLoginSchem
     const partner = await getPartnerByEmail(validatedData.email);
 
     if (!partner) {
-        throw new Error('No partner found with this email address.');
+        return { error: 'Invalid credentials or user not found.' };
     }
 
     if (!partner.password) {
-        // This case should ideally not happen if registration enforces password.
-        throw new Error('This partner account does not have a password.');
+        return { error: 'This partner account does not have a password.' };
     }
 
     const passwordsMatch = await bcrypt.compare(validatedData.password, partner.password as string);
 
     if (!passwordsMatch) {
-        throw new Error('Invalid password.');
+        return { error: 'Invalid credentials.' };
     }
     
     const { password, ...partnerWithoutPassword } = partner;
-    return partnerWithoutPassword;
+    return { success: partnerWithoutPassword };
 }
 
 /**
