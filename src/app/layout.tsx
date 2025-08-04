@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import './globals.css';
 import Header from '@/components/header';
@@ -14,6 +15,7 @@ export const metadata: Metadata = {
 };
 
 function I18nProvider({ children }: { children: React.ReactNode }) {
+  "use client";
   return <I18nextProvider i18n={i18n}>{children}</I18nextProvider>;
 }
 
