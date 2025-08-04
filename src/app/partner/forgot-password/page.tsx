@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useContext } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -13,8 +13,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { requestPartnerPasswordReset, updatePartnerPassword } from "@/lib/actions";
-import { LanguageContext } from "@/context/language-context";
 import { OtpDialog } from "@/components/otp-dialog";
+import { useTranslation } from "react-i18next";
 
 const forgotPasswordSchema = z.object({
   email: z.string().email("Please enter a valid email address."),
@@ -24,7 +24,7 @@ export default function PartnerForgotPasswordPage() {
   const { toast } = useToast();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const { t } = useContext(LanguageContext);
+  const { t } = useTranslation();
 
   const [isOtpOpen, setIsOtpOpen] = useState(false);
   const [otp, setOtp] = useState("");
