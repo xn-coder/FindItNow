@@ -26,7 +26,7 @@ import { CalendarIcon, Loader2 } from "lucide-react";
 import { itemCategories } from "@/lib/data";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp, doc, updateDoc } from "firebase/firestore";
 import { sendEmail } from "@/lib/email";
@@ -69,6 +69,7 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
   const router = useRouter();
 
   const isEditMode = existingItem !== null;
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const formSchema = z.object({
     name: z.string().min(3, t('validation.itemNameMin')).max(50),
@@ -119,6 +120,8 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
       image: undefined,
     },
   });
+  
+  const watchedImage = form.watch('image');
 
   useEffect(() => {
     if (isEditMode && existingItem) {
@@ -491,33 +494,43 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
                   />
               </div>
 
-                 <FormField
-                  control={form.control}
-                  name="image"
-                  render={({ field: { onChange, value, ...rest } }) => (
-                    <FormItem>
-                      <FormLabel>{t('reportFormImage')}</FormLabel>
-                       {isEditMode && typeof value === 'string' && (
-                        <div className="mb-4">
-                            <p className="text-sm text-muted-foreground mb-2">{t('reportFormCurrentImage')}</p>
-                            <Image src={value} alt="Current item image" width={150} height={150} className="rounded-md border"/>
-                        </div>
-                       )}
-                      <FormControl>
-                        <Input 
-                          type="file" 
-                          accept="image/png, image/jpeg, image/jpg, image/webp"
-                          onChange={(e) => onChange(e.target.files)}
-                          {...rest}
-                        />
-                      </FormControl>
-                       <FormDescription>
-                        {isEditMode ? t('reportFormImageDescExisting') : t('reportFormImageDescNew')}
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <FormField
+                    control={form.control}
+                    name="image"
+                    render={({ field: { onChange, value, ...rest } }) => (
+                        <FormItem>
+                        <FormLabel>{t('reportFormImage')}</FormLabel>
+                        {isEditMode && typeof value === 'string' && (
+                            <div className="mb-4">
+                                <p className="text-sm text-muted-foreground mb-2">{t('reportFormCurrentImage')}</p>
+                                <Image src={value} alt="Current item image" width={150} height={150} className="rounded-md border"/>
+                            </div>
+                        )}
+                        <FormControl>
+                            <div className="flex items-center gap-4">
+                                <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
+                                    {t('chooseFile')}
+                                </Button>
+                                <span className="text-sm text-muted-foreground">
+                                    {watchedImage?.[0]?.name || t('noFileChosen')}
+                                </span>
+                                <Input 
+                                    type="file" 
+                                    className="hidden"
+                                    ref={fileInputRef}
+                                    accept="image/png, image/jpeg, image/jpg, image/webp"
+                                    onChange={(e) => onChange(e.target.files)}
+                                    {...rest}
+                                />
+                            </div>
+                        </FormControl>
+                        <FormDescription>
+                            {isEditMode ? t('reportFormImageDescExisting') : t('reportFormImageDescNew')}
+                        </FormDescription>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
 
               <Button type="submit" size="lg" className="w-full md:w-auto shadow-lg hover:shadow-xl transition-shadow" disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -540,3 +553,5 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
     </>
   );
 }
+
+    
