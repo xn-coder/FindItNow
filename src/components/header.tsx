@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { MapPin, Menu, Sprout, User, LogOut, Inbox, Phone, Building, Sparkles, Users, Home } from "lucide-react";
+import { MapPin, Menu, Sprout, User, LogOut, Inbox, Phone, Building, Sparkles, Home, Users } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useState, useContext } from "react";
 import { AuthContext } from "@/context/auth-context";
@@ -14,8 +14,8 @@ import { cn } from "@/lib/utils";
 
 const allNavLinks = [
   { href: "/", label: "Home", icon: Home },
-  { href: "/about", label: "About Us", icon: Users },
   { href: "/services", label: "Services", icon: Sparkles },
+  { href: "/about", label: "About Us", icon: Users },
   { href: "/browse", label: "Browse", icon: MapPin },
   { href: "/map", label: "Map View", icon: MapPin },
   { href: "/contact", label: "Contact", icon: Phone },
@@ -51,39 +51,41 @@ export default function Header() {
     <header className="bg-card/80 backdrop-blur-lg sticky top-0 z-50 border-b">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-2 font-bold text-xl text-primary font-headline">
-          <Sprout className="h-6 w-6" />
+          <Sprout />
           FindItNow
         </Link>
 
-                    </Button>
-                    
-                    <Separator className="my-4"/>
-
-                    {user ? (
-                        <Button variant="ghost" className="flex items-center justify-start gap-3 p-2 text-base h-auto" onClick={() => { handleLogout(); setMobileMenuOpen(false); }}>
-                        <LogOut className="h-5 w-5 text-primary" />
-                        {t('logout')}
-                        </Button>
-                    ) : (
-                        <Button asChild variant="ghost" className="flex items-center justify-start gap-3 p-2 text-base h-auto">
-                            <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
-                                <User className="h-5 w-5 text-primary"/>
-                                {t('login')} / {t('signup')}
-                            </Link>
-                        </Button>
-                    )}
-                    </div>
-                </div>
-                </SheetContent>
-            </Sheet>
-            <Link href="/" className="flex items-center gap-2 font-bold text-xl text-primary font-headline">
-                DEMO
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex items-center gap-6">
+          {navLinks.map((link) => (
+            <Link key={link.href} href={link.href} className="text-sm font-medium text-foreground/70 transition-colors hover:text-primary">
+              {t(link.label.toLowerCase().replace(/ /g, ''))}
             </Link>
-        </div>
+          ))}
+          {user && !user.isPartner && (
+            <>
+             <Link href="/account" className="text-sm font-medium text-foreground/70 transition-colors hover:text-primary">
+                {t('myaccount')}
+            </Link>
+             <Link href="/enquiries" className="text-sm font-medium text-foreground/70 transition-colors hover:text-primary">
+                {t('enquiries')}
+            </Link>
+            </>
+          )}
+           {user && user.isPartner && (
+              <>
+                <Link href="/partner/dashboard" className="text-sm font-medium text-foreground/70 transition-colors hover:text-primary">
+                  {t('partnerDashboardTitle')}
+                </Link>
+                <Link href="/partner/enquiries" className="text-sm font-medium text-foreground/70 transition-colors hover:text-primary">
+                  {t('enquiries')}
+                </Link>
+              </>
+          )}
+        </nav>
 
-
-        <div className="flex items-center gap-4">
-           <div className="hidden sm:flex gap-2 text-sm font-medium">
+        <div className="hidden md:flex items-center gap-4">
+           <div className="flex gap-2 text-sm font-medium">
                 {languages.map((lang) => (
                     <button
                         key={lang.code}
@@ -121,7 +123,7 @@ export default function Header() {
                 <SheetHeader className="p-4 pb-0">
                     <SheetTitle>
                         <Link href="/" className="flex items-center gap-2 font-bold text-xl text-primary font-headline" onClick={() => setMobileMenuOpen(false)}>
-                            <Sprout className="h-6 w-6" />
+                            <Sprout/>
                             FindItNow
                         </Link>
                     </SheetTitle>
@@ -131,7 +133,7 @@ export default function Header() {
                   {navLinks.map((link) => (
                     <Link key={link.href} href={link.href} className="flex items-center gap-3 rounded-md p-2 text-base font-medium hover:bg-muted" onClick={() => setMobileMenuOpen(false)}>
                       <link.icon className="h-5 w-5 text-primary" />
-                      {t(link.label.toLowerCase().replace(' ', ''))}
+                      {t(link.label.toLowerCase().replace(/ /g, ''))}
                     </Link>
                   ))}
                   {user && !user.isPartner &&(
