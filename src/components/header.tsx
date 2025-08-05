@@ -3,17 +3,19 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { MapPin, Menu, Sprout, User, LogOut, Inbox, Phone, Building } from "lucide-react";
+import { MapPin, Menu, Sprout, User, LogOut, Inbox, Phone, Building, Sparkles, Users, Home } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useState, useContext } from "react";
 import { AuthContext } from "@/context/auth-context";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
-import { Separator } from "./ui/separator";
 
 
 const allNavLinks = [
+  { href: "/", label: "Home", icon: Home },
+  { href: "/about", label: "About Us", icon: Users },
+  { href: "/services", label: "Services", icon: Sparkles },
   { href: "/browse", label: "Browse", icon: MapPin },
   { href: "/map", label: "Map View", icon: MapPin },
   { href: "/contact", label: "Contact", icon: Phone },
