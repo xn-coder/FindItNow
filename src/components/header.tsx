@@ -52,37 +52,8 @@ export default function Header() {
           DEMO
         </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-6">
-          {navLinks.map((link) => (
-            <Link key={link.href} href={link.href} className="text-sm font-medium text-foreground/70 transition-colors hover:text-primary">
-              {t(link.label.toLowerCase().replace(' ', ''))}
-            </Link>
-          ))}
-          {user && !user.isPartner && (
-            <>
-             <Link href="/account" className="text-sm font-medium text-foreground/70 transition-colors hover:text-primary">
-                {t('myaccount')}
-            </Link>
-             <Link href="/enquiries" className="text-sm font-medium text-foreground/70 transition-colors hover:text-primary">
-                {t('enquiries')}
-            </Link>
-            </>
-          )}
-           {user && user.isPartner && (
-              <>
-                <Link href="/partner/dashboard" className="text-sm font-medium text-foreground/70 transition-colors hover:text-primary">
-                  {t('partnerDashboardTitle')}
-                </Link>
-                <Link href="/partner/enquiries" className="text-sm font-medium text-foreground/70 transition-colors hover:text-primary">
-                  {t('enquiries')}
-                </Link>
-              </>
-          )}
-        </nav>
-
-        <div className="hidden md:flex items-center gap-4">
-           <div className="flex gap-2 text-sm font-medium">
+        <div className="flex items-center gap-4">
+           <div className="hidden sm:flex gap-2 text-sm font-medium">
                 {languages.map((lang) => (
                     <button
                         key={lang.code}
@@ -96,19 +67,7 @@ export default function Header() {
                     </button>
                 ))}
             </div>
-          {user ? (
-             <Button variant="ghost" size="sm" onClick={handleLogout}>
-                {t('logout')}
-            </Button>
-          ) : (
-            <Button asChild variant="ghost" size="sm">
-                <Link href="/login">{t('login')}</Link>
-            </Button>
-          )}
-        </div>
-
-        {/* Mobile Navigation */}
-        <div className="md:hidden">
+         
           <Sheet open={isMobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon">
@@ -158,7 +117,7 @@ export default function Header() {
                   )}
                 </nav>
                 <div className="mt-8 flex flex-col gap-2">
-                    <div className="flex justify-around items-center p-2 mb-4 bg-muted rounded-md">
+                    <div className="flex justify-around items-center p-2 mb-4 bg-muted rounded-md sm:hidden">
                         {languages.map((lang) => (
                             <Button
                                 key={lang.code}
@@ -183,14 +142,20 @@ export default function Header() {
                     <Link href="/report-found" onClick={() => setMobileMenuOpen(false)}>{t('heroButtonFound')}</Link>
 
                   </Button>
+                  
+                  <Separator className="my-4"/>
+
                   {user ? (
-                    <Button variant="ghost" className="mt-4 flex items-center gap-3" onClick={() => { handleLogout(); setMobileMenuOpen(false); }}>
-                       <LogOut className="h-5 w-5" />
+                    <Button variant="ghost" className="flex items-center justify-start gap-3 p-2 text-base h-auto" onClick={() => { handleLogout(); setMobileMenuOpen(false); }}>
+                       <LogOut className="h-5 w-5 text-primary" />
                        {t('logout')}
                     </Button>
                   ) : (
-                    <Button asChild variant="ghost" className="mt-4">
-                        <Link href="/login" onClick={() => setMobileMenuOpen(false)}>{t('login')} / {t('signup')}</Link>
+                    <Button asChild variant="ghost" className="flex items-center justify-start gap-3 p-2 text-base h-auto">
+                        <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
+                            <User className="h-5 w-5 text-primary"/>
+                            {t('login')} / {t('signup')}
+                        </Link>
                     </Button>
                   )}
                 </div>
