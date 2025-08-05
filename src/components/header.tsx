@@ -49,7 +49,8 @@ export default function Header() {
     <header className="bg-card/80 backdrop-blur-lg sticky top-0 z-50 border-b">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-2 font-bold text-xl text-primary font-headline">
-          DEMO
+          <Sprout className="h-6 w-6" />
+          FindItNow
         </Link>
 
         {/* Desktop Navigation */}
@@ -120,7 +121,8 @@ export default function Header() {
                 <SheetHeader className="p-4 pb-0">
                     <SheetTitle>
                         <Link href="/" className="flex items-center gap-2 font-bold text-xl text-primary font-headline" onClick={() => setMobileMenuOpen(false)}>
-                            DEMO
+                            <Sprout className="h-6 w-6" />
+                            FindItNow
                         </Link>
                     </SheetTitle>
                 </SheetHeader>
