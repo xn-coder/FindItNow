@@ -55,37 +55,35 @@ export default function Header() {
           FindItNow
         </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-6">
-          {navLinks.map((link) => (
-            <Link key={link.href} href={link.href} className="text-sm font-medium text-foreground/70 transition-colors hover:text-primary">
-              {t(link.label.toLowerCase().replace(' ', ''))}
-            </Link>
-          ))}
-          {user && !user.isPartner && (
-            <>
-             <Link href="/account" className="text-sm font-medium text-foreground/70 transition-colors hover:text-primary">
-                {t('myaccount')}
-            </Link>
-             <Link href="/enquiries" className="text-sm font-medium text-foreground/70 transition-colors hover:text-primary">
-                {t('enquiries')}
-            </Link>
-            </>
-          )}
-           {user && user.isPartner && (
-              <>
-                <Link href="/partner/dashboard" className="text-sm font-medium text-foreground/70 transition-colors hover:text-primary">
-                  {t('partnerDashboardTitle')}
-                </Link>
-                <Link href="/partner/enquiries" className="text-sm font-medium text-foreground/70 transition-colors hover:text-primary">
-                  {t('enquiries')}
-                </Link>
-              </>
-          )}
-        </nav>
+                    </Button>
+                    
+                    <Separator className="my-4"/>
 
-        <div className="hidden md:flex items-center gap-4">
-           <div className="flex gap-2 text-sm font-medium">
+                    {user ? (
+                        <Button variant="ghost" className="flex items-center justify-start gap-3 p-2 text-base h-auto" onClick={() => { handleLogout(); setMobileMenuOpen(false); }}>
+                        <LogOut className="h-5 w-5 text-primary" />
+                        {t('logout')}
+                        </Button>
+                    ) : (
+                        <Button asChild variant="ghost" className="flex items-center justify-start gap-3 p-2 text-base h-auto">
+                            <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
+                                <User className="h-5 w-5 text-primary"/>
+                                {t('login')} / {t('signup')}
+                            </Link>
+                        </Button>
+                    )}
+                    </div>
+                </div>
+                </SheetContent>
+            </Sheet>
+            <Link href="/" className="flex items-center gap-2 font-bold text-xl text-primary font-headline">
+                DEMO
+            </Link>
+        </div>
+
+
+        <div className="flex items-center gap-4">
+           <div className="hidden sm:flex gap-2 text-sm font-medium">
                 {languages.map((lang) => (
                     <button
                         key={lang.code}
