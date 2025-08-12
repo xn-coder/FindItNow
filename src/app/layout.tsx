@@ -7,6 +7,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/context/auth-context';
 import { I18nProvider } from '@/components/providers';
 import { Suspense } from 'react';
+import { MaintenanceWrapper } from '@/components/maintenance-wrapper';
 
 export const metadata: Metadata = {
   title: 'FindItNow',
@@ -32,14 +33,16 @@ export default function RootLayout({
         <Suspense fallback={<div>Loading...</div>}>
           <I18nProvider>
             <AuthProvider>
-              <div className="flex flex-col min-h-screen">
-                <Header />
-                <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                  {children}
-                </main>
-                <Footer />
-              </div>
-              <Toaster />
+              <MaintenanceWrapper>
+                <div className="flex flex-col min-h-screen">
+                  <Header />
+                  <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    {children}
+                  </main>
+                  <Footer />
+                </div>
+                <Toaster />
+              </MaintenanceWrapper>
             </AuthProvider>
           </I18nProvider>
         </Suspense>
