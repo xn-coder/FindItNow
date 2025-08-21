@@ -3,27 +3,54 @@
 
 import { useState, useEffect, type ReactNode } from 'react';
 import { maintenanceDb } from '@/lib/maintenance-firebase';
-import { ref, onValue } from 'firebase/database';
+import { ref, onValue, get, set } from 'firebase/database';
 import { Wrench } from 'lucide-react';
 import { Skeleton } from './ui/skeleton';
+
+const defaultConfig = { 
+    isEnabled: false, 
+    message: 'We are currently down for maintenance. Please check back later.' 
+};
 
 export function MaintenanceWrapper({ children }: { children: ReactNode }) {
     const [maintenanceConfig, setMaintenanceConfig] = useState<{ isEnabled: boolean; message: string; } | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const configRef = ref(maintenanceDb, 'Lost&Found/maintenance');
-        const unsubscribe = onValue(configRef, (snapshot) => {
-            if (snapshot.exists()) {
-                setMaintenanceConfig(snapshot.val());
-            } else {
-                 setMaintenanceConfig({ isEnabled: false, message: 'We are currently down for maintenance. Please check back later.' });
+        const configRef = ref(maintenanceDb, '/');
+
+        const initializeAndListen = async () => {
+            // Check if data exists
+            const snapshot = await get(configRef);
+            if (!snapshot.exists() || !snapshot.val()?.hasOwnProperty('isEnabled')) {
+                // If not, set the default configuration
+                await set(configRef, defaultConfig);
             }
-            setLoading(false);
-        });
+
+            // Now, listen for real-time changes
+            const unsubscribe = onValue(configRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    setMaintenanceConfig(snapshot.val());
+                } else {
+                    // This case should be rare after the initial set
+                    setMaintenanceConfig(defaultConfig);
+                }
+                setLoading(false);
+            });
+
+            return unsubscribe;
+        };
+
+        const unsubscribePromise = initializeAndListen();
 
         // Cleanup subscription on unmount
-        return () => unsubscribe();
+        return () => {
+            unsubscribePromise.then(unsubscribe => {
+                if (unsubscribe) {
+                    unsubscribe();
+                }
+            });
+        };
     }, []);
 
     if (loading) {
