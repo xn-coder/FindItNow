@@ -12,7 +12,7 @@ export function MaintenanceWrapper({ children }: { children: ReactNode }) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const configRef = ref(maintenanceDb, 'maintenance');
+        const configRef = ref(maintenanceDb, 'Lost&Found/maintenance');
         const unsubscribe = onValue(configRef, (snapshot) => {
             if (snapshot.exists()) {
                 setMaintenanceConfig(snapshot.val());
