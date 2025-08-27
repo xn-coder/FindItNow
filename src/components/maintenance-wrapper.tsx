@@ -17,7 +17,7 @@ export function MaintenanceWrapper({ children }: { children: ReactNode }) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const configRef = ref(maintenanceDb, '/');
+        const configRef = ref(maintenanceDb, '/Lost&Found');
 
         const initializeAndListen = async () => {
             // Check if data exists

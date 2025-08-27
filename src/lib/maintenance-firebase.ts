@@ -13,14 +13,7 @@ const maintenanceFirebaseConfig = {
 };
 
 const appName = 'maintenance';
-let maintenanceApp;
-
-if (!getApps().some(app => app.name === appName)) {
-  maintenanceApp = initializeApp(maintenanceFirebaseConfig, appName);
-} else {
-  maintenanceApp = getApp(appName);
-}
-
+let maintenanceApp = initializeApp(maintenanceFirebaseConfig, appName);
 
 const maintenanceDb = getDatabase(maintenanceApp);
 
