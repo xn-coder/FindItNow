@@ -12,10 +12,15 @@ const maintenanceFirebaseConfig = {
   appId: "1:843565872569:web:118231d4e8066d27a93268"
 };
 
-// Initialize the secondary Firebase app for maintenance mode
-const maintenanceApp = !getApps().some(app => app.name === 'maintenance')
-  ? initializeApp(maintenanceFirebaseConfig, 'maintenance')
-  : getApp('maintenance');
+const appName = 'maintenance';
+let maintenanceApp;
+
+if (!getApps().some(app => app.name === appName)) {
+  maintenanceApp = initializeApp(maintenanceFirebaseConfig, appName);
+} else {
+  maintenanceApp = getApp(appName);
+}
+
 
 const maintenanceDb = getDatabase(maintenanceApp);
 
