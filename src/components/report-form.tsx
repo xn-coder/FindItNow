@@ -51,11 +51,44 @@ type ReportFormProps = {
   existingItem?: Item | null;
 };
 
-// Helper to convert file to base64
+// Helper to convert file to base64 with compression
 const toBase64 = (file: File): Promise<string> => new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result as string);
+    reader.onload = (event) => {
+        const img = document.createElement('img');
+        img.src = event.target?.result as string;
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const MAX_WIDTH = 1024;
+            const MAX_HEIGHT = 1024;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+                if (width > MAX_WIDTH) {
+                    height *= MAX_WIDTH / width;
+                    width = MAX_WIDTH;
+                }
+            } else {
+                if (height > MAX_HEIGHT) {
+                    width *= MAX_HEIGHT / height;
+                    height = MAX_HEIGHT;
+                }
+            }
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) {
+              return reject(new Error("Could not get canvas context"));
+            }
+            ctx.drawImage(img, 0, 0, width, height);
+            // Get the data-URL formatted string
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.8); // 80% quality
+            resolve(dataUrl);
+        };
+        img.onerror = error => reject(error);
+    };
     reader.onerror = error => reject(error);
 });
 
@@ -558,5 +591,3 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
     </>
   );
 }
-
-    
