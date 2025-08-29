@@ -28,19 +28,22 @@ export const sendEmail = async (templateParams: EmailTemplateParams): Promise<vo
   
   if (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY) {
     console.error('Cannot send email: EmailJS credentials are not configured in .env');
-    // Silently fail in production if not configured, but throw in dev?
-    // For now, just log error and return.
-    return;
+    throw new Error("EmailJS credentials are not configured.");
   }
   
   try {
-    await emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams, {
+    // Destructure to_email and send the rest of the params.
+    // EmailJS templates often have the 'to_email' address pre-configured
+    // or handle it via a different mechanism, not as a template variable.
+    const { to_email, ...paramsToSend } = templateParams;
+
+    await emailjs.send(SERVICE_ID, TEMPLATE_ID, paramsToSend, {
         publicKey: PUBLIC_KEY,
     });
     console.log('Email sent successfully!');
   } catch (error) {
     console.error('Failed to send email:', error);
-    // You might want to throw the error or handle it differently
+    // Re-throw the error to be handled by the calling function
     throw new Error('Failed to send email.');
   }
 };
