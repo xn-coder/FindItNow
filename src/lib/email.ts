@@ -15,8 +15,7 @@ if (EMAILJS_ENABLED && (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY)) {
 export type EmailTemplateParams = {
   to_email: string;
   subject: string;
-  message: string;
-  [key: string]: string; // Allow other string properties
+  message: string;// Allow other string properties
 };
 
 export const sendEmail = async (templateParams: EmailTemplateParams): Promise<void> => {
@@ -33,14 +32,7 @@ export const sendEmail = async (templateParams: EmailTemplateParams): Promise<vo
   }
   
   try {
-    // Destructure to_email and send the rest of the params.
-    // EmailJS templates often have the 'to_email' address pre-configured
-    // or handle it via a different mechanism, not as a template variable.
-    const { to_email, ...paramsToSend } = templateParams;
-
-    await emailjs.send(SERVICE_ID, TEMPLATE_ID, paramsToSend, {
-        publicKey: PUBLIC_KEY,
-    });
+    await emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams, PUBLIC_KEY);
     console.log('Email sent successfully!');
   } catch (error) {
     console.error('Failed to send email:', error);

@@ -14,7 +14,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import { createPartner, getPartnerByEmail, sendOtp } from "@/lib/actions";
+import { createPartner, getPartnerByEmail } from "@/lib/actions";
+import { sendEmail } from "@/lib/email";
 import { OtpDialog } from "@/components/otp-dialog";
 import { AuthContext } from "@/context/auth-context";
 import { useTranslation } from "react-i18next";
@@ -28,6 +29,10 @@ const businessTypes = [
     "Venue",
     "Other Agency"
 ];
+
+const generateOtp = () => {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+};
 
 export default function PartnerRegisterPage() {
     const { t } = useTranslation();
@@ -72,7 +77,20 @@ export default function PartnerRegisterPage() {
             }
 
             setFormValues(values);
-            const generatedOtp = await sendOtp(values.email, "Your FindItNow Partner Verification Code");
+            
+            const emailJsEnabled = process.env.NEXT_PUBLIC_EMAILJS_ENABLED !== 'false';
+            let generatedOtp;
+            if (emailJsEnabled) {
+                generatedOtp = generateOtp();
+                await sendEmail({
+                    to_email: values.email,
+                    subject: "Your FindItNow Partner Verification Code",
+                    message: `Your one-time password is: ${generatedOtp}`,
+                });
+            } else {
+                generatedOtp = "123456";
+            }
+
             setOtp(generatedOtp);
             setIsOtpOpen(true);
              toast({

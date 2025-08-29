@@ -68,11 +68,12 @@ export async function sendOtp(email: string, subject: string) {
 
     if (emailJsEnabled) {
       generatedOtp = generateOtp();
-      await sendEmailJs({
+      const { to_email, ...templateParams } = {
         to_email: email,
         subject: subject,
         message: `Your one-time password is: ${generatedOtp}`,
-      });
+      };
+      await sendEmailJs(templateParams);
     } else {
       // For development/testing without EmailJS credentials
       generatedOtp = "123456"; 
