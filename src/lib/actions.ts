@@ -5,7 +5,6 @@ import { z } from 'zod';
 import { db } from './firebase';
 import { collection, addDoc, getDocs, query, where, Timestamp, limit, orderBy, serverTimestamp, doc, updateDoc } from 'firebase/firestore';
 import bcrypt from 'bcryptjs';
-import { sendEmail as sendEmailJs } from './email';
 
 
 // Schema for new user creation
@@ -46,41 +45,12 @@ const FeedbackSchema = z.object({
     itemId: z.string(),
 });
 
-const PasswordResetRequestSchema = z.object({
-    email: z.string().email(),
-});
-
 const UpdatePasswordSchema = z.object({
     email: z.string().email(),
     password: z.string().min(6, "Password must be at least 6 characters."),
 });
 
 
-
-const generateOtp = () => {
-    return Math.floor(100000 + Math.random() * 900000).toString();
-};
-
-
-export async function sendOtp(email: string, subject: string) {
-    const emailJsEnabled = process.env.NEXT_PUBLIC_EMAILJS_ENABLED !== 'false';
-    let generatedOtp;
-
-    if (emailJsEnabled) {
-      generatedOtp = generateOtp();
-      const { to_email, ...templateParams } = {
-        to_email: email,
-        subject: subject,
-        message: `Your one-time password is: ${generatedOtp}`,
-      };
-      await sendEmailJs(templateParams);
-    } else {
-      // For development/testing without EmailJS credentials
-      generatedOtp = "123456"; 
-    }
-
-    return generatedOtp;
-}
 
 
 /**
@@ -278,23 +248,6 @@ export async function getRecentFeedback() {
     
     return feedbackData;
 }
-
-/**
- * Initiates a password reset request by sending an OTP.
- */
-export async function requestPasswordReset(data: z.infer<typeof PasswordResetRequestSchema>) {
-    const validatedData = PasswordResetRequestSchema.parse(data);
-
-    const user = await getUserByEmail(validatedData.email);
-    if (!user) {
-        throw new Error('No user found with this email address.');
-    }
-
-    // A user exists, so we send an OTP
-    const otp = await sendOtp(validatedData.email, "Your FindItNow Password Reset Code");
-    return otp;
-}
-
 
 /**
  * Updates a user's password in Firestore.

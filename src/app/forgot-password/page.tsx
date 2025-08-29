@@ -12,9 +12,14 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { requestPasswordReset, updateUserPassword } from "@/lib/actions";
+import { getUserByEmail, updateUserPassword } from "@/lib/actions";
 import { OtpDialog } from "@/components/otp-dialog";
 import { useTranslation } from "react-i18next";
+import { sendEmail } from "@/lib/email";
+
+const generateOtp = () => {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+};
 
 export default function ForgotPasswordPage() {
   const { toast } = useToast();
@@ -40,7 +45,18 @@ export default function ForgotPasswordPage() {
   async function onSubmit(values: z.infer<typeof forgotPasswordSchema>) {
     setIsLoading(true);
     try {
-      const generatedOtp = await requestPasswordReset(values);
+      const user = await getUserByEmail(values.email);
+      if (!user) {
+          throw new Error('No user found with this email address.');
+      }
+      
+      const generatedOtp = generateOtp();
+      await sendEmail({
+          to_email: values.email,
+          subject: "Your FindItNow Password Reset Code",
+          message: `Your one-time password is: ${generatedOtp}`,
+      });
+
       setOtp(generatedOtp);
       setEmail(values.email);
       setIsOtpOpen(true);
