@@ -1,5 +1,5 @@
 // This file is for a secondary Firebase app instance used for maintenance mode.
-import { initializeApp, getApp, getApps } from 'firebase/app';
+import { initializeApp } from 'firebase/app';
 import { getDatabase } from '@firebase/database';
 
 const maintenanceFirebaseConfig = {
