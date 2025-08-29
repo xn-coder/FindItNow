@@ -317,22 +317,6 @@ export async function updateUserPassword(data: z.infer<typeof UpdatePasswordSche
     return { success: true };
 }
 
-
-/**
- * Initiates a password reset request for a partner by sending an OTP.
- */
-export async function requestPartnerPasswordReset(data: z.infer<typeof PasswordResetRequestSchema>) {
-    const validatedData = PasswordResetRequestSchema.parse(data);
-
-    const partner = await getPartnerByEmail(validatedData.email);
-    if (!partner) {
-        throw new Error('No partner found with this email address.');
-    }
-
-    const otp = await sendOtp(validatedData.email, "Your FindItNow Partner Password Reset Code");
-    return otp;
-}
-
 /**
  * Updates a partner's password in Firestore.
  */
