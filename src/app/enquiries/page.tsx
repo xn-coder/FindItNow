@@ -11,10 +11,11 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Inbox, Mail, MessageSquare, Package, User, MapPin, Calendar, CheckCircle2, Loader2, Circle, Phone, ShieldCheck, MessageCircle } from "lucide-react";
+import { Inbox, Mail, MessageSquare, Package, User, MapPin, Calendar, CheckCircle2, Loader2, Circle, Phone, ShieldCheck, MessageCircle, Image as ImageIcon } from "lucide-react";
 import { FeedbackDialog } from "@/components/feedback-dialog";
 import { useTranslation } from "react-i18next";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function EnquiriesPage() {
     const { user, loading: authLoading } = useContext(AuthContext);
@@ -213,6 +214,17 @@ export default function EnquiriesPage() {
                                                     <p className="text-muted-foreground bg-slate-50 p-3 rounded-md mt-1 border">{enquiry.proof}</p>
                                                 </div>
                                             </div>
+                                            {enquiry.proofImageUrl && (
+                                                <div className="flex items-start gap-3">
+                                                    <ImageIcon className="h-5 w-5 text-muted-foreground mt-1"/>
+                                                    <div>
+                                                        <p className="font-semibold">{t('claimFormProofImage')}</p>
+                                                        <a href={enquiry.proofImageUrl} target="_blank" rel="noopener noreferrer">
+                                                            <Image src={enquiry.proofImageUrl} alt="Proof Image" width={200} height={200} className="mt-1 rounded-md border object-cover"/>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            )}
                                             {item.type === 'lost' && enquiry.location && foundDate && (
                                                 <>
                                                     <div className="flex items-start gap-3"><MapPin className="h-5 w-5 text-muted-foreground mt-1"/><div><p className="font-semibold">{t('enquiriesLocationReported')}</p><p className="text-muted-foreground">{enquiry.location}</p></div></div>

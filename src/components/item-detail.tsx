@@ -13,7 +13,7 @@ import { FoundItemForm } from "./found-item-form";
 import { useTranslation } from "react-i18next";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
 import { Button } from "./ui/button";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { AuthContext } from "@/context/auth-context";
 import Link from "next/link";
 
@@ -25,6 +25,7 @@ export function ItemDetail({ item }: ItemDetailProps) {
     const date = item.date instanceof Timestamp ? item.date.toDate() : new Date(item.date);
     const { t } = useTranslation();
     const { user } = useContext(AuthContext);
+    const [isClaimFormOpen, setIsClaimFormOpen] = useState(false);
     
     return (
         <div className="max-w-4xl mx-auto">
@@ -105,7 +106,7 @@ export function ItemDetail({ item }: ItemDetailProps) {
             ) : (
                 <>
                     {item.type === 'found' && (
-                        <Card className="border-2 border-primary/50 shadow-lg">
+                         <Card className="border-2 border-primary/50 shadow-lg">
                             <CardHeader className="text-center">
                                 <Sparkles className="mx-auto h-8 w-8 text-primary mb-2" />
                                 <CardTitle className="text-2xl font-headline">{t('isThisYourItemTitle')}</CardTitle>
@@ -114,8 +115,8 @@ export function ItemDetail({ item }: ItemDetailProps) {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
-                                {user && user.id !== item.userId ? (
-                                    <Dialog>
+                                {user?.id !== item.userId ? (
+                                     <Dialog open={isClaimFormOpen} onOpenChange={setIsClaimFormOpen}>
                                         <DialogTrigger asChild>
                                             <Button className="w-full">
                                                 <MessageCircle className="mr-2 h-5 w-5"/>
@@ -129,12 +130,8 @@ export function ItemDetail({ item }: ItemDetailProps) {
                                             <ClaimForm item={item} />
                                         </DialogContent>
                                     </Dialog>
-                                ) : user ? (
-                                    <p className="text-center text-muted-foreground">{t('cannotClaimOwnItem')}</p>
                                 ) : (
-                                    <Button asChild className="w-full">
-                                        <Link href="/login">{t('loginToClaim')}</Link>
-                                    </Button>
+                                    <p className="text-center text-muted-foreground">{t('cannotClaimOwnItem')}</p>
                                 )}
                             </CardContent>
                         </Card>

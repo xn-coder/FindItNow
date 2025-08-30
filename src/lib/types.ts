@@ -41,6 +41,7 @@ export type Claim = {
   email: string;
   phoneNumber?: string;
   proof: string;
+  proofImageUrl?: string;
   submittedAt: Timestamp;
   location?: string;
   date?: Timestamp;
