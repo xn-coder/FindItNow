@@ -22,7 +22,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { enUS, de, fr } from "date-fns/locale";
-import { CalendarIcon, Loader2 } from "lucide-react";
+import { CalendarIcon, Loader2, X } from "lucide-react";
 import { itemCategories } from "@/lib/data";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
@@ -30,7 +30,7 @@ import { useState, useContext, useEffect, useRef } from "react";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp, doc, updateDoc } from "firebase/firestore";
 import { sendEmail } from "@/lib/email";
-import { getUserByEmail, createUser } from "@/lib/actions";
+import { getUserByEmail, createUser, addGalleryImage } from "@/lib/actions";
 import { OtpDialog } from "./otp-dialog";
 import { AuthContext, AuthUser } from "@/context/auth-context";
 import { useRouter } from "next/navigation";
@@ -111,19 +111,23 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
     date: z.date({ required_error: t('validation.dateRequired') }),
     contact: z.string().email(t('validation.emailInvalid')),
     phoneNumber: z.string().regex(phoneRegex, t('validation.phoneInvalid')).optional().or(z.literal('')),
-    image: z.any()
-      .refine((files) => isEditMode || files?.length == 1, t('validation.imageRequired'))
+    images: z.any()
+      .refine((files) => isEditMode || (files && files.length > 0), t('validation.imageRequired'))
       .refine((files) => {
-          if (!files?.[0]) return isEditMode;
-          return files[0].size <= MAX_FILE_SIZE;
+          if (!files || files.length === 0) return isEditMode;
+          for (const file of files) {
+            if(file.size > MAX_FILE_SIZE) return false;
+          }
+          return true;
       }, t('validation.imageSize'))
-      .refine(
-        (files) => {
-            if (!files?.[0]) return isEditMode;
-            return ACCEPTED_IMAGE_TYPES.includes(files[0].type);
-        },
-        t('validation.imageType')
-      ).or(z.string()), // Allow existing image URL (string) for edits
+      .refine((files) => {
+            if (!files || files.length === 0) return isEditMode;
+            for (const file of files) {
+                if(!ACCEPTED_IMAGE_TYPES.includes(file.type)) return false;
+            }
+            return true;
+        }, t('validation.imageType')
+      ).or(z.array(z.string())), // Allow existing image URLs
   });
 
   type FormValues = z.infer<typeof reportFormSchema>;
@@ -147,7 +151,7 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
         date: new Date(existingItem.date as any),
         contact: existingItem.contact,
         phoneNumber: existingItem.phoneNumber || '',
-        image: existingItem.imageUrl,
+        images: [existingItem.imageUrl],
     } : {
       name: "",
       category: "",
@@ -155,11 +159,34 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
       location: "",
       contact: authUser?.email || "",
       phoneNumber: "",
-      image: undefined,
+      images: [],
     },
   });
   
-  const watchedImage = form.watch('image');
+  const watchedImages = form.watch('images');
+  const [imagePreviews, setImagePreviews] = useState<string[]>(isEditMode && existingItem ? [existingItem.imageUrl] : []);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files) {
+        const fileArray = Array.from(files);
+        form.setValue("images", [...(watchedImages || []), ...fileArray]);
+
+        const newPreviews = fileArray.map(file => URL.createObjectURL(file));
+        setImagePreviews(prev => [...prev, ...newPreviews]);
+    }
+  };
+
+  const handleRemoveImage = (index: number) => {
+    const updatedImages = [...(watchedImages || [])];
+    updatedImages.splice(index, 1);
+    form.setValue("images", updatedImages);
+
+    const updatedPreviews = [...imagePreviews];
+    updatedPreviews.splice(index, 1);
+    setImagePreviews(updatedPreviews);
+  };
+
 
   useEffect(() => {
     if (isEditMode && existingItem) {
@@ -171,8 +198,9 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
             date: new Date(existingItem.date as any),
             contact: existingItem.contact,
             phoneNumber: existingItem.phoneNumber || '',
-            image: existingItem.imageUrl, // Keep existing image
+            images: [existingItem.imageUrl],
         });
+        setImagePreviews([existingItem.imageUrl]);
     } else if (authUser) {
         form.setValue('contact', authUser.email);
     }
@@ -247,17 +275,24 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
     if (!existingItem) return;
     try {
         let imageUrl = existingItem.imageUrl;
-        if (values.image && typeof values.image !== 'string') {
-            const imageFile = values.image[0];
-            imageUrl = await toBase64(imageFile);
+
+        const newImages = values.images.filter((img: any) => typeof img !== 'string');
+        if (newImages.length > 0) {
+            imageUrl = await toBase64(newImages[0]);
+             // Here you could also handle uploading new gallery images and deleting old ones
         }
 
         const itemData = {
-            ...values,
+            name: values.name,
+            category: values.category,
+            description: values.description,
+            location: values.location,
+            date: values.date,
+            contact: values.contact,
+            phoneNumber: values.phoneNumber,
             imageUrl,
-            type: itemType, // ensure type is maintained
+            type: itemType,
         };
-        delete (itemData as any).image;
 
         const docRef = doc(db, "items", existingItem.id);
         await updateDoc(docRef, itemData);
@@ -308,7 +343,7 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
             throw new Error("Could not verify or create user.");
         }
         
-        const docRefId = await submitItem(formValues, userId, user);
+        await submitItem(formValues, userId, user);
 
         login(user); // Log the user in
         
@@ -329,10 +364,15 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
   }
 
     async function submitItem(values: FormValues, userId: string, userToLogin?: AuthUser) {
-        const imageFile = values.image[0];
-        const imageUrl = await toBase64(imageFile);
+        if (!values.images || values.images.length === 0) {
+             toast({ title: "Image required", description: "Please upload at least one image.", variant: "destructive" });
+             return;
+        }
+        
+        const primaryImageFile = values.images[0];
+        const primaryImageUrl = await toBase64(primaryImageFile);
 
-        const docRef = await addDoc(collection(db, "items"), {
+        const itemDocRef = await addDoc(collection(db, "items"), {
             type: itemType,
             name: values.name,
             category: values.category,
@@ -341,13 +381,24 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
             date: values.date,
             contact: values.contact,
             phoneNumber: values.phoneNumber,
-            imageUrl,
+            imageUrl: primaryImageUrl,
             createdAt: serverTimestamp(),
             lat: 40.7580,
             lng: -73.9855,
             userId: userId,
             status: 'open',
         });
+
+        // Upload gallery images
+        for(let i = 1; i < values.images.length; i++) {
+            const galleryImageFile = values.images[i];
+            const galleryImageUrl = await toBase64(galleryImageFile);
+            await addGalleryImage({
+                itemId: itemDocRef.id,
+                imageUrl: galleryImageUrl
+            });
+        }
+
 
         toast({
             title: "Report Submitted!",
@@ -359,7 +410,7 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
           await sendEmail({
             to_email: values.contact,
             subject: `Your ${itemType.charAt(0).toUpperCase() + itemType.slice(1)} Item Report Confirmation`,
-            message: `Hello,\n\nThis is a confirmation that your report for the following item has been submitted:\n\nItem Name: ${values.name}\nCategory: ${values.category}\nLocation: ${values.location}\nDate: ${format(values.date, "PPP")}\n\nYou can view your submission here: ${window.location.origin}/browse?item=${docRef.id}\n\nThank you for using FindItNow.`,
+            message: `Hello,\n\nThis is a confirmation that your report for the following item has been submitted:\n\nItem Name: ${values.name}\nCategory: ${values.category}\nLocation: ${values.location}\nDate: ${format(values.date, "PPP")}\n\nYou can view your submission here: ${window.location.origin}/browse?item=${itemDocRef.id}\n\nThank you for using FindItNow.`,
           });
         }
         
@@ -369,7 +420,7 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
         const destination = authUser?.isPartner ? '/partner/dashboard' : '/account';
         router.push(destination);
 
-        return docRef.id;
+        return itemDocRef.id;
     }
 
 
@@ -534,34 +585,41 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
 
                 <FormField
                     control={form.control}
-                    name="image"
-                    render={({ field: { onChange, value, ...rest } }) => (
+                    name="images"
+                    render={({ field }) => (
                         <FormItem>
                           <FormLabel>{t('reportFormImage')}</FormLabel>
-                          {isEditMode && typeof value === 'string' && (
-                              <div className="mb-4">
-                                  <p className="text-sm text-muted-foreground mb-2">{t('reportFormCurrentImage')}</p>
-                                  <Image src={value} alt="Current item image" width={150} height={150} className="rounded-md border"/>
-                              </div>
-                          )}
-                          <div className="flex items-center gap-4">
-                              <label htmlFor="image-upload" className="cursor-pointer bg-outline border border-input rounded-md px-4 py-2 text-sm font-medium hover:bg-accent">
-                                {t('chooseFile')}
-                              </label>
-                              <span className="text-sm text-muted-foreground">
-                                  {watchedImage?.[0]?.name || t('noFileChosen')}
-                              </span>
-                          </div>
-                          <FormControl>
-                              <input 
-                                  type="file" 
-                                  id="image-upload"
-                                  className="hidden"
-                                  accept="image/png, image/jpeg, image/jpg, image/webp"
-                                  onChange={(e) => onChange(e.target.files)}
-                                  {...rest}
-                              />
-                          </FormControl>
+                            <FormControl>
+                                <Button asChild variant="outline">
+                                    <label htmlFor="image-upload" className="cursor-pointer">
+                                        {t('chooseFile')}
+                                        <Input 
+                                            type="file" 
+                                            id="image-upload"
+                                            className="hidden"
+                                            accept="image/png, image/jpeg, image/jpg, image/webp"
+                                            multiple
+                                            onChange={handleImageChange}
+                                        />
+                                    </label>
+                                </Button>
+                            </FormControl>
+                            <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                                {imagePreviews.map((preview, index) => (
+                                    <div key={index} className="relative group">
+                                        <Image src={preview} alt={`Preview ${index}`} width={150} height={150} className="rounded-md border object-cover aspect-square"/>
+                                        <Button
+                                            type="button"
+                                            variant="destructive"
+                                            size="icon"
+                                            className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            onClick={() => handleRemoveImage(index)}
+                                        >
+                                            <X className="h-4 w-4"/>
+                                        </Button>
+                                    </div>
+                                ))}
+                            </div>
                           <FormDescription>
                               {isEditMode ? t('reportFormImageDescExisting') : t('reportFormImageDescNew')}
                           </FormDescription>

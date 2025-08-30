@@ -56,6 +56,11 @@ const MessageSchema = z.object({
     text: z.string().min(1).max(1000),
 });
 
+const GalleryImageSchema = z.object({
+    itemId: z.string(),
+    imageUrl: z.string(),
+});
+
 
 /**
  * Creates a new user in the Firestore 'users' collection.
@@ -328,4 +333,13 @@ export async function getMessages(chatId: string) {
             createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : new Date(data.createdAt),
         };
     });
+}
+
+export async function addGalleryImage(imageData: z.infer<typeof GalleryImageSchema>) {
+    const validatedData = GalleryImageSchema.parse(imageData);
+    await addDoc(collection(db, "gallery"), {
+        ...validatedData,
+        createdAt: serverTimestamp(),
+    });
+    return { success: true };
 }

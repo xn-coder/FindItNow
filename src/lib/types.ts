@@ -26,6 +26,13 @@ export type Item = {
   claimantInfo?: ClaimantInfo;
 };
 
+export type GalleryImage = {
+  id?: string;
+  itemId: string;
+  imageUrl: string; // Base64 string
+  createdAt: Timestamp;
+};
+
 export type Claim = {
   id: string;
   itemId: string;
