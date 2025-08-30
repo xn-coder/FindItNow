@@ -50,7 +50,11 @@ const UpdatePasswordSchema = z.object({
     password: z.string().min(6, "Password must be at least 6 characters."),
 });
 
-
+const MessageSchema = z.object({
+    chatId: z.string(),
+    senderId: z.string(),
+    text: z.string().min(1).max(1000),
+});
 
 
 /**
@@ -289,4 +293,39 @@ export async function updatePartnerPassword(data: z.infer<typeof UpdatePasswordS
     });
 
     return { success: true };
+}
+
+/**
+ * Sends a message in a chat.
+ */
+export async function sendMessage(messageData: z.infer<typeof MessageSchema>) {
+    const validatedData = MessageSchema.parse(messageData);
+    
+    const message = {
+        ...validatedData,
+        createdAt: serverTimestamp(),
+    };
+    
+    await addDoc(collection(db, "chats", validatedData.chatId, "messages"), message);
+}
+
+/**
+ * Fetches messages for a specific chat.
+ */
+export async function getMessages(chatId: string) {
+    const q = query(
+        collection(db, "chats", chatId, "messages"),
+        orderBy("createdAt", "asc")
+    );
+    
+    const querySnapshot = await getDocs(q);
+    
+    return querySnapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+            id: doc.id,
+            ...data,
+            createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : new Date(data.createdAt),
+        };
+    });
 }

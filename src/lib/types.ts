@@ -37,9 +37,10 @@ export type Claim = {
   submittedAt: Timestamp;
   location?: string;
   date?: Timestamp;
-  status: 'open' | 'resolved';
+  status: 'open' | 'accepted' | 'resolved';
   type?: 'message' | 'claim';
-  userId?: string; // The ID of the user who made the claim/message
+  userId: string; // The ID of the user who made the claim/message
+  chatId: string;
 };
 
 export type Feedback = {
@@ -54,3 +55,11 @@ export type Feedback = {
   finderName: string;
   createdAt: string;
 };
+
+export type Message = {
+    id: string;
+    chatId: string;
+    senderId: string;
+    text: string;
+    createdAt: Timestamp | Date;
+}

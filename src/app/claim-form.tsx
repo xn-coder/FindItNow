@@ -13,7 +13,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { db } from '@/lib/firebase';
-import { collection, addDoc, serverTimestamp, doc, updateDoc } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { useTranslation } from 'react-i18next';
 import { AuthContext } from '@/context/auth-context';
 import { useContext } from 'react';
@@ -24,9 +24,10 @@ const phoneRegex = new RegExp(
 
 type ClaimFormProps = {
   item: Item;
+  onSuccess: () => void;
 };
 
-export function ClaimForm({ item }: ClaimFormProps) {
+export function ClaimForm({ item, onSuccess }: ClaimFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { t } = useTranslation();
@@ -61,7 +62,7 @@ export function ClaimForm({ item }: ClaimFormProps) {
     setIsLoading(true);
     
     try {
-        const docRef = await addDoc(collection(db, "claims"), {
+        const claimRef = await addDoc(collection(db, "claims"), {
             itemId: item.id,
             itemOwnerId: item.userId,
             userId: user.id, // ID of the person making the claim
@@ -72,16 +73,18 @@ export function ClaimForm({ item }: ClaimFormProps) {
             submittedAt: serverTimestamp(),
             status: 'open',
             type: 'claim',
+            chatId: '', // Will be updated when claim is accepted
         });
 
-        // Set the chatId to be the same as the claim ID
-        await updateDoc(doc(db, "claims", docRef.id), { chatId: docRef.id });
+        // The chatId will be the same as the claimId for simplicity
+        await addDoc(collection(db, `chats/${claimRef.id}/messages`), {});
 
         toast({
             title: 'Claim Submitted!',
             description: "We've received your claim and the item reporter has been notified. They will contact you if your claim is verified.",
         });
         form.reset();
+        onSuccess();
 
     } catch (error) {
          console.error("Error submitting claim: ", error);

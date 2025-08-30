@@ -105,7 +105,7 @@ export function ItemDetail({ item }: ItemDetailProps) {
             ) : (
                 <>
                     {item.type === 'found' && (
-                        <Card className="border-2 border-primary/50 shadow-lg">
+                         <Card className="border-2 border-primary/50 shadow-lg">
                             <CardHeader className="text-center">
                                 <Sparkles className="mx-auto h-8 w-8 text-primary mb-2" />
                                 <CardTitle className="text-2xl font-headline">{t('isThisYourItemTitle')}</CardTitle>
@@ -126,7 +126,7 @@ export function ItemDetail({ item }: ItemDetailProps) {
                                             <DialogHeader>
                                                 <DialogTitle>{t('claimFormProof')}</DialogTitle>
                                             </DialogHeader>
-                                            <ClaimForm item={item} />
+                                            <ClaimForm item={item} onSuccess={() => {}} />
                                         </DialogContent>
                                     </Dialog>
                                 ) : user ? (

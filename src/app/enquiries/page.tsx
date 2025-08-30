@@ -11,9 +11,10 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Inbox, Mail, MessageSquare, Package, User, MapPin, Calendar, CheckCircle2, Loader2, Circle, Phone } from "lucide-react";
+import { Inbox, Mail, MessageSquare, Package, User, MapPin, Calendar, CheckCircle2, Loader2, Circle, Phone, ShieldCheck, MessageCircle } from "lucide-react";
 import { FeedbackDialog } from "@/components/feedback-dialog";
 import { useTranslation } from "react-i18next";
+import Link from "next/link";
 
 export default function EnquiriesPage() {
     const { user, loading: authLoading } = useContext(AuthContext);
@@ -38,7 +39,7 @@ export default function EnquiriesPage() {
             const q = query(
                 collection(db, "claims"),
                 where("itemOwnerId", "==", user.id),
-                where("status", "==", "open"),
+                where("status", "in", ["open", "accepted"]),
                 orderBy("submittedAt", "desc")
             );
             const querySnapshot = await getDocs(q);
@@ -49,6 +50,7 @@ export default function EnquiriesPage() {
                     ...data,
                     submittedAt: data.submittedAt instanceof Timestamp ? data.submittedAt.toDate() : new Date(data.submittedAt),
                     date: data.date instanceof Timestamp ? data.date.toDate() : data.date ? new Date(data.date) : undefined,
+                    chatId: doc.id, // Assign chatId from claimId
                 } as Claim
             });
 
@@ -64,8 +66,8 @@ export default function EnquiriesPage() {
                         items[itemId] = {
                             id: docSnap.id,
                             ...itemData,
-                            date: itemData.date instanceof Timestamp ? itemData.date.toDate() : new Date(itemData.date),
-                            createdAt: itemData.createdAt instanceof Timestamp ? itemData.createdAt.toDate() : new Date(itemData.createdAt),
+                            date: (itemData.date as Timestamp).toDate(),
+                            createdAt: (itemData.createdAt as Timestamp)?.toDate(),
                          } as Item;
                     }
                 }
@@ -83,27 +85,35 @@ export default function EnquiriesPage() {
         }
     }, [user]);
 
+    const handleAcceptClaim = (claim: Claim) => {
+        startTransition(async () => {
+            try {
+                const claimRef = doc(db, "claims", claim.id);
+                await updateDoc(claimRef, { status: 'accepted', chatId: claim.id });
+
+                setEnquiries(prev => prev.map(e => e.id === claim.id ? { ...e, status: 'accepted', chatId: claim.id } : e));
+                toast({
+                    title: "Claim Accepted",
+                    description: "You have accepted the claim. You can now chat with the claimant.",
+                });
+            } catch (error) {
+                console.error("Error accepting claim: ", error);
+                toast({ variant: "destructive", title: "Error", description: "Could not accept the claim." });
+            }
+        });
+    };
+
     const handleMarkAsResolved = (claim: Claim) => {
         startTransition(async () => {
             try {
                 const batch = writeBatch(db);
-
-                // Update the item status
                 const itemRef = doc(db, "items", claim.itemId);
                 batch.update(itemRef, {
                     status: 'resolved',
-                    claimantInfo: {
-                        fullName: claim.fullName,
-                        email: claim.email,
-                    }
+                    claimantInfo: { fullName: claim.fullName, email: claim.email }
                 });
 
-                // Find all open claims for this item and mark them as resolved
-                const claimsQuery = query(
-                    collection(db, "claims"),
-                    where("itemId", "==", claim.itemId),
-                    where("status", "==", "open")
-                );
+                const claimsQuery = query(collection(db, "claims"), where("itemId", "==", claim.itemId));
                 const claimsSnapshot = await getDocs(claimsQuery);
                 claimsSnapshot.forEach(claimDoc => {
                     batch.update(claimDoc.ref, { status: 'resolved' });
@@ -116,17 +126,12 @@ export default function EnquiriesPage() {
                     description: "You've marked this item as resolved. All related enquiries have been closed.",
                 });
                 
-                // Refresh the list by removing all enquiries for the resolved item
                 setEnquiries(prev => prev.filter(e => e.itemId !== claim.itemId));
                 setFeedbackClaim(claim);
 
             } catch (error) {
                 console.error("Error resolving enquiry: ", error);
-                toast({
-                    variant: "destructive",
-                    title: "Error",
-                    description: "Could not update the enquiry. Please try again.",
-                });
+                toast({ variant: "destructive", title: "Error", description: "Could not update the enquiry." });
             }
         });
     }
@@ -137,18 +142,7 @@ export default function EnquiriesPage() {
                 <Skeleton className="h-24 w-full" />
                 <div className="space-y-4">
                     {Array.from({ length: 3 }).map((_, i) => (
-                        <Card key={i}>
-                            <CardContent className="p-6">
-                                <div className="flex gap-4">
-                                    <Skeleton className="h-24 w-24 rounded-md" />
-                                    <div className="space-y-2 flex-1">
-                                        <Skeleton className="h-5 w-1/4" />
-                                        <Skeleton className="h-4 w-1/2" />
-                                        <Skeleton className="h-4 w-3/4" />
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
+                        <Card key={i}><CardContent className="p-6"><Skeleton className="h-32 w-full" /></CardContent></Card>
                     ))}
                 </div>
             </div>
@@ -156,23 +150,17 @@ export default function EnquiriesPage() {
     }
 
     const getEnquiryTitle = (itemType?: 'lost' | 'found') => {
-        if (itemType === 'lost') {
-            return t('enquiriesMessageFromFinder');
-        }
+        if (itemType === 'lost') return t('enquiriesMessageFromFinder');
         return t('enquiriesClaimOfOwnership');
     };
 
     const getEnquiryProofLabel = (itemType?: 'lost' | 'found') => {
-        if (itemType === 'lost') {
-            return t('enquiriesFindersMessage');
-        }
+        if (itemType === 'lost') return t('enquiriesFindersMessage');
         return t('enquiriesProofOfOwnership');
     }
 
     const getEnquirerLabel = (itemType?: 'lost' | 'found') => {
-        if (itemType === 'lost') {
-            return t('enquiriesFindersDetails');
-        }
+        if (itemType === 'lost') return t('enquiriesFindersDetails');
         return t('enquiriesClaimantsDetails');
     }
 
@@ -192,20 +180,9 @@ export default function EnquiriesPage() {
                 </Card>
 
                 {loadingEnquiries ? (
-                    <div className="space-y-4">
+                     <div className="space-y-4">
                         {Array.from({ length: 3 }).map((_, i) => (
-                            <Card key={i}>
-                                <CardContent className="p-6">
-                                    <div className="flex gap-4">
-                                        <Skeleton className="h-24 w-24 rounded-md" />
-                                        <div className="space-y-2 flex-1">
-                                            <Skeleton className="h-5 w-1/4" />
-                                            <Skeleton className="h-4 w-1/2" />
-                                            <Skeleton className="h-4 w-3/4" />
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
+                            <Card key={i}><CardContent className="p-6"><Skeleton className="h-32 w-full" /></CardContent></Card>
                         ))}
                     </div>
                 ) : enquiries.length > 0 ? (
@@ -224,9 +201,7 @@ export default function EnquiriesPage() {
                                             <h3 className="font-semibold text-lg">{item.name}</h3>
                                             <span className="text-sm text-muted-foreground">{t('enquiriesItemReportedAs', { itemType: t(item.type) })}</span>
                                         </div>
-                                        <span className="text-sm text-muted-foreground">
-                                            {t('enquiriesReceivedOn', { date: enquiryDate.toLocaleDateString() })}
-                                        </span>
+                                        <span className="text-sm text-muted-foreground">{t('enquiriesReceivedOn', { date: enquiryDate.toLocaleDateString() })}</span>
                                     </CardHeader>
                                     <CardContent className="p-6 grid md:grid-cols-2 gap-6">
                                         <div className="space-y-4">
@@ -240,47 +215,31 @@ export default function EnquiriesPage() {
                                             </div>
                                             {item.type === 'lost' && enquiry.location && foundDate && (
                                                 <>
-                                                    <div className="flex items-start gap-3">
-                                                        <MapPin className="h-5 w-5 text-muted-foreground mt-1"/>
-                                                        <div>
-                                                            <p className="font-semibold">{t('enquiriesLocationReported')}</p>
-                                                            <p className="text-muted-foreground">{enquiry.location}</p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex items-start gap-3">
-                                                        <Calendar className="h-5 w-5 text-muted-foreground mt-1"/>
-                                                        <div>
-                                                            <p className="font-semibold">{t('enquiriesDateReported')}</p>
-                                                            <p className="text-muted-foreground">{foundDate.toLocaleDateString()}</p>
-                                                        </div>
-                                                    </div>
+                                                    <div className="flex items-start gap-3"><MapPin className="h-5 w-5 text-muted-foreground mt-1"/><div><p className="font-semibold">{t('enquiriesLocationReported')}</p><p className="text-muted-foreground">{enquiry.location}</p></div></div>
+                                                    <div className="flex items-start gap-3"><Calendar className="h-5 w-5 text-muted-foreground mt-1"/><div><p className="font-semibold">{t('enquiriesDateReported')}</p><p className="text-muted-foreground">{foundDate.toLocaleDateString()}</p></div></div>
                                                 </>
                                             )}
                                         </div>
                                         <div className="space-y-4 bg-slate-50 p-4 rounded-lg border">
                                             <h4 className="font-semibold text-lg">{getEnquirerLabel(item.type)}</h4>
-                                            <div className="flex items-center gap-3">
-                                                <User className="h-5 w-5 text-muted-foreground"/>
-                                                <p><span className="font-semibold">{t('enquiriesName')}</span> {enquiry.fullName}</p>
-                                            </div>
-                                            <div className="flex items-center gap-3">
-                                                <Mail className="h-5 w-5 text-muted-foreground"/>
-                                                <p><span className="font-semibold">{t('enquiriesEmail')}</span> {enquiry.email}</p>
-                                            </div>
-                                            {enquiry.phoneNumber && (
-                                                <div className="flex items-center gap-3">
-                                                    <Phone className="h-5 w-5 text-muted-foreground"/>
-                                                    <p><span className="font-semibold">{t('enquiriesPhone')}</span> {enquiry.phoneNumber}</p>
-                                                </div>
-                                            )}
+                                            <div className="flex items-center gap-3"><User className="h-5 w-5 text-muted-foreground"/><p><span className="font-semibold">{t('enquiriesName')}</span> {enquiry.fullName}</p></div>
+                                            <div className="flex items-center gap-3"><Mail className="h-5 w-5 text-muted-foreground"/><p><span className="font-semibold">{t('enquiriesEmail')}</span> {enquiry.email}</p></div>
+                                            {enquiry.phoneNumber && (<div className="flex items-center gap-3"><Phone className="h-5 w-5 text-muted-foreground"/><p><span className="font-semibold">{t('enquiriesPhone')}</span> {enquiry.phoneNumber}</p></div>)}
                                         </div>
                                     </CardContent>
-                                    <CardFooter className="bg-muted/50 p-4 border-t flex items-center justify-end">
-                                        <Button
-                                            size="sm"
-                                            onClick={() => handleMarkAsResolved(enquiry)}
-                                            disabled={isPending}
-                                        >
+                                    <CardFooter className="bg-muted/50 p-4 border-t flex items-center justify-end gap-2">
+                                        {enquiry.status === 'open' && (
+                                            <Button size="sm" variant="outline" onClick={() => handleAcceptClaim(enquiry)} disabled={isPending}>
+                                                {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShieldCheck className="mr-2 h-4 w-4"/>}
+                                                {t('enquiriesAcceptClaim')}
+                                            </Button>
+                                        )}
+                                        {enquiry.status === 'accepted' && (
+                                            <Button asChild size="sm" variant="secondary">
+                                                <Link href={`/chat/${enquiry.chatId}`}><MessageCircle className="mr-2 h-4 w-4"/>Chat with Claimant</Link>
+                                            </Button>
+                                        )}
+                                        <Button size="sm" onClick={() => handleMarkAsResolved(enquiry)} disabled={isPending}>
                                             {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle2 className="mr-2 h-4 w-4"/>}
                                             {t('enquiriesMarkAsResolved')}
                                         </Button>
