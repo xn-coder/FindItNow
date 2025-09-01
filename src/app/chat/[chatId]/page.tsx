@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, useRef, useContext, FormEvent } from 'react';
+import { useState, useEffect, useRef, useContext, FormEvent, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { db } from '@/lib/firebase';
 import { collection, onSnapshot, query, orderBy, doc, getDoc } from 'firebase/firestore';
@@ -18,11 +18,12 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { translateText } from '@/ai/translate-flow';
 
 export default function ChatPage() {
     const { chatId } = useParams();
     const { user, loading: authLoading } = useContext(AuthContext);
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [messages, setMessages] = useState<Message[]>([]);
     const [newMessage, setNewMessage] = useState('');
     const [claim, setClaim] = useState<Claim | null>(null);
@@ -40,6 +41,19 @@ export default function ChatPage() {
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
+
+    const translateMessages = useCallback(async (msgs: Message[], language: string) => {
+        if (language === 'en') {
+            return msgs;
+        }
+        return Promise.all(
+            msgs.map(async (msg) => {
+                if (msg.senderId === 'system') return msg;
+                const translatedText = await translateText(msg.text, language);
+                return { ...msg, text: translatedText };
+            })
+        );
+    }, []);
 
     useEffect(() => {
         if (!chatId || !user) return;
@@ -71,20 +85,22 @@ export default function ChatPage() {
         });
 
         const q = query(collection(db, `chats/${chatId}/messages`), orderBy('createdAt'));
-        const messagesUnsubscribe = onSnapshot(q, (snapshot) => {
+        const messagesUnsubscribe = onSnapshot(q, async (snapshot) => {
             const msgs = snapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data(),
                 createdAt: doc.data().createdAt?.toDate() || new Date(),
             } as Message));
-            setMessages(msgs);
+
+            const translatedMsgs = await translateMessages(msgs, i18n.language);
+            setMessages(translatedMsgs);
         });
 
         return () => {
             claimUnsubscribe();
             messagesUnsubscribe();
         };
-    }, [chatId, user]);
+    }, [chatId, user, i18n.language, translateMessages]);
 
     const handleSendMessage = async (e: FormEvent) => {
         e.preventDefault();
@@ -92,10 +108,13 @@ export default function ChatPage() {
         
         setIsSending(true);
         try {
+            // Translate message to English before sending to DB
+            const textToSend = await translateText(newMessage, 'en');
+
             await sendMessage({
                 chatId: chatId as string,
                 senderId: user.id,
-                text: newMessage,
+                text: textToSend,
             });
             setNewMessage('');
         } catch (error) {
@@ -137,7 +156,7 @@ export default function ChatPage() {
     const otherPartyName = user?.id === claim.itemOwnerId ? claim.fullName : item?.contact;
 
     return (
-        <div className="flex flex-col flex-1">
+        <div className="flex flex-col flex-1 h-full">
             <Card className="mb-4 shrink-0">
                 <CardHeader>
                     <CardTitle>{t('chatTitle')} <Link href={`/browse?item=${claim.itemId}`} className="text-primary hover:underline">{item?.name || 'Item'}</Link></CardTitle>
@@ -156,7 +175,7 @@ export default function ChatPage() {
                 )}
             </Card>
             <Card className="flex-1 flex flex-col">
-                 <CardContent ref={scrollContainerRef} className="flex-1 p-6 space-y-4 overflow-y-auto max-h-[50vh]">
+                 <CardContent ref={scrollContainerRef} className="flex-1 p-6 space-y-4 overflow-y-auto">
                     {messages.map((message) => (
                         <div
                             key={message.id}
