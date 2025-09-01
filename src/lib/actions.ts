@@ -343,3 +343,26 @@ export async function addGalleryImage(imageData: z.infer<typeof GalleryImageSche
     });
     return { success: true };
 }
+
+/**
+ * Retrieves all gallery images for a specific item.
+ */
+export async function getGalleryImages(itemId: string) {
+    if (!itemId) return [];
+
+    const q = query(
+        collection(db, "gallery"),
+        where("itemId", "==", itemId),
+        orderBy("createdAt", "asc")
+    );
+    const querySnapshot = await getDocs(q);
+
+    return querySnapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+            id: doc.id,
+            ...data,
+            createdAt: (data.createdAt as Timestamp)?.toDate() || new Date(),
+        };
+    });
+}

@@ -16,6 +16,7 @@ import { Button } from "./ui/button";
 import { useContext, useState } from "react";
 import { AuthContext } from "@/context/auth-context";
 import Link from "next/link";
+import { ItemGallery } from "./item-gallery";
 
 type ItemDetailProps = {
     item: Item;
@@ -47,6 +48,7 @@ export function ItemDetail({ item }: ItemDetailProps) {
                             {t(item.status as any) === "Open" ? t(item.type === 'lost' ? 'lostItem' : 'found') : t(item.status as any)}
                         </Badge>
                     </div>
+                     <ItemGallery itemId={item.id} />
                 </div>
 
                 <div className="space-y-6">
