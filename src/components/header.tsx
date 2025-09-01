@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { MapPin, Menu, Sprout, User, LogOut, Inbox, Phone, Building, Sparkles, Home, Users, ChevronDown, Bell } from "lucide-react";
+import { MapPin, Menu, Sprout, User, LogOut, Inbox, Phone, Building, Sparkles, Home, Users, ChevronDown } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useState, useContext } from "react";
 import { AuthContext } from "@/context/auth-context";
@@ -17,7 +17,6 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { NotificationBell } from "./notification-bell";
 
 
 const mainNavLinks = [
@@ -144,7 +143,6 @@ export default function Header() {
                     </div>
                 {user ? (
                     <>
-                        <NotificationBell />
                         <Button variant="ghost" size="sm" onClick={handleLogout}>
                             {t('logout')}
                         </Button>
@@ -158,7 +156,6 @@ export default function Header() {
 
             {/* Mobile Navigation */}
             <div className="md:hidden flex items-center gap-2">
-            {user && <NotificationBell />}
             <Sheet open={isMobileMenuOpen} onOpenChange={setMobileMenuOpen}>
                 <SheetTrigger asChild>
                 <Button variant="ghost" size="icon">
