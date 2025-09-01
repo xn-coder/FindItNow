@@ -16,12 +16,13 @@ import { FeedbackDialog } from "@/components/feedback-dialog";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import Image from "next/image";
+import { translateText } from "@/ai/translate-flow";
 
 export default function PartnerEnquiriesPage() {
     const { user, loading: authLoading } = useContext(AuthContext);
     const router = useRouter();
     const { toast } = useToast();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [enquiries, setEnquiries] = useState<Claim[]>([]);
     const [loadingEnquiries, setLoadingEnquiries] = useState(true);
     const [relatedItems, setRelatedItems] = useState<Record<string, Item>>({});
@@ -44,7 +45,7 @@ export default function PartnerEnquiriesPage() {
                 orderBy("submittedAt", "desc")
             );
             const querySnapshot = await getDocs(q);
-            const enquiriesData = querySnapshot.docs.map(doc => {
+            let enquiriesData = querySnapshot.docs.map(doc => {
                 const data = doc.data();
                 return {
                     id: doc.id,
@@ -53,6 +54,21 @@ export default function PartnerEnquiriesPage() {
                     chatId: doc.id, // Assign chatId from claimId
                 } as Claim
             });
+
+            if (i18n.language !== 'en') {
+                const translatedEnquiries = await Promise.all(
+                    enquiriesData.map(async (enquiry) => {
+                        const [translatedItemName, translatedProof] = await Promise.all([
+                            translateText(enquiry.itemName, i18n.language),
+                            translateText(enquiry.proof, i18n.language),
+                        ]);
+                        return { ...enquiry, itemName: translatedItemName, proof: translatedProof };
+                    })
+                );
+                setEnquiries(translatedEnquiries);
+            } else {
+                 setEnquiries(enquiriesData);
+            }
 
             const itemIds = [...new Set(enquiriesData.map(enquiry => enquiry.itemId))];
             const items: Record<string, Item> = {};
@@ -73,7 +89,6 @@ export default function PartnerEnquiriesPage() {
             }
 
             setRelatedItems(items);
-            setEnquiries(enquiriesData);
             setLoadingEnquiries(false);
         }
     };
@@ -82,7 +97,7 @@ export default function PartnerEnquiriesPage() {
         if (user?.isPartner) {
             fetchEnquiries();
         }
-    }, [user]);
+    }, [user, i18n.language]);
 
      const handleAcceptClaim = (claim: Claim) => {
         startTransition(async () => {

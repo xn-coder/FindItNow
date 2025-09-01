@@ -16,6 +16,7 @@ import { FeedbackDialog } from "@/components/feedback-dialog";
 import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import Image from "next/image";
+import { translateText } from "@/ai/translate-flow";
 
 export default function EnquiriesPage() {
     const { user, loading: authLoading } = useContext(AuthContext);
@@ -25,7 +26,7 @@ export default function EnquiriesPage() {
     const [relatedItems, setRelatedItems] = useState<Record<string, Item>>({});
     const [isPending, startTransition] = useTransition();
     const { toast } = useToast();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [feedbackClaim, setFeedbackClaim] = useState<Claim | null>(null);
 
     useEffect(() => {
@@ -57,6 +58,21 @@ export default function EnquiriesPage() {
                  } as Claim
             });
 
+            if (i18n.language !== 'en') {
+                const translatedEnquiries = await Promise.all(
+                    enquiriesData.map(async (enquiry) => {
+                        const [translatedItemName, translatedProof] = await Promise.all([
+                            translateText(enquiry.itemName, i18n.language),
+                            translateText(enquiry.proof, i18n.language),
+                        ]);
+                        return { ...enquiry, itemName: translatedItemName, proof: translatedProof };
+                    })
+                );
+                setEnquiries(translatedEnquiries);
+            } else {
+                 setEnquiries(enquiriesData);
+            }
+
             const itemIds = [...new Set(enquiriesData.map(enquiry => enquiry.itemId))];
             const itemsToFetch = itemIds.filter(id => !relatedItems[id]);
 
@@ -78,7 +94,6 @@ export default function EnquiriesPage() {
                  setRelatedItems(items);
             }
             
-            setEnquiries(enquiriesData);
             setLoadingEnquiries(false);
         }, (error) => {
             console.error("Error fetching enquiries in real-time:", error);
@@ -86,7 +101,7 @@ export default function EnquiriesPage() {
         });
 
         return () => unsubscribe();
-    }, [user, relatedItems]);
+    }, [user, relatedItems, i18n.language]);
 
     const handleAcceptClaim = (claim: Claim) => {
         startTransition(async () => {
