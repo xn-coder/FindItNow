@@ -186,7 +186,7 @@ export default function ChatPage() {
                         <Input
                             value={newMessage}
                             onChange={(e) => setNewMessage(e.target.value)}
-                            placeholder={isChatDisabled ? t('chatDisabledPlaceholder') : "Type your message..."}
+                            placeholder={isChatDisabled ? t('chatDisabledPlaceholder') : t('chatPlaceholder')}
                             disabled={isSending || isChatDisabled}
                         />
                         <Button type="submit" disabled={isSending || newMessage.trim() === '' || isChatDisabled}>
