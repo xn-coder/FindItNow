@@ -2,6 +2,7 @@
 "use client";
 
 import { createContext, useState, useEffect, ReactNode } from 'react';
+import { createUser, getUserByEmail } from '@/lib/actions';
 
 export type AuthUser = {
     id: string;
@@ -35,23 +36,36 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Try to load user from localStorage on initial render
-    // This should only run on the client side
-    if (typeof window !== 'undefined') {
-        try {
-            const storedUser = localStorage.getItem('finditnow_user');
-            if (storedUser) {
-                setUser(JSON.parse(storedUser));
-            }
-        } catch (error) {
-            console.error("Failed to parse user from localStorage", error);
-            localStorage.removeItem('finditnow_user');
-        } finally {
-            setLoading(false);
-        }
-    } else {
-        setLoading(false);
-    }
+    const initializeAuth = async () => {
+      // Try to load user from localStorage on initial render
+      if (typeof window !== 'undefined') {
+          try {
+              // Auto-create admin user if they don't exist
+              const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+              if (adminEmail) {
+                  const adminUser = await getUserByEmail(adminEmail);
+                  if (!adminUser) {
+                      console.log(`Admin user ${adminEmail} not found, creating...`);
+                      await createUser({ email: adminEmail, password: 'password' });
+                  }
+              }
+
+              const storedUser = localStorage.getItem('finditnow_user');
+              if (storedUser) {
+                  setUser(JSON.parse(storedUser));
+              }
+          } catch (error) {
+              console.error("Failed to initialize auth state:", error);
+              localStorage.removeItem('finditnow_user');
+          } finally {
+              setLoading(false);
+          }
+      } else {
+          setLoading(false);
+      }
+    };
+    
+    initializeAuth();
   }, []);
 
   const login = (userData: AuthUser) => {
