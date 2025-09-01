@@ -175,7 +175,7 @@ export default function ChatPage() {
                 )}
             </Card>
             <Card className="flex-1 flex flex-col">
-                 <CardContent ref={scrollContainerRef} className="flex-1 p-6 space-y-4 overflow-y-auto">
+                 <CardContent ref={scrollContainerRef} className="flex-1 p-6 space-y-4 overflow-y-auto max-h-[50vh]">
                     {messages.map((message) => (
                         <div
                             key={message.id}
