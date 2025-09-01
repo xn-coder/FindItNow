@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Inbox, Mail, MessageSquare, Package, User, CheckCircle2, Loader2, Phone, ShieldCheck, MessageCircle, Image as ImageIcon } from "lucide-react";
+import { Inbox, Mail, MessageSquare, Package, User, CheckCircle2, Loader2, Phone, ShieldCheck, MessageCircle, Image as ImageIcon, Hourglass } from "lucide-react";
 import { FeedbackDialog } from "@/components/feedback-dialog";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
@@ -40,7 +40,7 @@ export default function PartnerEnquiriesPage() {
             const q = query(
                 collection(db, "claims"),
                 where("itemOwnerId", "==", user.id),
-                 where("status", "in", ["open", "accepted"]),
+                 where("status", "in", ["open", "accepted", "resolving"]),
                 orderBy("submittedAt", "desc")
             );
             const querySnapshot = await getDocs(q);
@@ -105,32 +105,20 @@ export default function PartnerEnquiriesPage() {
     const handleMarkAsResolved = (claim: Claim) => {
         startTransition(async () => {
             try {
-                const batch = writeBatch(db);
-                const itemRef = doc(db, "items", claim.itemId);
-                batch.update(itemRef, { 
-                    status: 'resolved',
-                    claimantInfo: { fullName: claim.fullName, email: claim.email }
-                });
+                 // Set the current claim to 'resolving'
+                const claimRef = doc(db, "claims", claim.id);
+                await updateDoc(claimRef, { status: 'resolving' });
 
-                const claimsQuery = query(collection(db, "claims"), where("itemId", "==", claim.itemId));
-                const claimsSnapshot = await getDocs(claimsQuery);
-                claimsSnapshot.forEach(claimDoc => {
-                     batch.update(claimDoc.ref, { status: 'resolved' });
-                });
-
-                await batch.commit();
-
+                setEnquiries(prev => prev.map(e => e.id === claim.id ? { ...e, status: 'resolving' } : e));
+                
                 toast({
-                    title: t('toastEnquiryResolvedTitle'),
-                    description: t('toastEnquiryResolvedDesc'),
+                    title: t('toastEnquiryResolvingTitle'),
+                    description: t('toastEnquiryResolvingDesc'),
                 });
                 
-                setEnquiries(prev => prev.filter(e => e.itemId !== claim.itemId));
-                setFeedbackClaim(claim);
-
             } catch (error) {
-                console.error("Error resolving enquiry: ", error);
-                toast({ variant: "destructive", title: "Error", description: "Could not update the enquiry." });
+                console.error("Error initiating resolution: ", error);
+                toast({ variant: "destructive", title: "Error", description: "Could not start the resolution process." });
             }
         });
     }
@@ -223,14 +211,22 @@ export default function PartnerEnquiriesPage() {
                                             </Button>
                                         )}
                                         {enquiry.status === 'accepted' && (
-                                             <Button asChild size="sm" variant="secondary">
-                                                <Link href={`/chat/${enquiry.chatId}`}><MessageCircle className="mr-2 h-4 w-4"/>{t('chatWithClaimant')}</Link>
-                                            </Button>
+                                             <>
+                                                <Button asChild size="sm" variant="secondary">
+                                                    <Link href={`/chat/${enquiry.chatId}`}><MessageCircle className="mr-2 h-4 w-4"/>{t('chatWithClaimant')}</Link>
+                                                </Button>
+                                                <Button size="sm" onClick={() => handleMarkAsResolved(enquiry)} disabled={isPending}>
+                                                    {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle2 className="mr-2 h-4 w-4"/>}
+                                                    {t('enquiriesMarkAsResolved')}
+                                                </Button>
+                                            </>
                                         )}
-                                        <Button size="sm" onClick={() => handleMarkAsResolved(enquiry)} disabled={isPending}>
-                                            {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle2 className="mr-2 h-4 w-4"/>}
-                                            {t('enquiriesMarkAsResolved')}
-                                        </Button>
+                                         {enquiry.status === 'resolving' && (
+                                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                                <Hourglass className="h-4 w-4 animate-spin" />
+                                                <span>{t('enquiriesWaitingForConfirmation')}</span>
+                                            </div>
+                                        )}
                                     </CardFooter>
                                 </Card>
                             )

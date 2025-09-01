@@ -1,17 +1,17 @@
 
 "use client";
 
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useTransition } from "react";
 import { AuthContext } from "@/context/auth-context";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { db } from "@/lib/firebase";
-import { collection, query, where, orderBy, deleteDoc, doc, onSnapshot } from "firebase/firestore";
+import { collection, query, where, orderBy, deleteDoc, doc, onSnapshot, updateDoc, writeBatch, getDocs } from "firebase/firestore";
 import type { Item, Claim } from "@/lib/types";
 import { Timestamp } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
-import { User, Mail, MessageSquare, Briefcase } from "lucide-react";
+import { User, Mail, MessageSquare, Briefcase, CheckCheck, Loader2 } from "lucide-react";
 import { AccountItemCard } from "@/components/account-item-card";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -38,6 +38,7 @@ export default function AccountPage() {
     const [loading, setLoading] = useState(true);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<Item | null>(null);
+    const [isPending, startTransition] = useTransition();
 
     useEffect(() => {
         if (!authLoading && !user) {
@@ -116,6 +117,41 @@ export default function AccountPage() {
             setItemToDelete(null);
         }
     };
+    
+    const handleAcceptResolution = (claim: Claim) => {
+        startTransition(async () => {
+            try {
+                const batch = writeBatch(db);
+                
+                // 1. Update the item status to 'resolved'
+                const itemRef = doc(db, "items", claim.itemId);
+                batch.update(itemRef, { 
+                    status: 'resolved',
+                    claimantInfo: { fullName: claim.fullName, email: claim.email }
+                });
+
+                // 2. Query all claims for this item
+                const claimsQuery = query(collection(db, "claims"), where("itemId", "==", claim.itemId));
+                const claimsSnapshot = await getDocs(claimsQuery);
+                
+                // 3. Update all related claims to 'resolved'
+                claimsSnapshot.forEach(claimDoc => {
+                    batch.update(claimDoc.ref, { status: 'resolved' });
+                });
+
+                await batch.commit();
+
+                toast({
+                    title: "Deal Closed!",
+                    description: "You have successfully marked the item as received.",
+                });
+
+            } catch (error) {
+                 console.error("Error accepting resolution: ", error);
+                toast({ variant: "destructive", title: "Error", description: "Could not finalize the deal. Please try again." });
+            }
+        });
+    }
 
     if (authLoading || !user) {
         return (
@@ -217,12 +253,32 @@ export default function AccountPage() {
                                             <div>
                                                 <p className="font-semibold">{t('accountClaimForItem')} <Link href={`/browse?item=${claim.itemId}`} className="text-primary hover:underline">#{claim.itemId.substring(0, 6)}</Link></p>
                                                 <p className="text-sm text-muted-foreground">{t('accountClaimStatus')}: <span className="font-medium capitalize">{t(claim.status)}</span></p>
+                                                {claim.status === 'resolving' && <p className="text-xs text-blue-600 mt-1">{t('accountAcceptResolutionPrompt')}</p>}
+                                                {claim.status === 'resolved' && <p className="text-xs text-green-600 mt-1">{t('accountDealClosed')}</p>}
                                             </div>
-                                            {claim.status === 'accepted' && (
-                                                <Button asChild size="sm">
-                                                    <Link href={`/chat/${claim.chatId}`}>{t('accountViewChat')}</Link>
-                                                </Button>
-                                            )}
+                                            <div className="flex items-center gap-2">
+                                                {claim.status === 'accepted' && (
+                                                    <Button asChild size="sm">
+                                                        <Link href={`/chat/${claim.chatId}`}>{t('accountViewChat')}</Link>
+                                                    </Button>
+                                                )}
+                                                 {claim.status === 'resolving' && (
+                                                    <>
+                                                        <Button asChild size="sm" variant="secondary">
+                                                            <Link href={`/chat/${claim.chatId}`}>{t('accountViewChat')}</Link>
+                                                        </Button>
+                                                        <Button size="sm" onClick={() => handleAcceptResolution(claim)} disabled={isPending}>
+                                                            {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <CheckCheck className="mr-2 h-4 w-4" />}
+                                                            {t('accountAcceptResolution')}
+                                                        </Button>
+                                                    </>
+                                                )}
+                                                {claim.status === 'resolved' && (
+                                                     <Button asChild size="sm" variant="secondary">
+                                                        <Link href={`/chat/${claim.chatId}`}>{t('accountViewChatHistory')}</Link>
+                                                    </Button>
+                                                )}
+                                            </div>
                                         </li>
                                     ))}
                                 </ul>

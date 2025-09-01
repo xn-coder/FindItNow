@@ -38,7 +38,7 @@ export type Claim = {
   itemId: string;
   itemName: string;
   itemOwnerId: string;
-  fullName: string;
+  fullName:string;
   email: string;
   phoneNumber?: string;
   proof: string;
@@ -46,7 +46,7 @@ export type Claim = {
   submittedAt: Timestamp;
   location?: string;
   date?: Timestamp;
-  status: 'open' | 'accepted' | 'resolved';
+  status: 'open' | 'accepted' | 'resolving' | 'resolved';
   type?: 'message' | 'claim';
   userId: string; // The ID of the user who made the claim/message
   chatId: string;

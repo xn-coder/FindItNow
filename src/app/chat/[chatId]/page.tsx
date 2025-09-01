@@ -11,12 +11,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { sendMessage } from '@/lib/actions';
-import { Send, Loader2, User } from 'lucide-react';
+import { Send, Loader2, User, ShieldCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 export default function ChatPage() {
     const { chatId } = useParams();
@@ -43,38 +44,34 @@ export default function ChatPage() {
     useEffect(() => {
         if (!chatId || !user) return;
 
-        const fetchClaimAndItem = async () => {
-            setLoading(true);
-            const claimRef = doc(db, 'claims', chatId as string);
-            const claimSnap = await getDoc(claimRef);
-
-            if (claimSnap.exists()) {
-                const claimData = claimSnap.data() as Claim;
-                 // Security check
-                if (user.id !== claimData.itemOwnerId && user.id !== claimData.userId) {
-                    // Not authorized to view this chat
-                    setClaim(null);
-                    setLoading(false);
-                    return;
-                }
-                setClaim(claimData);
-
-                const itemRef = doc(db, 'items', claimData.itemId);
-                const itemSnap = await getDoc(itemRef);
-                if (itemSnap.exists()) {
-                    setItem(itemSnap.data() as Item);
-                }
-
-            } else {
-                setClaim(null);
-            }
+        const fetchInitialData = async () => {
+             setLoading(true);
+             const claimRef = doc(db, 'claims', chatId as string);
+             const claimSnap = await getDoc(claimRef);
+             if (claimSnap.exists()) {
+                 const claimData = claimSnap.data() as Claim;
+                 if (user.id !== claimData.itemOwnerId && user.id !== claimData.userId) {
+                     setClaim(null); setLoading(false); return;
+                 }
+                 const itemRef = doc(db, 'items', claimData.itemId);
+                 const itemSnap = await getDoc(itemRef);
+                 if (itemSnap.exists()) setItem(itemSnap.data() as Item);
+             } else {
+                 setClaim(null);
+             }
              setLoading(false);
-        };
-        
-        fetchClaimAndItem();
+        }
+        fetchInitialData();
+
+        // Real-time listener for the claim status
+        const claimUnsubscribe = onSnapshot(doc(db, 'claims', chatId as string), (doc) => {
+            if(doc.exists()) {
+                setClaim(doc.data() as Claim);
+            }
+        });
 
         const q = query(collection(db, `chats/${chatId}/messages`), orderBy('createdAt'));
-        const unsubscribe = onSnapshot(q, (snapshot) => {
+        const messagesUnsubscribe = onSnapshot(q, (snapshot) => {
             const msgs = snapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data(),
@@ -83,12 +80,15 @@ export default function ChatPage() {
             setMessages(msgs);
         });
 
-        return () => unsubscribe();
+        return () => {
+            claimUnsubscribe();
+            messagesUnsubscribe();
+        };
     }, [chatId, user]);
 
     const handleSendMessage = async (e: FormEvent) => {
         e.preventDefault();
-        if (newMessage.trim() === '' || !user || !chatId) return;
+        if (newMessage.trim() === '' || !user || !chatId || claim?.status === 'resolved') return;
         
         setIsSending(true);
         try {
@@ -104,6 +104,8 @@ export default function ChatPage() {
             setIsSending(false);
         }
     };
+
+    const isChatDisabled = claim?.status === 'resolved' || claim?.status === 'resolving';
 
     if (loading || authLoading) {
          return (
@@ -141,6 +143,17 @@ export default function ChatPage() {
                     <CardTitle>{t('chatTitle')} <Link href={`/browse?item=${claim.itemId}`} className="text-primary hover:underline">{item?.name || 'Item'}</Link></CardTitle>
                     <CardDescription>{t('chattingWith')} {otherPartyName}</CardDescription>
                 </CardHeader>
+                 {claim.status === 'resolved' && (
+                    <CardContent>
+                        <Alert variant="default" className="bg-green-50 border-green-200">
+                             <ShieldCheck className="h-4 w-4 text-green-600"/>
+                            <AlertTitle className="text-green-700">{t('chatDealClosedTitle')}</AlertTitle>
+                            <AlertDescription className="text-green-600">
+                                {t('chatDealClosedDesc')}
+                            </AlertDescription>
+                        </Alert>
+                    </CardContent>
+                )}
             </Card>
             <Card className="flex-1 flex flex-col">
                  <CardContent ref={scrollContainerRef} className="flex-1 p-6 space-y-4 overflow-y-auto max-h-[50vh]">
@@ -173,10 +186,10 @@ export default function ChatPage() {
                         <Input
                             value={newMessage}
                             onChange={(e) => setNewMessage(e.target.value)}
-                            placeholder="Type your message..."
-                            disabled={isSending}
+                            placeholder={isChatDisabled ? t('chatDisabledPlaceholder') : "Type your message..."}
+                            disabled={isSending || isChatDisabled}
                         />
-                        <Button type="submit" disabled={isSending || newMessage.trim() === ''}>
+                        <Button type="submit" disabled={isSending || newMessage.trim() === '' || isChatDisabled}>
                             {isSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                             <span className="sr-only">Send</span>
                         </Button>

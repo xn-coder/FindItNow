@@ -5,13 +5,13 @@ import { useContext, useEffect, useState, useTransition } from "react";
 import { AuthContext } from "@/context/auth-context";
 import { useRouter } from "next/navigation";
 import { db } from "@/lib/firebase";
-import { collection, query, where, orderBy, doc, Timestamp, updateDoc, writeBatch, onSnapshot, getDoc } from "firebase/firestore";
+import { collection, query, where, orderBy, doc, Timestamp, updateDoc, writeBatch, onSnapshot, getDoc, getDocs } from "firebase/firestore";
 import type { Claim, Item } from "@/lib/types";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Inbox, Mail, MessageSquare, Package, User, MapPin, Calendar, CheckCircle2, Loader2, Circle, Phone, ShieldCheck, MessageCircle, Image as ImageIcon } from "lucide-react";
+import { Inbox, Mail, MessageSquare, Package, User, MapPin, Calendar, CheckCircle2, Loader2, Circle, Phone, ShieldCheck, MessageCircle, Image as ImageIcon, Hourglass } from "lucide-react";
 import { FeedbackDialog } from "@/components/feedback-dialog";
 import { useTranslation } from "react-i18next";
 import Link from "next/link";
@@ -41,7 +41,7 @@ export default function EnquiriesPage() {
         const q = query(
             collection(db, "claims"),
             where("itemOwnerId", "==", user.id),
-            where("status", "in", ["open", "accepted"]),
+            where("status", "in", ["open", "accepted", "resolving"]),
             orderBy("submittedAt", "desc")
         );
 
@@ -86,7 +86,7 @@ export default function EnquiriesPage() {
         });
 
         return () => unsubscribe();
-    }, [user]);
+    }, [user, relatedItems]);
 
     const handleAcceptClaim = (claim: Claim) => {
         startTransition(async () => {
@@ -109,32 +109,21 @@ export default function EnquiriesPage() {
     const handleMarkAsResolved = (claim: Claim) => {
         startTransition(async () => {
             try {
-                const batch = writeBatch(db);
-                const itemRef = doc(db, "items", claim.itemId);
-                batch.update(itemRef, {
-                    status: 'resolved',
-                    claimantInfo: { fullName: claim.fullName, email: claim.email }
-                });
-
-                const claimsQuery = query(collection(db, "claims"), where("itemId", "==", claim.itemId));
-                const claimsSnapshot = await getDocs(claimsQuery);
-                claimsSnapshot.forEach(claimDoc => {
-                    batch.update(claimDoc.ref, { status: 'resolved' });
-                });
-
-                await batch.commit();
+                // Set the current claim to 'resolving'
+                const claimRef = doc(db, "claims", claim.id);
+                await updateDoc(claimRef, { status: 'resolving' });
 
                 toast({
-                    title: t('toastEnquiryResolvedTitle'),
-                    description: t('toastEnquiryResolvedDesc'),
+                    title: t('toastEnquiryResolvingTitle'),
+                    description: t('toastEnquiryResolvingDesc'),
                 });
                 
-                // No need to update state manually, onSnapshot will handle it.
-                setFeedbackClaim(claim);
-
+                // The rest of the process is handled by the claimant on their end.
+                // onSnapshot will update the local state.
+                
             } catch (error) {
-                console.error("Error resolving enquiry: ", error);
-                toast({ variant: "destructive", title: "Error", description: "Could not update the enquiry." });
+                console.error("Error initiating resolution: ", error);
+                toast({ variant: "destructive", title: "Error", description: "Could not start the resolution process." });
             }
         });
     }
@@ -249,14 +238,22 @@ export default function EnquiriesPage() {
                                             </Button>
                                         )}
                                         {enquiry.status === 'accepted' && (
-                                            <Button asChild size="sm" variant="secondary">
-                                                <Link href={`/chat/${enquiry.chatId}`}><MessageCircle className="mr-2 h-4 w-4"/>{t('chatWithClaimant')}</Link>
-                                            </Button>
+                                             <>
+                                                <Button asChild size="sm" variant="secondary">
+                                                    <Link href={`/chat/${enquiry.chatId}`}><MessageCircle className="mr-2 h-4 w-4"/>{t('chatWithClaimant')}</Link>
+                                                </Button>
+                                                <Button size="sm" onClick={() => handleMarkAsResolved(enquiry)} disabled={isPending}>
+                                                    {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle2 className="mr-2 h-4 w-4"/>}
+                                                    {t('enquiriesMarkAsResolved')}
+                                                </Button>
+                                            </>
                                         )}
-                                        <Button size="sm" onClick={() => handleMarkAsResolved(enquiry)} disabled={isPending}>
-                                            {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle2 className="mr-2 h-4 w-4"/>}
-                                            {t('enquiriesMarkAsResolved')}
-                                        </Button>
+                                        {enquiry.status === 'resolving' && (
+                                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                                <Hourglass className="h-4 w-4 animate-spin" />
+                                                <span>{t('enquiriesWaitingForConfirmation')}</span>
+                                            </div>
+                                        )}
                                     </CardFooter>
                                 </Card>
                             )
