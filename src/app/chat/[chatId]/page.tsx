@@ -28,10 +28,12 @@ export default function ChatPage() {
     const [item, setItem] = useState<Item | null>(null);
     const [loading, setLoading] = useState(true);
     const [isSending, setIsSending] = useState(false);
-    const messagesEndRef = useRef<HTMLDivElement>(null);
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
 
     const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        if (scrollContainerRef.current) {
+            scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+        }
     };
 
     useEffect(() => {
@@ -105,14 +107,14 @@ export default function ChatPage() {
 
     if (loading || authLoading) {
          return (
-             <div className="h-[70vh] flex flex-col">
-                <Skeleton className="h-24 w-full mb-4" />
+             <div className="h-full flex flex-col">
+                <Skeleton className="h-24 w-full shrink-0 mb-4" />
                 <div className="flex-grow space-y-4">
                     <Skeleton className="h-12 w-3/4" />
                     <Skeleton className="h-12 w-3/4 ml-auto" />
                     <Skeleton className="h-12 w-3/4" />
                 </div>
-                <Skeleton className="h-12 w-full mt-4" />
+                <Skeleton className="h-12 w-full mt-4 shrink-0" />
             </div>
         );
     }
@@ -141,7 +143,7 @@ export default function ChatPage() {
                 </CardHeader>
             </Card>
             <Card className="flex-grow flex flex-col">
-                 <CardContent className="flex-grow p-6 space-y-4 overflow-y-auto">
+                 <CardContent ref={scrollContainerRef} className="flex-grow p-6 space-y-4 overflow-y-auto">
                     {messages.map((message) => (
                         <div
                             key={message.id}
@@ -165,7 +167,6 @@ export default function ChatPage() {
                             </div>
                         </div>
                     ))}
-                    <div ref={messagesEndRef} />
                 </CardContent>
                 <div className="p-4 border-t shrink-0">
                     <form onSubmit={handleSendMessage} className="flex items-center gap-2">
