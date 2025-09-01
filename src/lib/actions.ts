@@ -3,7 +3,7 @@
 
 import { z } from 'zod';
 import { db } from './firebase';
-import { collection, addDoc, getDocs, query, where, Timestamp, limit, orderBy, serverTimestamp, doc, updateDoc, writeBatch } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, where, Timestamp, limit, orderBy, serverTimestamp, doc, updateDoc, writeBatch, deleteDoc } from 'firebase/firestore';
 import bcrypt from 'bcryptjs';
 import type { Notification, Claim } from './types';
 
@@ -402,4 +402,49 @@ export async function getAllPartners() {
             createdAt: (data.createdAt as Timestamp)?.toDate() || new Date(),
         };
     });
+}
+
+/**
+ * Retrieves all items from Firestore, sorted by creation date.
+ */
+export async function getAllItems() {
+  const q = query(collection(db, 'items'), orderBy('createdAt', 'desc'));
+  const querySnapshot = await getDocs(q);
+
+  return querySnapshot.docs.map((doc) => {
+    const data = doc.data();
+    return {
+      id: doc.id,
+      ...data,
+      date: (data.date as Timestamp)?.toDate() || new Date(),
+      createdAt: (data.createdAt as Timestamp)?.toDate() || new Date(),
+    };
+  });
+}
+
+/**
+ * Deletes an item from Firestore.
+ */
+export async function deleteItem(itemId: string) {
+  if (!itemId) {
+    throw new Error('Item ID is required.');
+  }
+  const itemRef = doc(db, 'items', itemId);
+  await deleteDoc(itemRef);
+  return { success: true };
+}
+
+/**
+ * Marks an item as resolved in Firestore.
+ */
+export async function resolveItem(itemId: string, claimantInfo?: { fullName: string; email: string }) {
+  if (!itemId) {
+    throw new Error('Item ID is required.');
+  }
+  const itemRef = doc(db, 'items', itemId);
+  await updateDoc(itemRef, {
+    status: 'resolved',
+    claimantInfo: claimantInfo || { fullName: 'Admin', email: 'Resolved manually' },
+  });
+  return { success: true };
 }
