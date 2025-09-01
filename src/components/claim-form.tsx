@@ -225,7 +225,7 @@ export function ClaimForm({ item, onSuccess }: ClaimFormProps) {
                 proofImageUrl = await toBase64(values.proofImage);
             }
 
-            const docRef = await addDoc(collection(db, "claims"), {
+            const claimData = {
                 itemId: item.id,
                 itemOwnerId: item.userId,
                 userId: userId,
@@ -237,9 +237,20 @@ export function ClaimForm({ item, onSuccess }: ClaimFormProps) {
                 submittedAt: serverTimestamp(),
                 status: 'open',
                 type: 'claim',
-            });
-
+                chatId: '', // Will be updated below
+            };
+            
+            const docRef = await addDoc(collection(db, "claims"), claimData);
+            
+            // The chatId will be the same as the claimId for simplicity
             await updateDoc(doc(db, "claims", docRef.id), { chatId: docRef.id });
+
+            // Create a placeholder document in the chat subcollection to initialize it
+            await addDoc(collection(db, `chats/${docRef.id}/messages`), {
+                senderId: 'system',
+                text: 'Chat initiated.',
+                createdAt: serverTimestamp(),
+            });
 
             toast({
                 title: 'Claim Submitted!',
