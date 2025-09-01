@@ -11,7 +11,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { CalendarIcon, Loader2 } from 'lucide-react';
+import { CalendarIcon, CheckCircle, Loader2 } from 'lucide-react';
 import { sendEmail } from '@/lib/email';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { db } from '@/lib/firebase';
@@ -34,6 +34,8 @@ type FoundItemFormProps = {
 
 export function FoundItemForm({ item }: FoundItemFormProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submittedMessage, setSubmittedMessage] = useState('');
   const { toast } = useToast();
   const { t, i18n } = useTranslation();
 
@@ -122,7 +124,8 @@ export function FoundItemForm({ item }: FoundItemFormProps) {
             title: 'Message Sent!',
             description: "We've sent your message to the item's owner and logged your enquiry. They will contact you shortly if it's a match.",
         });
-        form.reset();
+        setSubmittedMessage(values.message);
+        setIsSubmitted(true);
 
     } catch (error) {
          console.error("Error sending message: ", error);
@@ -134,6 +137,26 @@ export function FoundItemForm({ item }: FoundItemFormProps) {
     } finally {
         setIsLoading(false);
     }
+  }
+
+  if(isSubmitted) {
+    return (
+        <Card className="border-2 border-green-500/50 shadow-lg">
+            <CardHeader className="text-center">
+                <CheckCircle className="mx-auto h-12 w-12 text-green-500 mb-2" />
+                <CardTitle className="text-2xl font-headline text-green-600">Message Sent Successfully</CardTitle>
+                <CardDescription>
+                    We have notified the owner of the lost item. They will contact you via email if it's a match. Thank you for helping out!
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="bg-muted p-4 rounded-md border">
+                    <p className="font-semibold text-sm mb-2">Your sent message:</p>
+                    <p className="text-muted-foreground italic">"{submittedMessage}"</p>
+                </div>
+            </CardContent>
+        </Card>
+    )
   }
 
   return (
