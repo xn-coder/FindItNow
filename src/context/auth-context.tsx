@@ -7,6 +7,7 @@ export type AuthUser = {
     id: string;
     email: string;
     isPartner?: boolean;
+    isAdmin?: boolean;
     businessName?: string;
     // You can add other user properties here
 };
@@ -54,8 +55,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   const login = (userData: AuthUser) => {
-    localStorage.setItem('finditnow_user', JSON.stringify(userData));
-    setUser(userData);
+    const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+    const userWithAdminCheck = {
+      ...userData,
+      isAdmin: adminEmail && userData.email === adminEmail,
+    };
+    localStorage.setItem('finditnow_user', JSON.stringify(userWithAdminCheck));
+    setUser(userWithAdminCheck);
   };
 
   const logout = () => {
