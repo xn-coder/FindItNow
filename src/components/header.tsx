@@ -210,20 +210,13 @@ export default function Header() {
                             </Button>
                         ))}
                     </div>
-                  <Button asChild>
-                    <Link href="/report-lost" onClick={() => setMobileMenuOpen(false)}>{t('heroButtonLost')}</Link>
-                  </Button>
-                  <Button asChild variant="outline">
-                    <Link href="/report-found" onClick={() => setMobileMenuOpen(false)}>{t('heroButtonFound')}</Link>
-
-                  </Button>
                   {user ? (
                     <Button variant="ghost" className="mt-4 flex items-center gap-3" onClick={() => { handleLogout(); setMobileMenuOpen(false); }}>
                        <LogOut className="h-5 w-5" />
                        {t('logout')}
                     </Button>
                   ) : (
-                    <Button asChild variant="ghost" className="mt-4">
+                    <Button asChild className="w-full">
                         <Link href="/login" onClick={() => setMobileMenuOpen(false)}>{t('login')} / {t('signup')}</Link>
                     </Button>
                   )}
