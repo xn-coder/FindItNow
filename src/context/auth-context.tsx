@@ -35,15 +35,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   useEffect(() => {
     // Try to load user from localStorage on initial render
-    try {
-      const storedUser = localStorage.getItem('finditnow_user');
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
-      }
-    } catch (error) {
-      console.error("Failed to parse user from localStorage", error);
-      localStorage.removeItem('finditnow_user');
-    } finally {
+    // This should only run on the client side
+    if (typeof window !== 'undefined') {
+        try {
+            const storedUser = localStorage.getItem('finditnow_user');
+            if (storedUser) {
+                setUser(JSON.parse(storedUser));
+            }
+        } catch (error) {
+            console.error("Failed to parse user from localStorage", error);
+            localStorage.removeItem('finditnow_user');
+        } finally {
+            setLoading(false);
+        }
+    } else {
         setLoading(false);
     }
   }, []);
