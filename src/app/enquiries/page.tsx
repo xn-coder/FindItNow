@@ -11,12 +11,13 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Inbox, Mail, MessageSquare, Package, User, MapPin, Calendar, CheckCircle2, Loader2, Circle, Phone, ShieldCheck, MessageCircle, Image as ImageIcon, Hourglass } from "lucide-react";
+import { Inbox, Mail, MessageSquare, Package, User, MapPin, Calendar, CheckCircle2, Loader2, Circle, Phone, ShieldCheck, MessageCircle, Image as ImageIcon, Hourglass, Eye } from "lucide-react";
 import { FeedbackDialog } from "@/components/feedback-dialog";
 import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import Image from "next/image";
 import { translateText } from "@/ai/translate-flow";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 export default function EnquiriesPage() {
     const { user, loading: authLoading } = useContext(AuthContext);
@@ -161,11 +162,6 @@ export default function EnquiriesPage() {
         return t('enquiriesClaimOfOwnership');
     };
 
-    const getEnquiryProofLabel = (itemType?: 'lost' | 'found') => {
-        if (itemType === 'lost') return t('enquiriesFindersMessage');
-        return t('enquiriesProofOfOwnership');
-    }
-
     const getEnquirerLabel = (itemType?: 'lost' | 'found') => {
         if (itemType === 'lost') return t('enquiriesFindersDetails');
         return t('enquiriesClaimantsDetails');
@@ -212,30 +208,34 @@ export default function EnquiriesPage() {
                                     </CardHeader>
                                     <CardContent className="p-6 grid md:grid-cols-2 gap-6">
                                         <div className="space-y-4">
-                                            <h4 className="font-semibold text-lg">{getEnquiryTitle(item.type)}</h4>
-                                            <div className="flex items-start gap-3">
-                                                <MessageSquare className="h-5 w-5 text-muted-foreground mt-1"/>
-                                                <div>
-                                                    <p className="font-semibold">{getEnquiryProofLabel(item.type)}</p>
-                                                    <p className="text-muted-foreground bg-slate-50 p-3 rounded-md mt-1 border">{enquiry.proof}</p>
-                                                </div>
+                                            <div className="flex justify-between items-start">
+                                                <h4 className="font-semibold text-lg">{getEnquiryTitle(item.type)}</h4>
+                                                 <Dialog>
+                                                    <DialogTrigger asChild>
+                                                        <Button variant="outline" size="sm"><Eye className="mr-2 h-4 w-4" />{t('viewProof')}</Button>
+                                                    </DialogTrigger>
+                                                    <DialogContent>
+                                                        <DialogHeader>
+                                                            <DialogTitle>{t('proofOfOwnership')}</DialogTitle>
+                                                            <DialogDescription>{t('proofSubmittedBy', {name: enquiry.fullName})}</DialogDescription>
+                                                        </DialogHeader>
+                                                        <div className="space-y-4">
+                                                            <p className="text-sm text-muted-foreground bg-slate-50 p-3 rounded-md mt-1 border">{enquiry.proof}</p>
+                                                            {enquiry.proofImageUrl && (
+                                                                <div>
+                                                                    <p className="font-semibold mb-2">{t('claimFormProofImage')}</p>
+                                                                    <Image src={enquiry.proofImageUrl} alt="Proof Image" width={400} height={400} className="rounded-md border object-cover w-full"/>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </DialogContent>
+                                                </Dialog>
                                             </div>
-                                            {enquiry.proofImageUrl && (
-                                                <div className="flex items-start gap-3">
-                                                    <ImageIcon className="h-5 w-5 text-muted-foreground mt-1"/>
-                                                    <div>
-                                                        <p className="font-semibold">{t('claimFormProofImage')}</p>
-                                                        <a href={enquiry.proofImageUrl} target="_blank" rel="noopener noreferrer">
-                                                            <Image src={enquiry.proofImageUrl} alt="Proof Image" width={200} height={200} className="mt-1 rounded-md border object-cover"/>
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            )}
                                             {item.type === 'lost' && enquiry.location && foundDate && (
-                                                <>
+                                                <div className="pt-4 space-y-4 border-t">
                                                     <div className="flex items-start gap-3"><MapPin className="h-5 w-5 text-muted-foreground mt-1"/><div><p className="font-semibold">{t('enquiriesLocationReported')}</p><p className="text-muted-foreground">{enquiry.location}</p></div></div>
                                                     <div className="flex items-start gap-3"><Calendar className="h-5 w-5 text-muted-foreground mt-1"/><div><p className="font-semibold">{t('enquiriesDateReported')}</p><p className="text-muted-foreground">{foundDate.toLocaleDateString()}</p></div></div>
-                                                </>
+                                                </div>
                                             )}
                                         </div>
                                         <div className="space-y-4 bg-slate-50 p-4 rounded-lg border">
@@ -293,3 +293,5 @@ export default function EnquiriesPage() {
         </>
     );
 }
+
+    
