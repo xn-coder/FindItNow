@@ -414,7 +414,7 @@ export async function getNotifications(userId: string): Promise<Notification[]> 
       id: docSnap.id,
       userId: userId,
       message: `New enquiry for your '${claim.itemName}' from ${claim.fullName}.`,
-      link: `/enquiries`,
+      link: `/chat/${claim.chatId}`,
       createdAt: claim.submittedAt.toDate(),
       read: claim.ownerRead,
       type: 'new_enquiry'
