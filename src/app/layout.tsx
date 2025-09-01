@@ -1,5 +1,6 @@
 
-import type { Metadata } from 'next';
+"use client";
+
 import './globals.css';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
@@ -8,11 +9,25 @@ import { AuthProvider } from '@/context/auth-context';
 import { I18nProvider } from '@/components/providers';
 import { Suspense } from 'react';
 import { MaintenanceWrapper } from '@/components/maintenance-wrapper';
+import { usePathname } from 'next/navigation';
 
-export const metadata: Metadata = {
-  title: 'FindItNow',
-  description: 'A modern platform to help you find your lost items.',
-};
+function SiteLayout({ children }: { children: React.ReactNode }) {
+    const pathname = usePathname();
+    const isAdminPage = pathname.startsWith('/admin');
+    
+    return (
+        <div className="flex flex-col min-h-screen">
+            {!isAdminPage && <Header />}
+            <main className={cn(
+                "flex-grow flex flex-col",
+                !isAdminPage && "container mx-auto px-4 sm:px-6 lg:px-8 py-8"
+            )}>
+                {children}
+            </main>
+            {!isAdminPage && <Footer />}
+        </div>
+    );
+}
 
 export default function RootLayout({
   children,
@@ -28,20 +43,18 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lexend:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
+        <title>FindItNow</title>
+        <meta name="description" content="A modern platform to help you find your lost items." />
       </head>
       <body className="font-body antialiased">
         <Suspense fallback={<div>Loading...</div>}>
           <I18nProvider>
             <AuthProvider>
               <MaintenanceWrapper>
-                <div className="flex flex-col min-h-screen">
-                  <Header />
-                  <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col">
+                  <SiteLayout>
                     {children}
-                  </main>
-                  <Footer />
-                </div>
-                <Toaster />
+                  </SiteLayout>
+                  <Toaster />
               </MaintenanceWrapper>
             </AuthProvider>
           </I18nProvider>
@@ -49,4 +62,9 @@ export default function RootLayout({
       </body>
     </html>
   );
+}
+
+// Helper to merge class names
+function cn(...classes: (string | boolean | undefined)[]) {
+  return classes.filter(Boolean).join(' ');
 }
