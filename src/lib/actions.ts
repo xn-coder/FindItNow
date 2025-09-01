@@ -3,8 +3,9 @@
 
 import { z } from 'zod';
 import { db } from './firebase';
-import { collection, addDoc, getDocs, query, where, Timestamp, limit, orderBy, serverTimestamp, doc, updateDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, where, Timestamp, limit, orderBy, serverTimestamp, doc, updateDoc, writeBatch } from 'firebase/firestore';
 import bcrypt from 'bcryptjs';
+import type { Notification, Claim } from './types';
 
 
 // Schema for new user creation
@@ -370,25 +371,107 @@ export async function getGalleryImages(itemId: string) {
 export async function getNotificationCount(userId: string): Promise<number> {
     if (!userId) return 0;
 
-    // 1. Get count of new claims/messages on items the user owns.
-    // This is for the "receiver".
+    // 1. New enquiries on items owned by the user.
     const newEnquiriesQuery = query(
         collection(db, "claims"),
         where("itemOwnerId", "==", userId),
-        where("status", "==", "open")
+        where("status", "==", "open"),
+        where("ownerRead", "==", false)
     );
     const newEnquiriesSnapshot = await getDocs(newEnquiriesQuery);
     const newEnquiriesCount = newEnquiriesSnapshot.size;
     
-    // 2. Get count of claims the user made that have been accepted.
-    // This is for the "sender" of the original claim.
+    // 2. Claims the user made that have been accepted.
     const acceptedClaimsQuery = query(
         collection(db, "claims"),
         where("userId", "==", userId),
-        where("status", "==", "accepted")
+        where("status", "==", "accepted"),
+        where("claimantRead", "==", false)
     );
     const acceptedClaimsSnapshot = await getDocs(acceptedClaimsQuery);
     const acceptedClaimsCount = acceptedClaimsSnapshot.size;
 
     return newEnquiriesCount + acceptedClaimsCount;
+}
+
+
+export async function getNotifications(userId: string): Promise<Notification[]> {
+  if (!userId) return [];
+
+  const notifications: Notification[] = [];
+  const batch = writeBatch(db);
+
+  // 1. Get new enquiries on items the user owns
+  const newEnquiriesQuery = query(
+    collection(db, "claims"),
+    where("itemOwnerId", "==", userId),
+    where("status", "==", "open")
+  );
+  const newEnquiriesSnapshot = await getDocs(newEnquiriesQuery);
+  newEnquiriesSnapshot.forEach(docSnap => {
+    const claim = docSnap.data() as Claim;
+    notifications.push({
+      id: docSnap.id,
+      userId: userId,
+      message: `You have a new enquiry from ${claim.fullName} for an item.`,
+      link: `/enquiries`,
+      createdAt: claim.submittedAt.toDate(),
+      read: claim.ownerRead,
+      type: 'new_enquiry'
+    });
+    if (!claim.ownerRead) {
+        batch.update(docSnap.ref, { ownerRead: true });
+    }
+  });
+
+  // 2. Get claims the user made that were accepted
+  const acceptedClaimsQuery = query(
+    collection(db, "claims"),
+    where("userId", "==", userId),
+    where("status", "==", "accepted")
+  );
+  const acceptedClaimsSnapshot = await getDocs(acceptedClaimsQuery);
+  acceptedClaimsSnapshot.forEach(docSnap => {
+    const claim = docSnap.data() as Claim;
+    notifications.push({
+      id: docSnap.id,
+      userId: userId,
+      message: `Your claim for an item has been accepted.`,
+      link: `/chat/${claim.chatId}`,
+      createdAt: claim.submittedAt.toDate(), // This should ideally be an 'acceptedAt' timestamp
+      read: claim.claimantRead,
+      type: 'claim_accepted'
+    });
+     if (!claim.claimantRead) {
+        batch.update(docSnap.ref, { claimantRead: true });
+    }
+  });
+
+   // 3. Get claims the user made for items that were resolved
+  const resolvedClaimsQuery = query(
+    collection(db, "claims"),
+    where("userId", "==", userId),
+    where("status", "==", "resolved")
+  );
+  const resolvedClaimsSnapshot = await getDocs(resolvedClaimsQuery);
+  resolvedClaimsSnapshot.forEach(docSnap => {
+    const claim = docSnap.data() as Claim;
+    notifications.push({
+      id: docSnap.id,
+      userId: userId,
+      message: `An item you claimed has been marked as resolved.`,
+      link: `/account`,
+      createdAt: claim.submittedAt.toDate(), // This should ideally be a 'resolvedAt' timestamp
+      read: claim.claimantRead,
+      type: 'item_resolved'
+    });
+    if (!claim.claimantRead) {
+        batch.update(docSnap.ref, { claimantRead: true });
+    }
+  });
+
+  await batch.commit();
+
+  // Sort notifications by date, most recent first
+  return notifications.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 }

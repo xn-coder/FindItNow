@@ -236,6 +236,8 @@ export function ClaimForm({ item, onSuccess }: ClaimFormProps) {
                 status: 'open',
                 type: 'claim',
                 chatId: '', // Will be updated below
+                ownerRead: false,
+                claimantRead: true, // The claimant has "read" it by submitting it
             };
             
             const docRef = await addDoc(collection(db, "claims"), claimData);

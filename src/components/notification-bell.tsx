@@ -8,11 +8,13 @@ import { Bell } from 'lucide-react';
 import { AuthContext } from '@/context/auth-context';
 import { getNotificationCount } from '@/lib/actions';
 import { Skeleton } from './ui/skeleton';
+import { usePathname } from 'next/navigation';
 
 export function NotificationBell() {
     const { user } = useContext(AuthContext);
     const [count, setCount] = useState(0);
     const [loading, setLoading] = useState(true);
+    const pathname = usePathname();
 
     useEffect(() => {
         if (user) {
@@ -30,21 +32,21 @@ export function NotificationBell() {
 
             fetchCount();
             
-            // Optionally, you could set up a polling mechanism here to refresh the count
-            // const interval = setInterval(fetchCount, 60000); // e.g., every minute
-            // return () => clearInterval(interval);
+            // Poll for new notifications every 30 seconds
+            const interval = setInterval(fetchCount, 30000); 
+            return () => clearInterval(interval);
 
         } else {
             setCount(0);
             setLoading(false);
         }
-    }, [user]);
+    }, [user, pathname]);
 
     if (loading) {
         return <Skeleton className="h-8 w-8 rounded-full" />;
     }
 
-    const destination = user?.isPartner ? '/partner/enquiries' : '/enquiries';
+    const destination = '/notifications';
 
     return (
         <Button asChild variant="ghost" size="icon" className="relative">

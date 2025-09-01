@@ -49,6 +49,8 @@ export type Claim = {
   type?: 'message' | 'claim';
   userId: string; // The ID of the user who made the claim/message
   chatId: string;
+  ownerRead: boolean;
+  claimantRead: boolean;
 };
 
 export type Feedback = {
@@ -71,3 +73,13 @@ export type Message = {
     text: string;
     createdAt: Timestamp | Date;
 }
+
+export type Notification = {
+    id: string;
+    userId: string; // The user who should see this notification
+    message: string;
+    link: string;
+    createdAt: Date;
+    read: boolean;
+    type: 'new_enquiry' | 'claim_accepted' | 'item_resolved';
+};
