@@ -28,11 +28,12 @@ export default function ChatPage() {
     const [item, setItem] = useState<Item | null>(null);
     const [loading, setLoading] = useState(true);
     const [isSending, setIsSending] = useState(false);
-    const messagesEndRef = useRef<HTMLDivElement>(null);
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        if (messagesEndRef.current) {
-            messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        // Scroll to the bottom of the chat container when new messages arrive
+        if (scrollContainerRef.current) {
+            scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
         }
     }, [messages]);
 
@@ -139,7 +140,7 @@ export default function ChatPage() {
                 </CardHeader>
             </Card>
             <Card className="flex-grow flex flex-col">
-                 <CardContent className="flex-grow overflow-y-auto p-6 space-y-4">
+                 <CardContent ref={scrollContainerRef} className="flex-grow overflow-y-auto p-6 space-y-4">
                     {messages.map((message) => (
                         <div
                             key={message.id}
@@ -163,7 +164,6 @@ export default function ChatPage() {
                             </div>
                         </div>
                     ))}
-                    <div ref={messagesEndRef} />
                 </CardContent>
                 <div className="p-4 border-t">
                     <form onSubmit={handleSendMessage} className="flex items-center gap-2">
