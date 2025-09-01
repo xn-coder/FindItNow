@@ -5,7 +5,7 @@ import { useContext, useEffect, useState, useTransition } from "react";
 import { AuthContext } from "@/context/auth-context";
 import { useRouter } from "next/navigation";
 import { db } from "@/lib/firebase";
-import { collection, getDocs, query, where, orderBy, doc, getDoc, Timestamp, updateDoc, writeBatch } from "firebase/firestore";
+import { collection, query, where, orderBy, doc, Timestamp, updateDoc, writeBatch, onSnapshot, getDoc } from "firebase/firestore";
 import type { Claim, Item } from "@/lib/types";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -34,56 +34,58 @@ export default function EnquiriesPage() {
         }
     }, [user, authLoading, router]);
 
-    const fetchEnquiries = async () => {
-        if (user) {
-            setLoadingEnquiries(true);
-            const q = query(
-                collection(db, "claims"),
-                where("itemOwnerId", "==", user.id),
-                where("status", "in", ["open", "accepted"]),
-                orderBy("submittedAt", "desc")
-            );
-            const querySnapshot = await getDocs(q);
+     useEffect(() => {
+        if (!user) return;
+
+        setLoadingEnquiries(true);
+        const q = query(
+            collection(db, "claims"),
+            where("itemOwnerId", "==", user.id),
+            where("status", "in", ["open", "accepted"]),
+            orderBy("submittedAt", "desc")
+        );
+
+        const unsubscribe = onSnapshot(q, async (querySnapshot) => {
             const enquiriesData = querySnapshot.docs.map(doc => {
-                const data = doc.data();
-                return {
-                    id: doc.id,
-                    ...data,
-                    submittedAt: data.submittedAt instanceof Timestamp ? data.submittedAt.toDate() : new Date(data.submittedAt),
-                    date: data.date instanceof Timestamp ? data.date.toDate() : data.date ? new Date(data.date) : undefined,
-                    chatId: doc.id, // Assign chatId from claimId
-                } as Claim
+                 const data = doc.data();
+                 return {
+                     id: doc.id,
+                     ...data,
+                     submittedAt: data.submittedAt instanceof Timestamp ? data.submittedAt.toDate() : new Date(data.submittedAt),
+                     date: data.date instanceof Timestamp ? data.date.toDate() : data.date ? new Date(data.date) : undefined,
+                     chatId: doc.id,
+                 } as Claim
             });
 
             const itemIds = [...new Set(enquiriesData.map(enquiry => enquiry.itemId))];
-            const items: Record<string, Item> = {};
+            const itemsToFetch = itemIds.filter(id => !relatedItems[id]);
 
-            for (const itemId of itemIds) {
-                if (itemId) {
-                    const docRef = doc(db, "items", itemId);
-                    const docSnap = await getDoc(docRef);
-                    if (docSnap.exists()) {
-                        const itemData = docSnap.data();
-                        items[itemId] = {
-                            id: docSnap.id,
-                            ...itemData,
-                            date: (itemData.date as Timestamp).toDate(),
-                            createdAt: (itemData.createdAt as Timestamp)?.toDate(),
-                         } as Item;
-                    }
-                }
+            if (itemsToFetch.length > 0) {
+                 const items: Record<string, Item> = {...relatedItems};
+                 for (const itemId of itemsToFetch) {
+                     const docRef = doc(db, "items", itemId);
+                     const docSnap = await getDoc(docRef);
+                     if (docSnap.exists()) {
+                         const itemData = docSnap.data();
+                         items[itemId] = {
+                             id: docSnap.id,
+                             ...itemData,
+                             date: (itemData.date as Timestamp).toDate(),
+                             createdAt: (itemData.createdAt as Timestamp)?.toDate(),
+                          } as Item;
+                     }
+                 }
+                 setRelatedItems(items);
             }
-
-            setRelatedItems(items);
+            
             setEnquiries(enquiriesData);
             setLoadingEnquiries(false);
-        }
-    };
+        }, (error) => {
+            console.error("Error fetching enquiries in real-time:", error);
+            setLoadingEnquiries(false);
+        });
 
-    useEffect(() => {
-        if (user) {
-            fetchEnquiries();
-        }
+        return () => unsubscribe();
     }, [user]);
 
     const handleAcceptClaim = (claim: Claim) => {
@@ -92,7 +94,7 @@ export default function EnquiriesPage() {
                 const claimRef = doc(db, "claims", claim.id);
                 await updateDoc(claimRef, { status: 'accepted', chatId: claim.id });
 
-                setEnquiries(prev => prev.map(e => e.id === claim.id ? { ...e, status: 'accepted', chatId: claim.id } : e));
+                // No need to update state manually, onSnapshot will handle it.
                 toast({
                     title: t('toastClaimAcceptedTitle'),
                     description: t('toastClaimAcceptedDesc'),
@@ -127,7 +129,7 @@ export default function EnquiriesPage() {
                     description: t('toastEnquiryResolvedDesc'),
                 });
                 
-                setEnquiries(prev => prev.filter(e => e.itemId !== claim.itemId));
+                // No need to update state manually, onSnapshot will handle it.
                 setFeedbackClaim(claim);
 
             } catch (error) {
@@ -191,8 +193,8 @@ export default function EnquiriesPage() {
                         {enquiries.map((enquiry) => {
                             const item = relatedItems[enquiry.itemId];
                             if (!item) return null;
-                            const enquiryDate = enquiry.submittedAt instanceof Timestamp ? enquiry.submittedAt.toDate() : new Date(enquiry.submittedAt);
-                            const foundDate = enquiry.date ? (enquiry.date instanceof Timestamp ? enquiry.date.toDate() : new Date(enquiry.date)) : null;
+                            const enquiryDate = enquiry.submittedAt instanceof Date ? enquiry.submittedAt : new Date(enquiry.submittedAt);
+                            const foundDate = enquiry.date ? (enquiry.date instanceof Date ? enquiry.date : new Date(enquiry.date)) : null;
 
                             return (
                                 <Card key={enquiry.id} className="overflow-hidden">

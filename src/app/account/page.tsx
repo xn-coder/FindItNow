@@ -6,7 +6,7 @@ import { AuthContext } from "@/context/auth-context";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { db } from "@/lib/firebase";
-import { collection, getDocs, query, where, orderBy, deleteDoc, doc } from "firebase/firestore";
+import { collection, query, where, orderBy, deleteDoc, doc, onSnapshot } from "firebase/firestore";
 import type { Item, Claim } from "@/lib/types";
 import { Timestamp } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -45,43 +45,49 @@ export default function AccountPage() {
         }
     }, [user, authLoading, router]);
 
-    const fetchData = async () => {
-         if (user) {
-            setLoading(true);
-            // Fetch items reported by the user
-            const itemsQuery = query(
-                collection(db, "items"), 
-                where("userId", "==", user.id),
-                orderBy("createdAt", "desc")
-            );
-            const itemsSnapshot = await getDocs(itemsQuery);
-            const itemsData = itemsSnapshot.docs.map(doc => {
+    useEffect(() => {
+       if (!user) return;
+
+        setLoading(true);
+
+        // Listener for items reported by the user
+        const itemsQuery = query(
+            collection(db, "items"),
+            where("userId", "==", user.id),
+            orderBy("createdAt", "desc")
+        );
+        const unsubscribeItems = onSnapshot(itemsQuery, (snapshot) => {
+            const itemsData = snapshot.docs.map(doc => {
                 const data = doc.data();
                 return { id: doc.id, ...data, date: (data.date as Timestamp).toDate(), createdAt: (data.createdAt as Timestamp)?.toDate() || new Date() } as Item;
             });
             setItems(itemsData);
+            setLoading(false);
+        }, (error) => {
+            console.error("Error fetching items in real-time:", error);
+            setLoading(false);
+        });
 
-            // Fetch claims submitted by the user
-            const claimsQuery = query(
-                collection(db, "claims"), 
-                where("userId", "==", user.id),
-                orderBy("submittedAt", "desc")
-            );
-            const claimsSnapshot = await getDocs(claimsQuery);
-            const claimsData = claimsSnapshot.docs.map(doc => {
+        // Listener for claims submitted by the user
+        const claimsQuery = query(
+            collection(db, "claims"),
+            where("userId", "==", user.id),
+            orderBy("submittedAt", "desc")
+        );
+        const unsubscribeClaims = onSnapshot(claimsQuery, (snapshot) => {
+             const claimsData = snapshot.docs.map(doc => {
                 const data = doc.data();
                 return { id: doc.id, ...data, submittedAt: (data.submittedAt as Timestamp).toDate() } as Claim;
             });
             setClaims(claimsData);
+        }, (error) => {
+            console.error("Error fetching claims in real-time:", error);
+        });
 
-            setLoading(false);
-        }
-    }
-
-    useEffect(() => {
-       if (user) {
-          fetchData();
-       }
+        return () => {
+            unsubscribeItems();
+            unsubscribeClaims();
+        };
     }, [user]);
 
     const handleDeleteRequest = (item: Item) => {
@@ -97,7 +103,7 @@ export default function AccountPage() {
                 title: "Item Deleted",
                 description: "Your item listing has been successfully removed.",
             });
-            setItems(items.filter(item => item.id !== itemToDelete.id));
+            // No need to manually filter, onSnapshot will update the state
         } catch (error) {
             console.error("Error deleting document: ", error);
             toast({
