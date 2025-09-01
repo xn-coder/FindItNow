@@ -366,3 +366,27 @@ export async function getGalleryImages(itemId: string) {
         };
     });
 }
+
+export async function getNotificationCount(userId: string): Promise<number> {
+    if (!userId) return 0;
+
+    // 1. Get count of new claims on items the user owns
+    const newClaimsQuery = query(
+        collection(db, "claims"),
+        where("itemOwnerId", "==", userId),
+        where("status", "==", "open")
+    );
+    const newClaimsSnapshot = await getDocs(newClaimsQuery);
+    const newClaimsCount = newClaimsSnapshot.size;
+    
+    // 2. Get count of claims the user made that have been accepted
+    const acceptedClaimsQuery = query(
+        collection(db, "claims"),
+        where("userId", "==", userId),
+        where("status", "==", "accepted")
+    );
+    const acceptedClaimsSnapshot = await getDocs(acceptedClaimsQuery);
+    const acceptedClaimsCount = acceptedClaimsSnapshot.size;
+
+    return newClaimsCount + acceptedClaimsCount;
+}

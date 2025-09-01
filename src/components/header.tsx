@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { MapPin, Menu, Sprout, User, LogOut, Inbox, Phone, Building, Sparkles, Home, Users, ChevronDown } from "lucide-react";
+import { MapPin, Menu, Sprout, User, LogOut, Inbox, Phone, Building, Sparkles, Home, Users, ChevronDown, Bell } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useState, useContext } from "react";
 import { AuthContext } from "@/context/auth-context";
@@ -16,6 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { NotificationBell } from "./notification-bell";
 
 
 const mainNavLinks = [
@@ -114,117 +115,122 @@ export default function Header() {
           )}
         </nav>
 
-        <div className="hidden md:flex items-center gap-4">
-           <div className="flex gap-2 text-sm font-medium">
-                {languages.map((lang) => (
-                    <button
-                        key={lang.code}
-                        onClick={() => changeLanguage(lang.code)}
-                        className={cn(
-                            "hover:text-primary",
-                            i18n.language === lang.code ? "text-primary font-bold underline underline-offset-4" : "text-foreground/70"
-                        )}
-                    >
-                        {lang.name}
-                    </button>
-                ))}
-            </div>
-          {user ? (
-             <Button variant="ghost" size="sm" onClick={handleLogout}>
-                {t('logout')}
-            </Button>
-          ) : (
-            <Button asChild variant="ghost" size="sm">
-                <Link href="/login">{t('login')}</Link>
-            </Button>
-          )}
-        </div>
-
-        {/* Mobile Navigation */}
-        <div className="md:hidden">
-          <Sheet open={isMobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Menu className="h-6 w-6" />
-                <span className="sr-only">Open menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-[280px]">
-                <SheetHeader className="p-4 pb-0">
-                    <SheetTitle>
-                        <Link href="/" className="flex items-center gap-2 font-bold text-xl text-primary font-headline" onClick={() => setMobileMenuOpen(false)}>
-                            <Sprout/>
-                            FindItNow
-                        </Link>
-                    </SheetTitle>
-                </SheetHeader>
-              <div className="p-4">
-                <nav className="flex flex-col gap-4 mt-8">
-                  {allNavLinks.map((link) => (
-                    <Link key={link.href} href={link.href} className="flex items-center gap-3 rounded-md p-2 text-base font-medium hover:bg-muted" onClick={() => setMobileMenuOpen(false)}>
-                      <link.icon className="h-5 w-5 text-primary" />
-                      {t(link.label.toLowerCase().replace(/ /g, ''))}
-                    </Link>
-                  ))}
-                  {user && !user.isPartner &&(
-                    <>
-                     <Link href="/account" className="flex items-center gap-3 rounded-md p-2 text-base font-medium hover:bg-muted" onClick={() => setMobileMenuOpen(false)}>
-                      <User className="h-5 w-5 text-primary" />
-                      {t('myaccount')}
-                    </Link>
-                     <Link href="/enquiries" className="flex items-center gap-3 rounded-md p-2 text-base font-medium hover:bg-muted" onClick={() => setMobileMenuOpen(false)}>
-                      <Inbox className="h-5 w-5 text-primary" />
-                      {t('enquiries')}
-                    </Link>
-                    </>
-                  )}
-                   {user && user.isPartner &&(
-                    <>
-                        <Link href="/partner/dashboard" className="flex items-center gap-3 rounded-md p-2 text-base font-medium hover:bg-muted" onClick={() => setMobileMenuOpen(false)}>
-                            <Building className="h-5 w-5 text-primary" />
-                            {t('partnerDashboardTitle')}
-                        </Link>
-                        <Link href="/partner/enquiries" className="flex items-center gap-3 rounded-md p-2 text-base font-medium hover:bg-muted" onClick={() => setMobileMenuOpen(false)}>
-                            <Inbox className="h-5 w-5 text-primary" />
-                            {t('enquiries')}
-                        </Link>
-                     </>
-                  )}
-                </nav>
-                <div className="mt-8 flex flex-col gap-2">
-                    <div className="flex justify-around items-center p-2 mb-4 bg-muted rounded-md">
+        <div className="flex items-center gap-4">
+            <div className="hidden md:flex items-center gap-2">
+                <div className="flex gap-2 text-sm font-medium">
                         {languages.map((lang) => (
-                            <Button
+                            <button
                                 key={lang.code}
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => {
-                                    changeLanguage(lang.code);
-                                }}
+                                onClick={() => changeLanguage(lang.code)}
                                 className={cn(
-                                    "text-base",
-                                    i18n.language === lang.code ? "text-primary font-bold" : "text-foreground/70"
+                                    "hover:text-primary",
+                                    i18n.language === lang.code ? "text-primary font-bold underline underline-offset-4" : "text-foreground/70"
                                 )}
                             >
                                 {lang.name}
-                            </Button>
+                            </button>
                         ))}
                     </div>
-                  {user ? (
-                    <Button variant="ghost" className="mt-4 flex items-center gap-3" onClick={() => { handleLogout(); setMobileMenuOpen(false); }}>
-                       <LogOut className="h-5 w-5" />
-                       {t('logout')}
+                {user ? (
+                    <>
+                        <NotificationBell />
+                        <Button variant="ghost" size="sm" onClick={handleLogout}>
+                            {t('logout')}
+                        </Button>
+                    </>
+                ) : (
+                    <Button asChild variant="ghost" size="sm">
+                        <Link href="/login">{t('login')}</Link>
                     </Button>
-                  ) : (
-                    <Button asChild className="w-full">
-                        <Link href="/login" onClick={() => setMobileMenuOpen(false)}>{t('login')} / {t('signup')}</Link>
-                    </Button>
-                  )}
+                )}
+            </div>
+
+            {/* Mobile Navigation */}
+            <div className="md:hidden flex items-center gap-2">
+            {user && <NotificationBell />}
+            <Sheet open={isMobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+                <SheetTrigger asChild>
+                <Button variant="ghost" size="icon">
+                    <Menu className="h-6 w-6" />
+                    <span className="sr-only">Open menu</span>
+                </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-[280px]">
+                    <SheetHeader className="p-4 pb-0">
+                        <SheetTitle>
+                            <Link href="/" className="flex items-center gap-2 font-bold text-xl text-primary font-headline" onClick={() => setMobileMenuOpen(false)}>
+                                <Sprout/>
+                                FindItNow
+                            </Link>
+                        </SheetTitle>
+                    </SheetHeader>
+                <div className="p-4">
+                    <nav className="flex flex-col gap-4 mt-8">
+                    {allNavLinks.map((link) => (
+                        <Link key={link.href} href={link.href} className="flex items-center gap-3 rounded-md p-2 text-base font-medium hover:bg-muted" onClick={() => setMobileMenuOpen(false)}>
+                        <link.icon className="h-5 w-5 text-primary" />
+                        {t(link.label.toLowerCase().replace(/ /g, ''))}
+                        </Link>
+                    ))}
+                    {user && !user.isPartner &&(
+                        <>
+                        <Link href="/account" className="flex items-center gap-3 rounded-md p-2 text-base font-medium hover:bg-muted" onClick={() => setMobileMenuOpen(false)}>
+                        <User className="h-5 w-5 text-primary" />
+                        {t('myaccount')}
+                        </Link>
+                        <Link href="/enquiries" className="flex items-center gap-3 rounded-md p-2 text-base font-medium hover:bg-muted" onClick={() => setMobileMenuOpen(false)}>
+                        <Inbox className="h-5 w-5 text-primary" />
+                        {t('enquiries')}
+                        </Link>
+                        </>
+                    )}
+                    {user && user.isPartner &&(
+                        <>
+                            <Link href="/partner/dashboard" className="flex items-center gap-3 rounded-md p-2 text-base font-medium hover:bg-muted" onClick={() => setMobileMenuOpen(false)}>
+                                <Building className="h-5 w-5 text-primary" />
+                                {t('partnerDashboardTitle')}
+                            </Link>
+                            <Link href="/partner/enquiries" className="flex items-center gap-3 rounded-md p-2 text-base font-medium hover:bg-muted" onClick={() => setMobileMenuOpen(false)}>
+                                <Inbox className="h-5 w-5 text-primary" />
+                                {t('enquiries')}
+                            </Link>
+                        </>
+                    )}
+                    </nav>
+                    <div className="mt-8 flex flex-col gap-2">
+                        <div className="flex justify-around items-center p-2 mb-4 bg-muted rounded-md">
+                            {languages.map((lang) => (
+                                <Button
+                                    key={lang.code}
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => {
+                                        changeLanguage(lang.code);
+                                    }}
+                                    className={cn(
+                                        "text-base",
+                                        i18n.language === lang.code ? "text-primary font-bold" : "text-foreground/70"
+                                    )}
+                                >
+                                    {lang.name}
+                                </Button>
+                            ))}
+                        </div>
+                    {user ? (
+                        <Button variant="ghost" className="mt-4 flex items-center gap-3" onClick={() => { handleLogout(); setMobileMenuOpen(false); }}>
+                        <LogOut className="h-5 w-5" />
+                        {t('logout')}
+                        </Button>
+                    ) : (
+                        <Button asChild className="w-full">
+                            <Link href="/login" onClick={() => setMobileMenuOpen(false)}>{t('login')} / {t('signup')}</Link>
+                        </Button>
+                    )}
+                    </div>
                 </div>
-              </div>
-            </SheetContent>
-          </Sheet>
-        </div>
+                </SheetContent>
+            </Sheet>
+            </div>
       </div>
     </header>
   );
