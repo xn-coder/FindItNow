@@ -28,13 +28,14 @@ export default function ChatPage() {
     const [item, setItem] = useState<Item | null>(null);
     const [loading, setLoading] = useState(true);
     const [isSending, setIsSending] = useState(false);
-    const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
 
     useEffect(() => {
-        // Scroll to the bottom of the chat container when new messages arrive
-        if (scrollContainerRef.current) {
-            scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
-        }
+        scrollToBottom();
     }, [messages]);
 
     useEffect(() => {
@@ -132,7 +133,7 @@ export default function ChatPage() {
     const otherPartyName = user?.id === claim.itemOwnerId ? claim.fullName : item?.contact;
 
     return (
-        <div className="flex flex-col h-[calc(100vh-10rem)]">
+        <div className="flex flex-col h-full">
             <Card className="mb-4 shrink-0">
                 <CardHeader>
                     <CardTitle>{t('chatTitle')} <Link href={`/browse?item=${claim.itemId}`} className="text-primary hover:underline">{item?.name || 'Item'}</Link></CardTitle>
@@ -140,7 +141,7 @@ export default function ChatPage() {
                 </CardHeader>
             </Card>
             <Card className="flex-grow flex flex-col">
-                 <CardContent ref={scrollContainerRef} className="flex-grow overflow-y-auto p-6 space-y-4">
+                 <CardContent className="flex-grow p-6 space-y-4 overflow-y-auto">
                     {messages.map((message) => (
                         <div
                             key={message.id}
@@ -164,6 +165,7 @@ export default function ChatPage() {
                             </div>
                         </div>
                     ))}
+                    <div ref={messagesEndRef} />
                 </CardContent>
                 <div className="p-4 border-t shrink-0">
                     <form onSubmit={handleSendMessage} className="flex items-center gap-2">
