@@ -112,19 +112,29 @@ export function FoundItemForm({ item }: FoundItemFormProps) {
         setUserExists(!!user);
         setFormValues(values);
 
-        const generatedOtp = generateOtp();
-        await sendEmail({
-            to_email: values.finderEmail,
-            subject: "Your FindItNow Verification Code",
-            message: `Your one-time password is: ${generatedOtp}`,
-        });
+        const emailJsEnabled = process.env.NEXT_PUBLIC_EMAILJS_ENABLED !== 'false';
+        let generatedOtp;
+        if (emailJsEnabled) {
+            generatedOtp = generateOtp();
+            await sendEmail({
+                to_email: values.finderEmail,
+                subject: "Your FindItNow Verification Code",
+                message: `Your one-time password is: ${generatedOtp}`,
+            });
+            toast({
+                title: "Verification Required",
+                description: "We've sent a one-time password to your email.",
+            });
+        } else {
+            generatedOtp = "123456";
+            toast({
+                title: "Verification Required (Dev Mode)",
+                description: "Enter the default OTP to proceed.",
+            });
+        }
         
         setOtp(generatedOtp);
         setIsOtpOpen(true);
-        toast({
-            title: "Verification Required",
-            description: "We've sent a one-time password to your email.",
-        });
 
     } catch (error) {
         console.error("Error during initial submission: ", error);
