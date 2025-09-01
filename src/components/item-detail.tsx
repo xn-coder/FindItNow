@@ -28,6 +28,10 @@ export function ItemDetail({ item }: ItemDetailProps) {
     const { user } = useContext(AuthContext);
     const [isClaimFormOpen, setIsClaimFormOpen] = useState(false);
     
+    const handleClaimSuccess = () => {
+        setIsClaimFormOpen(false);
+    };
+
     return (
         <div className="max-w-4xl mx-auto">
             <div className="grid md:grid-cols-2 gap-8 md:gap-12">
@@ -129,7 +133,7 @@ export function ItemDetail({ item }: ItemDetailProps) {
                                             <DialogHeader>
                                                 <DialogTitle>{t('claimFormProof')}</DialogTitle>
                                             </DialogHeader>
-                                            <ClaimForm item={item} />
+                                            <ClaimForm item={item} onSuccess={handleClaimSuccess} />
                                         </DialogContent>
                                     </Dialog>
                                 ) : (

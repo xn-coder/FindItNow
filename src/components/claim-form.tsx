@@ -71,9 +71,10 @@ const toBase64 = (file: File): Promise<string> => new Promise((resolve, reject) 
 
 type ClaimFormProps = {
   item: Item;
+  onSuccess: () => void;
 };
 
-export function ClaimForm({ item }: ClaimFormProps) {
+export function ClaimForm({ item, onSuccess }: ClaimFormProps) {
     const { t } = useTranslation();
 
     const claimFormSchema = z.object({
@@ -148,11 +149,12 @@ export function ClaimForm({ item }: ClaimFormProps) {
 
             const generatedOtp = generateOtp();
             await sendEmail({
+                to_email: values.email,
                 subject: "Your FindItNow Verification Code",
                 message: `Your one-time password is: ${generatedOtp}`,
                 from_name: "FindItNow",
                 from_email: "no-reply@finditnow.com",
-            }, values.email);
+            });
             
             setOtp(generatedOtp);
             setIsOtpOpen(true);
@@ -244,6 +246,7 @@ export function ClaimForm({ item }: ClaimFormProps) {
                 description: "We've received your claim and the item reporter has been notified.",
             });
             form.reset();
+            onSuccess();
 
         } catch (error) {
             console.error("Error submitting claim: ", error);
