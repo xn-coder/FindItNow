@@ -8,8 +8,16 @@ import type { GalleryImage } from "@/lib/types";
 import { Skeleton } from "./ui/skeleton";
 import { Card } from "./ui/card";
 import { ImagePlus } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-export function ItemGallery({ itemId }: { itemId: string }) {
+type ItemGalleryProps = {
+    itemId: string;
+    onImageSelect: (imageUrl: string) => void;
+    primaryImageUrl: string;
+    selectedImageUrl: string;
+}
+
+export function ItemGallery({ itemId, onImageSelect, primaryImageUrl, selectedImageUrl }: ItemGalleryProps) {
     const [images, setImages] = useState<GalleryImage[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -29,40 +37,43 @@ export function ItemGallery({ itemId }: { itemId: string }) {
         fetchImages();
     }, [itemId]);
 
+    const allImageUrls = [primaryImageUrl, ...images.map(img => img.imageUrl)];
+
     if (loading) {
         return (
-             <div className="grid grid-cols-4 gap-2">
-                {Array.from({ length: 4 }).map((_, i) => (
+             <div className="grid grid-cols-5 gap-2">
+                {Array.from({ length: 5 }).map((_, i) => (
                     <Skeleton key={i} className="aspect-square w-full rounded-md" />
                 ))}
             </div>
         )
     }
 
-    if (images.length === 0) {
+    if (allImageUrls.length <= 1) {
         return null; // Don't render anything if there are no extra images
     }
 
     return (
         <div>
-             <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
-                <ImagePlus className="h-5 w-5 text-primary"/>
-                Additional Images
-            </h3>
-            <div className="grid grid-cols-4 gap-2">
-                {images.map((image) => (
-                    <Card key={image.id} className="overflow-hidden rounded-md">
+            <div className="grid grid-cols-5 gap-2">
+                {allImageUrls.map((imageUrl, index) => (
+                    <Card 
+                        key={index} 
+                        className={cn(
+                            "overflow-hidden rounded-md cursor-pointer border-2 transition-all",
+                            selectedImageUrl === imageUrl ? "border-primary" : "border-transparent"
+                        )}
+                        onClick={() => onImageSelect(imageUrl)}
+                    >
                         <div className="relative aspect-square w-full">
-                             <a href={image.imageUrl} target="_blank" rel="noopener noreferrer">
-                                <Image
-                                    src={image.imageUrl}
-                                    alt="Gallery image"
-                                    fill
-                                    sizes="10vw"
-                                    style={{objectFit: "cover"}}
-                                    className="hover:scale-110 transition-transform duration-300"
-                                />
-                             </a>
+                            <Image
+                                src={imageUrl}
+                                alt={`Gallery image ${index + 1}`}
+                                fill
+                                sizes="10vw"
+                                style={{objectFit: "cover"}}
+                                className="hover:scale-110 transition-transform duration-300"
+                            />
                         </div>
                     </Card>
                 ))}
@@ -70,4 +81,3 @@ export function ItemGallery({ itemId }: { itemId: string }) {
         </div>
     );
 }
-

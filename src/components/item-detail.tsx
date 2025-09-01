@@ -27,10 +27,15 @@ export function ItemDetail({ item }: ItemDetailProps) {
     const { t } = useTranslation();
     const { user } = useContext(AuthContext);
     const [isClaimFormOpen, setIsClaimFormOpen] = useState(false);
+    const [selectedImageUrl, setSelectedImageUrl] = useState(item.imageUrl);
     
     const handleClaimSuccess = () => {
         setIsClaimFormOpen(false);
     };
+
+    const handleImageSelect = (imageUrl: string) => {
+        setSelectedImageUrl(imageUrl);
+    }
 
     return (
         <div className="max-w-4xl mx-auto">
@@ -38,12 +43,13 @@ export function ItemDetail({ item }: ItemDetailProps) {
                 <div className="space-y-4">
                     <div className="relative aspect-square w-full overflow-hidden rounded-lg border">
                          <Image
-                            src={item.imageUrl}
+                            src={selectedImageUrl}
                             alt={item.name}
                             fill
                             sizes="(max-width: 768px) 100vw, 50vw"
                             style={{objectFit: 'cover'}}
                             data-ai-hint="lost found item"
+                            className="transition-all duration-300"
                         />
                          <Badge
                             className="absolute top-4 right-4 text-sm py-1 px-3"
@@ -52,7 +58,12 @@ export function ItemDetail({ item }: ItemDetailProps) {
                             {t(item.status as any) === "Open" ? t(item.type === 'lost' ? 'lostItem' : 'found') : t(item.status as any)}
                         </Badge>
                     </div>
-                     <ItemGallery itemId={item.id} />
+                     <ItemGallery 
+                        itemId={item.id} 
+                        onImageSelect={handleImageSelect}
+                        primaryImageUrl={item.imageUrl}
+                        selectedImageUrl={selectedImageUrl}
+                     />
                 </div>
 
                 <div className="space-y-6">
