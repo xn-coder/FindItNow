@@ -132,8 +132,8 @@ export default function ChatPage() {
     const otherPartyName = user?.id === claim.itemOwnerId ? claim.fullName : item?.contact;
 
     return (
-        <div className="max-w-4xl mx-auto h-[80vh] flex flex-col">
-            <Card className="mb-4">
+        <div className="flex flex-col h-[calc(100vh-10rem)]">
+            <Card className="mb-4 shrink-0">
                 <CardHeader>
                     <CardTitle>{t('chatTitle')} <Link href={`/browse?item=${claim.itemId}`} className="text-primary hover:underline">{item?.name || 'Item'}</Link></CardTitle>
                     <CardDescription>{t('chattingWith')} {otherPartyName}</CardDescription>
@@ -165,7 +165,7 @@ export default function ChatPage() {
                         </div>
                     ))}
                 </CardContent>
-                <div className="p-4 border-t">
+                <div className="p-4 border-t shrink-0">
                     <form onSubmit={handleSendMessage} className="flex items-center gap-2">
                         <Input
                             value={newMessage}
