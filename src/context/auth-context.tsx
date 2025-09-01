@@ -16,14 +16,14 @@ export type AuthUser = {
 type AuthContextType = {
   user: AuthUser | null;
   loading: boolean;
-  login: (user: AuthUser) => void;
+  login: (user: AuthUser) => AuthUser;
   logout: () => void;
 };
 
 export const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
-  login: () => {},
+  login: () => ({} as AuthUser),
   logout: () => {},
 });
 
@@ -76,6 +76,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     };
     localStorage.setItem('finditnow_user', JSON.stringify(userWithAdminCheck));
     setUser(userWithAdminCheck);
+    return userWithAdminCheck;
   };
 
   const logout = () => {

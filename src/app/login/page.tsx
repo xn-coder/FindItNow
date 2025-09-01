@@ -41,12 +41,17 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       const user = await loginUser(values);
-      login(user as AuthUser);
+      const loggedInUser = login(user as AuthUser);
       toast({
         title: "Login Successful",
         description: "Welcome back!",
       });
-      router.push("/account"); 
+
+      if (loggedInUser.isAdmin) {
+        router.push("/admin");
+      } else {
+        router.push("/account"); 
+      }
     } catch (error: any) {
       toast({
         variant: "destructive",
