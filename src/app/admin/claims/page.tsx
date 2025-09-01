@@ -41,12 +41,15 @@ export default function ClaimManagementPage() {
   }, []);
 
   const filteredClaims = useMemo(() => {
-    return claims.filter(claim =>
-      claim.itemName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      claim.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      claim.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      claim.status.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    return claims.filter(claim => {
+        const lowerCaseSearchTerm = searchTerm.toLowerCase();
+        return (
+            (claim.itemName && claim.itemName.toLowerCase().includes(lowerCaseSearchTerm)) ||
+            (claim.fullName && claim.fullName.toLowerCase().includes(lowerCaseSearchTerm)) ||
+            (claim.email && claim.email.toLowerCase().includes(lowerCaseSearchTerm)) ||
+            (claim.status && claim.status.toLowerCase().includes(lowerCaseSearchTerm))
+        );
+    });
   }, [claims, searchTerm]);
 
   const handleStatusUpdate = (claimId: string, status: 'accepted' | 'rejected' | 'resolved') => {
