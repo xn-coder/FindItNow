@@ -45,7 +45,7 @@ export type Claim = {
   proofImageUrl?: string;
   submittedAt: Date | Timestamp;
   location?: string;
-  date?: Timestamp;
+  date?: Date;
   status: 'open' | 'accepted' | 'resolving' | 'resolved' | 'rejected';
   type?: 'message' | 'claim';
   userId: string; // The ID of the user who made the claim/message

@@ -452,7 +452,7 @@ export async function resolveItem(itemId: string, claimantInfo?: { fullName: str
 /**
  * Retrieves all claims from Firestore, sorted by submission date.
  */
-export async function getAllClaims() {
+export async function getAllClaims(): Promise<Claim[]> {
   const q = query(collection(db, 'claims'), orderBy('submittedAt', 'desc'));
   const querySnapshot = await getDocs(q);
 
@@ -462,6 +462,7 @@ export async function getAllClaims() {
       id: doc.id,
       ...data,
       submittedAt: (data.submittedAt as Timestamp)?.toDate() || new Date(),
+      date: (data.date as Timestamp)?.toDate() || undefined,
     } as Claim;
   });
 }
