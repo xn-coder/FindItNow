@@ -199,7 +199,7 @@ export default function EnquiriesPage() {
                                     <CardHeader className="bg-muted/50 p-4 border-b flex-row items-center justify-between">
                                         <div className="flex items-center gap-3">
                                             <Package className="h-5 w-5 text-primary"/>
-                                            <h3 className="font-semibold text-lg">{item.name}</h3>
+                                            <h3 className="font-semibold text-lg">{enquiry.itemName}</h3>
                                             <span className="text-sm text-muted-foreground">{t('enquiriesItemReportedAs', { itemType: t(item.type) })}</span>
                                         </div>
                                         <span className="text-sm text-muted-foreground">{t('enquiriesReceivedOn', { date: enquiryDate.toLocaleDateString() })}</span>

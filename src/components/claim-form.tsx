@@ -225,6 +225,7 @@ export function ClaimForm({ item, onSuccess }: ClaimFormProps) {
 
             const claimData = {
                 itemId: item.id,
+                itemName: item.name,
                 itemOwnerId: item.userId,
                 userId: userId,
                 fullName: values.fullName,
@@ -394,3 +395,4 @@ export function ClaimForm({ item, onSuccess }: ClaimFormProps) {
     </>
   );
 }
+

@@ -36,6 +36,7 @@ export type GalleryImage = {
 export type Claim = {
   id: string;
   itemId: string;
+  itemName: string;
   itemOwnerId: string;
   fullName: string;
   email: string;

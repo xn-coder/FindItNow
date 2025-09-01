@@ -413,7 +413,7 @@ export async function getNotifications(userId: string): Promise<Notification[]> 
     notifications.push({
       id: docSnap.id,
       userId: userId,
-      message: `You have a new enquiry from ${claim.fullName} for an item.`,
+      message: `New enquiry for your '${claim.itemName}' from ${claim.fullName}.`,
       link: `/enquiries`,
       createdAt: claim.submittedAt.toDate(),
       read: claim.ownerRead,
@@ -436,7 +436,7 @@ export async function getNotifications(userId: string): Promise<Notification[]> 
     notifications.push({
       id: docSnap.id,
       userId: userId,
-      message: `Your claim for an item has been accepted.`,
+      message: `Your claim for '${claim.itemName}' has been accepted.`,
       link: `/chat/${claim.chatId}`,
       createdAt: claim.submittedAt.toDate(), // This should ideally be an 'acceptedAt' timestamp
       read: claim.claimantRead,
@@ -459,7 +459,7 @@ export async function getNotifications(userId: string): Promise<Notification[]> 
     notifications.push({
       id: docSnap.id,
       userId: userId,
-      message: `An item you claimed has been marked as resolved.`,
+      message: `The item '${claim.itemName}' you claimed has been marked as resolved.`,
       link: `/account`,
       createdAt: claim.submittedAt.toDate(), // This should ideally be a 'resolvedAt' timestamp
       read: claim.claimantRead,
