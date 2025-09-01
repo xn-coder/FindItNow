@@ -94,8 +94,8 @@ export default function EnquiriesPage() {
 
                 setEnquiries(prev => prev.map(e => e.id === claim.id ? { ...e, status: 'accepted', chatId: claim.id } : e));
                 toast({
-                    title: "Claim Accepted",
-                    description: "You have accepted the claim. You can now chat with the claimant.",
+                    title: t('toastClaimAcceptedTitle'),
+                    description: t('toastClaimAcceptedDesc'),
                 });
             } catch (error) {
                 console.error("Error accepting claim: ", error);
@@ -123,8 +123,8 @@ export default function EnquiriesPage() {
                 await batch.commit();
 
                 toast({
-                    title: "Enquiry Resolved",
-                    description: "You've marked this item as resolved. All related enquiries have been closed.",
+                    title: t('toastEnquiryResolvedTitle'),
+                    description: t('toastEnquiryResolvedDesc'),
                 });
                 
                 setEnquiries(prev => prev.filter(e => e.itemId !== claim.itemId));
@@ -248,7 +248,7 @@ export default function EnquiriesPage() {
                                         )}
                                         {enquiry.status === 'accepted' && (
                                             <Button asChild size="sm" variant="secondary">
-                                                <Link href={`/chat/${enquiry.chatId}`}><MessageCircle className="mr-2 h-4 w-4"/>Chat with Claimant</Link>
+                                                <Link href={`/chat/${enquiry.chatId}`}><MessageCircle className="mr-2 h-4 w-4"/>{t('chatWithClaimant')}</Link>
                                             </Button>
                                         )}
                                         <Button size="sm" onClick={() => handleMarkAsResolved(enquiry)} disabled={isPending}>

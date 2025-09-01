@@ -11,18 +11,21 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Inbox, Mail, MessageSquare, Package, User, CheckCircle2, Loader2, Phone, ShieldCheck, MessageCircle } from "lucide-react";
+import { Inbox, Mail, MessageSquare, Package, User, CheckCircle2, Loader2, Phone, ShieldCheck, MessageCircle, Image as ImageIcon } from "lucide-react";
 import { FeedbackDialog } from "@/components/feedback-dialog";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
+import Image from "next/image";
 
 export default function PartnerEnquiriesPage() {
     const { user, loading: authLoading } = useContext(AuthContext);
     const router = useRouter();
+    const { toast } = useToast();
+    const { t } = useTranslation();
     const [enquiries, setEnquiries] = useState<Claim[]>([]);
     const [loadingEnquiries, setLoadingEnquiries] = useState(true);
     const [relatedItems, setRelatedItems] = useState<Record<string, Item>>({});
     const [isPending, startTransition] = useTransition();
-    const { toast } = useToast();
     const [feedbackClaim, setFeedbackClaim] = useState<Claim | null>(null);
 
     useEffect(() => {
@@ -89,8 +92,8 @@ export default function PartnerEnquiriesPage() {
 
                 setEnquiries(prev => prev.map(e => e.id === claim.id ? { ...e, status: 'accepted', chatId: claim.id } : e));
                 toast({
-                    title: "Claim Accepted",
-                    description: "You can now chat with the claimant.",
+                    title: t('toastClaimAcceptedTitle'),
+                    description: t('toastClaimAcceptedDesc'),
                 });
             } catch (error) {
                 console.error("Error accepting claim: ", error);
@@ -118,8 +121,8 @@ export default function PartnerEnquiriesPage() {
                 await batch.commit();
 
                 toast({
-                    title: "Enquiry Resolved",
-                    description: "You've marked this item as resolved. All related enquiries have been closed.",
+                    title: t('toastEnquiryResolvedTitle'),
+                    description: t('toastEnquiryResolvedDesc'),
                 });
                 
                 setEnquiries(prev => prev.filter(e => e.itemId !== claim.itemId));
@@ -152,10 +155,10 @@ export default function PartnerEnquiriesPage() {
                     <CardHeader>
                         <CardTitle className="text-3xl font-headline flex items-center gap-3">
                             <Inbox className="h-8 w-8 text-primary"/>
-                            Item Enquiries
+                            {t('enquiriesTitle')}
                         </CardTitle>
                         <CardDescription>
-                            Here are the open claims for items you've reported. Review the proof and contact the claimant to arrange a return.
+                            {t('partnerEnquiriesSubtitle')}
                         </CardDescription>
                     </CardHeader>
                 </Card>
@@ -180,42 +183,53 @@ export default function PartnerEnquiriesPage() {
                                             <h3 className="font-semibold text-lg">{item.name}</h3>
                                         </div>
                                         <span className="text-sm text-muted-foreground">
-                                            Received on: {enquiry.submittedAt.toLocaleDateString()}
+                                            {t('enquiriesReceivedOn', {date: enquiry.submittedAt.toLocaleDateString()})}
                                         </span>
                                     </CardHeader>
                                     <CardContent className="p-6 grid md:grid-cols-2 gap-6">
                                         <div className="space-y-4">
-                                            <h4 className="font-semibold text-lg">Claim of Ownership</h4>
+                                            <h4 className="font-semibold text-lg">{t('enquiriesClaimOfOwnership')}</h4>
                                             <div className="flex items-start gap-3">
                                                 <MessageSquare className="h-5 w-5 text-muted-foreground mt-1"/>
                                                 <div>
-                                                    <p className="font-semibold">Proof of Ownership:</p>
+                                                    <p className="font-semibold">{t('enquiriesProofOfOwnership')}</p>
                                                     <p className="text-muted-foreground bg-slate-50 p-3 rounded-md mt-1 border">{enquiry.proof}</p>
                                                 </div>
                                             </div>
+                                             {enquiry.proofImageUrl && (
+                                                <div className="flex items-start gap-3">
+                                                    <ImageIcon className="h-5 w-5 text-muted-foreground mt-1"/>
+                                                    <div>
+                                                        <p className="font-semibold">{t('claimFormProofImage')}</p>
+                                                        <a href={enquiry.proofImageUrl} target="_blank" rel="noopener noreferrer">
+                                                            <Image src={enquiry.proofImageUrl} alt="Proof Image" width={200} height={200} className="mt-1 rounded-md border object-cover"/>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                         <div className="space-y-4 bg-slate-50 p-4 rounded-lg border">
-                                            <h4 className="font-semibold text-lg">Claimant's Details</h4>
-                                            <div className="flex items-center gap-3"><User className="h-5 w-5 text-muted-foreground"/><p><span className="font-semibold">Name:</span> {enquiry.fullName}</p></div>
-                                            <div className="flex items-center gap-3"><Mail className="h-5 w-5 text-muted-foreground"/><p><span className="font-semibold">Email:</span> {enquiry.email}</p></div>
-                                            {enquiry.phoneNumber && (<div className="flex items-center gap-3"><Phone className="h-5 w-5 text-muted-foreground"/><p><span className="font-semibold">Phone:</span> {enquiry.phoneNumber}</p></div>)}
+                                            <h4 className="font-semibold text-lg">{t('enquiriesClaimantsDetails')}</h4>
+                                            <div className="flex items-center gap-3"><User className="h-5 w-5 text-muted-foreground"/><p><span className="font-semibold">{t('enquiriesName')}</span> {enquiry.fullName}</p></div>
+                                            <div className="flex items-center gap-3"><Mail className="h-5 w-5 text-muted-foreground"/><p><span className="font-semibold">{t('enquiriesEmail')}</span> {enquiry.email}</p></div>
+                                            {enquiry.phoneNumber && (<div className="flex items-center gap-3"><Phone className="h-5 w-5 text-muted-foreground"/><p><span className="font-semibold">{t('enquiriesPhone')}</span> {enquiry.phoneNumber}</p></div>)}
                                         </div>
                                     </CardContent>
                                     <CardFooter className="bg-muted/50 p-4 border-t flex items-center justify-end gap-2">
                                         {enquiry.status === 'open' && (
                                             <Button size="sm" variant="outline" onClick={() => handleAcceptClaim(enquiry)} disabled={isPending}>
                                                 {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShieldCheck className="mr-2 h-4 w-4"/>}
-                                                Accept Claim
+                                                {t('enquiriesAcceptClaim')}
                                             </Button>
                                         )}
                                         {enquiry.status === 'accepted' && (
                                              <Button asChild size="sm" variant="secondary">
-                                                <Link href={`/chat/${enquiry.chatId}`}><MessageCircle className="mr-2 h-4 w-4"/>Chat with Claimant</Link>
+                                                <Link href={`/chat/${enquiry.chatId}`}><MessageCircle className="mr-2 h-4 w-4"/>{t('chatWithClaimant')}</Link>
                                             </Button>
                                         )}
                                         <Button size="sm" onClick={() => handleMarkAsResolved(enquiry)} disabled={isPending}>
                                             {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle2 className="mr-2 h-4 w-4"/>}
-                                            Mark as Resolved
+                                            {t('enquiriesMarkAsResolved')}
                                         </Button>
                                     </CardFooter>
                                 </Card>
@@ -224,8 +238,8 @@ export default function PartnerEnquiriesPage() {
                     </div>
                 ) : (
                     <div className="text-center py-16 bg-card rounded-lg border">
-                        <p className="text-xl font-medium">No open enquiries.</p>
-                        <p className="text-muted-foreground mt-2">When someone claims an item you've reported, you'll see it here.</p>
+                        <p className="text-xl font-medium">{t('enquiriesNoEnquiries')}</p>
+                        <p className="text-muted-foreground mt-2">{t('partnerEnquiriesNoEnquiriesDesc')}</p>
                     </div>
                 )}
             </div>

@@ -152,8 +152,6 @@ export function ClaimForm({ item, onSuccess }: ClaimFormProps) {
                 to_email: values.email,
                 subject: "Your FindItNow Verification Code",
                 message: `Your one-time password is: ${generatedOtp}`,
-                from_name: "FindItNow",
-                from_email: "no-reply@finditnow.com",
             });
             
             setOtp(generatedOtp);
@@ -253,8 +251,8 @@ export function ClaimForm({ item, onSuccess }: ClaimFormProps) {
             });
 
             toast({
-                title: 'Claim Submitted!',
-                description: "We've received your claim and the item reporter has been notified.",
+                title: t('toastClaimSubmittedTitle'),
+                description: t('toastClaimSubmittedDesc'),
             });
             form.reset();
             onSuccess();

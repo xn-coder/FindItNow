@@ -79,7 +79,9 @@ export default function AccountPage() {
     }
 
     useEffect(() => {
-       fetchData();
+       if (user) {
+          fetchData();
+       }
     }, [user]);
 
     const handleDeleteRequest = (item: Item) => {

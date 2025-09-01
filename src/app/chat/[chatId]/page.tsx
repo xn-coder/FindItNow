@@ -16,10 +16,12 @@ import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 
 export default function ChatPage() {
     const { chatId } = useParams();
     const { user, loading: authLoading } = useContext(AuthContext);
+    const { t } = useTranslation();
     const [messages, setMessages] = useState<Message[]>([]);
     const [newMessage, setNewMessage] = useState('');
     const [claim, setClaim] = useState<Claim | null>(null);
@@ -117,10 +119,10 @@ export default function ChatPage() {
         return (
             <Card>
                 <CardHeader>
-                    <CardTitle>Chat Not Found</CardTitle>
+                    <CardTitle>{t('chatNotFoundTitle')}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <p>The chat you are looking for does not exist or you do not have permission to view it.</p>
+                    <p>{t('chatNotFoundDesc')}</p>
                 </CardContent>
             </Card>
         );
@@ -132,8 +134,8 @@ export default function ChatPage() {
         <div className="max-w-4xl mx-auto h-[80vh] flex flex-col">
             <Card className="mb-4">
                 <CardHeader>
-                    <CardTitle>Chat regarding: <Link href={`/browse?item=${claim.itemId}`} className="text-primary hover:underline">{item?.name || 'Item'}</Link></CardTitle>
-                    <CardDescription>Communicating with {otherPartyName}</CardDescription>
+                    <CardTitle>{t('chatTitle')} <Link href={`/browse?item=${claim.itemId}`} className="text-primary hover:underline">{item?.name || 'Item'}</Link></CardTitle>
+                    <CardDescription>{t('chattingWith')} {otherPartyName}</CardDescription>
                 </CardHeader>
             </Card>
             <Card className="flex-grow flex flex-col">
