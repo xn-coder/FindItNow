@@ -21,7 +21,7 @@ type OtpDialogProps = {
   onClose: () => void;
   onVerify: (password?: string) => void;
   expectedOtp: string;
-  isNewUser: boolean;
+  isNewUser: boolean; // True if this dialog needs to collect a new password (e.g. forgot password)
   isLoading: boolean;
 };
 
@@ -49,6 +49,7 @@ export function OtpDialog({ isOpen, onClose, onVerify, expectedOtp, isNewUser, i
         return;
       }
     }
+    // Only pass the password if it's a flow that sets a new one (like forgot password)
     onVerify(isNewUser ? password : undefined);
   };
 
@@ -68,8 +69,8 @@ export function OtpDialog({ isOpen, onClose, onVerify, expectedOtp, isNewUser, i
           <DialogTitle>Email Verification</DialogTitle>
           <DialogDescription>
             {isNewUser
-              ? 'Enter the OTP we sent to your email. If you are creating a new account, you will also need to set a password.'
-              : 'Enter the OTP we sent to your email to confirm your submission.'}
+              ? 'Enter the OTP we sent to your email. You will also need to set a new password.'
+              : 'Enter the OTP we sent to your email to confirm your identity.'}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-4">
@@ -85,7 +86,7 @@ export function OtpDialog({ isOpen, onClose, onVerify, expectedOtp, isNewUser, i
           {isNewUser && (
             <>
               <div className="space-y-2">
-                <Label htmlFor="password">Set Password</Label>
+                <Label htmlFor="password">Set New Password</Label>
                 <Input
                   id="password"
                   type="password"
@@ -95,7 +96,7 @@ export function OtpDialog({ isOpen, onClose, onVerify, expectedOtp, isNewUser, i
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="confirm-password">Confirm Password</Label>
+                <Label htmlFor="confirm-password">Confirm New Password</Label>
                 <Input
                   id="confirm-password"
                   type="password"
