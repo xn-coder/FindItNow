@@ -15,6 +15,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { NotificationBell } from "./notification-bell";
 
@@ -30,13 +31,6 @@ const moreNavLinksRaw = [
   { href: "/map", label: "Map View", icon: MapPin },
   { href: "/contact", label: "Contact", icon: Phone },
 ];
-
-const moreNavLinks = process.env.NEXT_PUBLIC_MAP_ENABLED === 'false' 
-  ? moreNavLinksRaw.filter(link => link.href !== '/map')
-  : moreNavLinksRaw;
-
-const allNavLinks = [...mainNavLinks, ...moreNavLinks];
-
 
 export default function Header() {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -59,6 +53,34 @@ export default function Header() {
     i18n.changeLanguage(lang);
   }
 
+  const baseMoreLinks = process.env.NEXT_PUBLIC_MAP_ENABLED === 'false' 
+    ? moreNavLinksRaw.filter(link => link.href !== '/map')
+    : moreNavLinksRaw;
+
+  let moreNavLinks = [...baseMoreLinks];
+  let mobileNavLinks = [...mainNavLinks, ...baseMoreLinks];
+  
+  const userLinks = [];
+  const partnerLinks = [];
+  const mobileUserLinks = [];
+  const mobilePartnerLinks = [];
+  
+  if (user) {
+    if (user.isPartner) {
+        partnerLinks.push({ href: "/partner/dashboard", label: "partnerDashboardTitle", icon: Building });
+        partnerLinks.push({ href: "/partner/enquiries", label: "enquiries", icon: Inbox });
+        mobilePartnerLinks.push(...partnerLinks);
+    } else {
+        userLinks.push({ href: "/account", label: "myaccount", icon: User });
+        userLinks.push({ href: "/enquiries", label: "enquiries", icon: Inbox });
+        mobileUserLinks.push(...userLinks);
+    }
+  }
+  
+  // Combine all links for mobile view
+  mobileNavLinks.push(...mobileUserLinks, ...mobilePartnerLinks);
+
+
   return (
     <header className="bg-card/80 backdrop-blur-lg sticky top-0 z-50 border-b">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -74,45 +96,34 @@ export default function Header() {
               {t(link.label.toLowerCase().replace(/ /g, ''))}
             </Link>
           ))}
-           {moreNavLinks.length > 0 && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="flex items-center gap-1 text-sm font-medium text-foreground/70 transition-colors hover:text-primary">
-                  {t('more')}
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {moreNavLinks.map((link) => (
-                   <DropdownMenuItem key={link.href} asChild>
-                     <Link href={link.href}>
-                       {t(link.label.toLowerCase().replace(/ /g, ''))}
-                     </Link>
-                   </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
-          {user && !user.isPartner && (
-            <>
-             <Link href="/account" className="text-sm font-medium text-foreground/70 transition-colors hover:text-primary">
-                {t('myaccount')}
-            </Link>
-             <Link href="/enquiries" className="text-sm font-medium text-foreground/70 transition-colors hover:text-primary">
-                {t('enquiries')}
-            </Link>
-            </>
-          )}
-           {user && user.isPartner && (
-              <>
-                <Link href="/partner/dashboard" className="text-sm font-medium text-foreground/70 transition-colors hover:text-primary">
-                  {t('partnerDashboardTitle')}
-                </Link>
-                <Link href="/partner/enquiries" className="text-sm font-medium text-foreground/70 transition-colors hover:text-primary">
-                  {t('enquiries')}
-                </Link>
-              </>
-          )}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="flex items-center gap-1 text-sm font-medium text-foreground/70 transition-colors hover:text-primary">
+                {t('more')}
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {moreNavLinks.map((link) => (
+                  <DropdownMenuItem key={link.href} asChild>
+                    <Link href={link.href}>
+                      {t(link.label.toLowerCase().replace(/ /g, ''))}
+                    </Link>
+                  </DropdownMenuItem>
+              ))}
+              {(userLinks.length > 0 || partnerLinks.length > 0) && <DropdownMenuSeparator />}
+              {userLinks.map((link) => (
+                  <DropdownMenuItem key={link.href} asChild>
+                    <Link href={link.href}>{t(link.label)}</Link>
+                  </DropdownMenuItem>
+              ))}
+               {partnerLinks.map((link) => (
+                  <DropdownMenuItem key={link.href} asChild>
+                    <Link href={link.href}>{t(link.label)}</Link>
+                  </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </nav>
 
         <div className="flex items-center gap-4">
@@ -166,36 +177,30 @@ export default function Header() {
                     </SheetHeader>
                 <div className="p-4">
                     <nav className="flex flex-col gap-4 mt-8">
-                    {allNavLinks.map((link) => (
+                    {mainNavLinks.map((link) => (
                         <Link key={link.href} href={link.href} className="flex items-center gap-3 rounded-md p-2 text-base font-medium hover:bg-muted" onClick={() => setMobileMenuOpen(false)}>
                         <link.icon className="h-5 w-5 text-primary" />
                         {t(link.label.toLowerCase().replace(/ /g, ''))}
                         </Link>
                     ))}
-                    {user && !user.isPartner &&(
-                        <>
-                        <Link href="/account" className="flex items-center gap-3 rounded-md p-2 text-base font-medium hover:bg-muted" onClick={() => setMobileMenuOpen(false)}>
-                        <User className="h-5 w-5 text-primary" />
-                        {t('myaccount')}
+                    {moreNavLinks.map((link) => (
+                        <Link key={link.href} href={link.href} className="flex items-center gap-3 rounded-md p-2 text-base font-medium hover:bg-muted" onClick={() => setMobileMenuOpen(false)}>
+                        <link.icon className="h-5 w-5 text-primary" />
+                        {t(link.label.toLowerCase().replace(/ /g, ''))}
                         </Link>
-                        <Link href="/enquiries" className="flex items-center gap-3 rounded-md p-2 text-base font-medium hover:bg-muted" onClick={() => setMobileMenuOpen(false)}>
-                        <Inbox className="h-5 w-5 text-primary" />
-                        {t('enquiries')}
+                    ))}
+                    {mobileUserLinks.map((link) => (
+                        <Link key={link.href} href={link.href} className="flex items-center gap-3 rounded-md p-2 text-base font-medium hover:bg-muted" onClick={() => setMobileMenuOpen(false)}>
+                        <link.icon className="h-5 w-5 text-primary" />
+                        {t(link.label)}
                         </Link>
-                        </>
-                    )}
-                    {user && user.isPartner &&(
-                        <>
-                            <Link href="/partner/dashboard" className="flex items-center gap-3 rounded-md p-2 text-base font-medium hover:bg-muted" onClick={() => setMobileMenuOpen(false)}>
-                                <Building className="h-5 w-5 text-primary" />
-                                {t('partnerDashboardTitle')}
-                            </Link>
-                            <Link href="/partner/enquiries" className="flex items-center gap-3 rounded-md p-2 text-base font-medium hover:bg-muted" onClick={() => setMobileMenuOpen(false)}>
-                                <Inbox className="h-5 w-5 text-primary" />
-                                {t('enquiries')}
-                            </Link>
-                        </>
-                    )}
+                    ))}
+                    {mobilePartnerLinks.map((link) => (
+                        <Link key={link.href} href={link.href} className="flex items-center gap-3 rounded-md p-2 text-base font-medium hover:bg-muted" onClick={() => setMobileMenuOpen(false)}>
+                        <link.icon className="h-5 w-5 text-primary" />
+                        {t(link.label)}
+                        </Link>
+                    ))}
                     </nav>
                     <div className="mt-8 flex flex-col gap-2">
                         <div className="flex justify-around items-center p-2 mb-4 bg-muted rounded-md">
@@ -232,8 +237,7 @@ export default function Header() {
             </Sheet>
             </div>
       </div>
+      </div>
     </header>
   );
 }
-
-    
