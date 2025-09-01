@@ -3,27 +3,38 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { MapPin, Menu, Sprout, User, LogOut, Inbox, Phone, Building, Sparkles, Home, Users } from "lucide-react";
+import { MapPin, Menu, Sprout, User, LogOut, Inbox, Phone, Building, Sparkles, Home, Users, ChevronDown } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useState, useContext } from "react";
 import { AuthContext } from "@/context/auth-context";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 
-const allNavLinks = [
+const mainNavLinks = [
   { href: "/", label: "Home", icon: Home },
   { href: "/services", label: "Services", icon: Sparkles },
   { href: "/about", label: "About Us", icon: Users },
   { href: "/browse", label: "Browse", icon: MapPin },
+];
+
+const moreNavLinksRaw = [
   { href: "/map", label: "Map View", icon: MapPin },
   { href: "/contact", label: "Contact", icon: Phone },
 ];
 
-const navLinks = process.env.NEXT_PUBLIC_MAP_ENABLED === 'false' 
-  ? allNavLinks.filter(link => link.href !== '/map')
-  : allNavLinks;
+const moreNavLinks = process.env.NEXT_PUBLIC_MAP_ENABLED === 'false' 
+  ? moreNavLinksRaw.filter(link => link.href !== '/map')
+  : moreNavLinksRaw;
+
+const allNavLinks = [...mainNavLinks, ...moreNavLinks];
 
 
 export default function Header() {
@@ -57,11 +68,30 @@ export default function Header() {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6">
-          {navLinks.map((link) => (
+          {mainNavLinks.map((link) => (
             <Link key={link.href} href={link.href} className="text-sm font-medium text-foreground/70 transition-colors hover:text-primary">
               {t(link.label.toLowerCase().replace(/ /g, ''))}
             </Link>
           ))}
+           {moreNavLinks.length > 0 && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="flex items-center gap-1 text-sm font-medium text-foreground/70 transition-colors hover:text-primary">
+                  {t('more')}
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {moreNavLinks.map((link) => (
+                   <DropdownMenuItem key={link.href} asChild>
+                     <Link href={link.href}>
+                       {t(link.label.toLowerCase().replace(/ /g, ''))}
+                     </Link>
+                   </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
           {user && !user.isPartner && (
             <>
              <Link href="/account" className="text-sm font-medium text-foreground/70 transition-colors hover:text-primary">
@@ -130,7 +160,7 @@ export default function Header() {
                 </SheetHeader>
               <div className="p-4">
                 <nav className="flex flex-col gap-4 mt-8">
-                  {navLinks.map((link) => (
+                  {allNavLinks.map((link) => (
                     <Link key={link.href} href={link.href} className="flex items-center gap-3 rounded-md p-2 text-base font-medium hover:bg-muted" onClick={() => setMobileMenuOpen(false)}>
                       <link.icon className="h-5 w-5 text-primary" />
                       {t(link.label.toLowerCase().replace(/ /g, ''))}
