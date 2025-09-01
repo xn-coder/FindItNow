@@ -370,16 +370,18 @@ export async function getGalleryImages(itemId: string) {
 export async function getNotificationCount(userId: string): Promise<number> {
     if (!userId) return 0;
 
-    // 1. Get count of new claims on items the user owns
-    const newClaimsQuery = query(
+    // 1. Get count of new claims/messages on items the user owns.
+    // This is for the "receiver".
+    const newEnquiriesQuery = query(
         collection(db, "claims"),
         where("itemOwnerId", "==", userId),
         where("status", "==", "open")
     );
-    const newClaimsSnapshot = await getDocs(newClaimsQuery);
-    const newClaimsCount = newClaimsSnapshot.size;
+    const newEnquiriesSnapshot = await getDocs(newEnquiriesQuery);
+    const newEnquiriesCount = newEnquiriesSnapshot.size;
     
-    // 2. Get count of claims the user made that have been accepted
+    // 2. Get count of claims the user made that have been accepted.
+    // This is for the "sender" of the original claim.
     const acceptedClaimsQuery = query(
         collection(db, "claims"),
         where("userId", "==", userId),
@@ -388,5 +390,5 @@ export async function getNotificationCount(userId: string): Promise<number> {
     const acceptedClaimsSnapshot = await getDocs(acceptedClaimsQuery);
     const acceptedClaimsCount = acceptedClaimsSnapshot.size;
 
-    return newClaimsCount + acceptedClaimsCount;
+    return newEnquiriesCount + acceptedClaimsCount;
 }
