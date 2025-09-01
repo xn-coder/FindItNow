@@ -43,10 +43,10 @@ export type Claim = {
   phoneNumber?: string;
   proof: string;
   proofImageUrl?: string;
-  submittedAt: Timestamp;
+  submittedAt: Date | Timestamp;
   location?: string;
   date?: Timestamp;
-  status: 'open' | 'accepted' | 'resolving' | 'resolved';
+  status: 'open' | 'accepted' | 'resolving' | 'resolved' | 'rejected';
   type?: 'message' | 'claim';
   userId: string; // The ID of the user who made the claim/message
   chatId: string;

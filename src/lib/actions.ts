@@ -448,3 +448,32 @@ export async function resolveItem(itemId: string, claimantInfo?: { fullName: str
   });
   return { success: true };
 }
+
+/**
+ * Retrieves all claims from Firestore, sorted by submission date.
+ */
+export async function getAllClaims() {
+  const q = query(collection(db, 'claims'), orderBy('submittedAt', 'desc'));
+  const querySnapshot = await getDocs(q);
+
+  return querySnapshot.docs.map((doc) => {
+    const data = doc.data();
+    return {
+      id: doc.id,
+      ...data,
+      submittedAt: (data.submittedAt as Timestamp)?.toDate() || new Date(),
+    } as Claim;
+  });
+}
+
+/**
+ * Updates the status of a claim.
+ */
+export async function updateClaimStatus(claimId: string, status: 'accepted' | 'rejected' | 'resolved') {
+  if (!claimId) {
+    throw new Error('Claim ID is required.');
+  }
+  const claimRef = doc(db, 'claims', claimId);
+  await updateDoc(claimRef, { status });
+  return { success: true };
+}
