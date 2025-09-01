@@ -12,7 +12,7 @@ import { itemCategories } from '@/lib/data';
 import type { Item } from '@/lib/types';
 import { ListFilter, Search } from 'lucide-react';
 import { db } from '@/lib/firebase';
-import { collection, getDocs, doc, getDoc, query, where } from "firebase/firestore";
+import { collection, getDocs, doc, getDoc, query, where, orderBy } from "firebase/firestore";
 import { Timestamp } from "firebase/firestore";
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -33,13 +33,15 @@ function ItemBrowser() {
     setLoading(true);
     const q = query(
       collection(db, "items"),
-      where("status", "==", "open")
+      where("status", "==", "open"),
+      orderBy("createdAt", "desc")
     );
     const querySnapshot = await getDocs(q);
     const itemsData = querySnapshot.docs.map(doc => {
       const data = doc.data();
       const date = data.date instanceof Timestamp ? data.date.toDate() : new Date(data.date);
-      return { id: doc.id, ...data, date } as Item;
+      const createdAt = data.createdAt instanceof Timestamp ? data.createdAt.toDate() : new Date();
+      return { id: doc.id, ...data, date, createdAt } as Item;
     });
 
     if (language !== 'en') {
