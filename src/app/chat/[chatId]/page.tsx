@@ -107,7 +107,7 @@ export default function ChatPage() {
 
     if (loading || authLoading) {
          return (
-             <div className="h-full flex flex-col">
+             <div className="flex-1 flex flex-col">
                 <Skeleton className="h-24 w-full shrink-0 mb-4" />
                 <div className="flex-grow space-y-4">
                     <Skeleton className="h-12 w-3/4" />
@@ -135,15 +135,15 @@ export default function ChatPage() {
     const otherPartyName = user?.id === claim.itemOwnerId ? claim.fullName : item?.contact;
 
     return (
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col flex-1">
             <Card className="mb-4 shrink-0">
                 <CardHeader>
                     <CardTitle>{t('chatTitle')} <Link href={`/browse?item=${claim.itemId}`} className="text-primary hover:underline">{item?.name || 'Item'}</Link></CardTitle>
                     <CardDescription>{t('chattingWith')} {otherPartyName}</CardDescription>
                 </CardHeader>
             </Card>
-            <Card className="flex-grow flex flex-col">
-                 <CardContent ref={scrollContainerRef} className="flex-grow p-6 space-y-4 overflow-y-auto">
+            <Card className="flex-1 flex flex-col">
+                 <CardContent ref={scrollContainerRef} className="flex-1 p-6 space-y-4 overflow-y-auto max-h-[50vh]">
                     {messages.map((message) => (
                         <div
                             key={message.id}
