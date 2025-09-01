@@ -367,3 +367,39 @@ export async function getGalleryImages(itemId: string) {
         };
     });
 }
+
+/**
+ * Retrieves all users from Firestore.
+ */
+export async function getAllUsers() {
+    const q = query(collection(db, "users"), orderBy("createdAt", "desc"));
+    const querySnapshot = await getDocs(q);
+
+    return querySnapshot.docs.map(doc => {
+        const data = doc.data();
+        const { password, ...userWithoutPassword } = data;
+        return {
+            id: doc.id,
+            ...userWithoutPassword,
+            createdAt: (data.createdAt as Timestamp)?.toDate() || new Date(),
+        };
+    });
+}
+
+/**
+ * Retrieves all partners from Firestore.
+ */
+export async function getAllPartners() {
+    const q = query(collection(db, "partners"), orderBy("createdAt", "desc"));
+    const querySnapshot = await getDocs(q);
+
+    return querySnapshot.docs.map(doc => {
+        const data = doc.data();
+        const { password, ...partnerWithoutPassword } = data;
+        return {
+            id: doc.id,
+            ...partnerWithoutPassword,
+            createdAt: (data.createdAt as Timestamp)?.toDate() || new Date(),
+        };
+    });
+}
