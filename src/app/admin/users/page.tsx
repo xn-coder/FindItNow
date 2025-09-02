@@ -16,7 +16,7 @@ type CombinedUser = {
   name: string;
   email: string;
   role: 'User' | 'Partner';
-  createdAt: Date;
+  createdAt: string; // Changed to string for serialization
 };
 
 export default function UserManagementPage() {
@@ -50,7 +50,7 @@ export default function UserManagementPage() {
         ];
 
         // Sort combined list by creation date
-        combined.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+        combined.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
         setUsers(combined);
       } catch (error) {
@@ -118,7 +118,7 @@ export default function UserManagementPage() {
                       <TableCell>
                         <Badge variant={user.role === 'Partner' ? 'secondary' : 'outline'}>{t(user.role.toLowerCase())}</Badge>
                       </TableCell>
-                      <TableCell>{user.createdAt.toLocaleDateString()}</TableCell>
+                      <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
                       <TableCell className="text-right">
                         {/* Action buttons will go here */}
                       </TableCell>

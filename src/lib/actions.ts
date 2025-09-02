@@ -399,7 +399,8 @@ export async function getAllUsers() {
         return {
             id: doc.id,
             ...userWithoutPassword,
-            createdAt: (data.createdAt as Timestamp)?.toDate() || new Date(),
+            createdAt: ((data.createdAt as Timestamp)?.toDate() || new Date()).toISOString(),
+            lastActivity: ((data.lastActivity as Timestamp)?.toDate() || new Date()).toISOString(),
         };
     });
 }
@@ -417,7 +418,8 @@ export async function getAllPartners() {
         return {
             id: doc.id,
             ...partnerWithoutPassword,
-            createdAt: (data.createdAt as Timestamp)?.toDate() || new Date(),
+            createdAt: ((data.createdAt as Timestamp)?.toDate() || new Date()).toISOString(),
+            lastActivity: ((data.lastActivity as Timestamp)?.toDate() || new Date()).toISOString(),
         };
     });
 }
@@ -724,7 +726,7 @@ export async function getRecentActivity() {
             const data = doc.data();
             return {
                 id: doc.id,
-                type: 'item',
+                type: 'item' as const,
                 name: data.name,
                 timestamp: ((data.createdAt as Timestamp)?.toDate() || new Date()).toISOString(),
             }
@@ -734,7 +736,7 @@ export async function getRecentActivity() {
             const data = doc.data();
             return {
                 id: doc.id,
-                type: 'claim',
+                type: 'claim' as const,
                 fullName: data.fullName,
                 itemName: data.itemName,
                 itemId: data.itemId,
