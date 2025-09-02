@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { MapPin, Menu, Sprout, User, LogOut, Inbox, Phone, Building, Sparkles, Home, Users, ChevronDown } from "lucide-react";
+import { MapPin, Menu, Sprout, User, LogOut, Inbox, Phone, Building, Sparkles, Home, Users, ChevronDown, Shield } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useState, useContext } from "react";
 import { AuthContext } from "@/context/auth-context";
@@ -65,6 +65,9 @@ export default function Header() {
   const mobilePartnerLinks = [];
   
   if (user) {
+    if (user.isAdmin) {
+        userLinks.push({ href: "/admin", label: "admindashboard", icon: Shield });
+    }
     if (user.isPartner) {
         partnerLinks.push({ href: "/partner/dashboard", label: "partnerDashboardTitle", icon: Building });
         partnerLinks.push({ href: "/partner/enquiries", label: "enquiries", icon: Inbox });
@@ -186,6 +189,12 @@ export default function Header() {
                         {t(link.label.toLowerCase().replace(/ /g, ''))}
                         </Link>
                     ))}
+                     {user && user.isAdmin && (
+                        <Link href="/admin" className="flex items-center gap-3 rounded-md p-2 text-base font-medium hover:bg-muted" onClick={() => setMobileMenuOpen(false)}>
+                            <Shield className="h-5 w-5 text-primary" />
+                            {t('admindashboard')}
+                        </Link>
+                    )}
                     {mobileUserLinks.map((link) => (
                         <Link key={link.href} href={link.href} className="flex items-center gap-3 rounded-md p-2 text-base font-medium hover:bg-muted" onClick={() => setMobileMenuOpen(false)}>
                         <link.icon className="h-5 w-5 text-primary" />
