@@ -666,3 +666,70 @@ export async function exportReports() {
         throw new Error("Failed to export data.");
     }
 }
+
+
+export async function getAdminDashboardStats() {
+    try {
+        const itemsSnapshot = await getDocs(collection(db, "items"));
+        const claimsSnapshot = await getDocs(collection(db, "claims"));
+        const partnersSnapshot = await getDocs(collection(db, "partners"));
+
+        const partnerIds = new Set(partnersSnapshot.docs.map(doc => doc.id));
+        
+        const totalItems = itemsSnapshot.size;
+        const resolvedCases = itemsSnapshot.docs.filter(doc => doc.data().status === 'resolved').length;
+        const partnerContributions = itemsSnapshot.docs.filter(doc => partnerIds.has(doc.data().userId)).length;
+        const activeClaims = claimsSnapshot.docs.filter(doc => ['open', 'accepted', 'resolving'].includes(doc.data().status)).length;
+        const totalLost = itemsSnapshot.docs.filter(doc => doc.data().type === 'lost').length;
+        const totalFound = itemsSnapshot.docs.filter(doc => doc.data().type === 'found').length;
+
+        return {
+            totalItems,
+            resolvedCases,
+            activeClaims,
+            partnerContributions,
+            totalLost,
+            totalFound
+        };
+
+    } catch (error) {
+        console.error("Error fetching admin dashboard stats:", error);
+        throw new Error("Failed to fetch admin dashboard stats.");
+    }
+}
+
+export async function getRecentActivity() {
+    try {
+        const itemsQuery = query(collection(db, "items"), orderBy("createdAt", "desc"), limit(5));
+        const claimsQuery = query(collection(db, "claims"), orderBy("submittedAt", "desc"), limit(5));
+
+        const [itemsSnapshot, claimsSnapshot] = await Promise.all([
+            getDocs(itemsQuery),
+            getDocs(claimsQuery)
+        ]);
+
+        const recentItems = itemsSnapshot.docs.map(doc => ({
+            id: doc.id,
+            type: 'item',
+            ...doc.data(),
+            timestamp: (doc.data().createdAt as Timestamp).toDate()
+        }));
+
+        const recentClaims = claimsSnapshot.docs.map(doc => ({
+            id: doc.id,
+            type: 'claim',
+            ...doc.data(),
+            timestamp: (doc.data().submittedAt as Timestamp).toDate()
+        }));
+        
+        const combinedActivity = [...recentItems, ...recentClaims]
+            .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
+            .slice(0, 10);
+
+        return combinedActivity;
+
+    } catch (error) {
+        console.error("Error fetching recent activity:", error);
+        throw new Error("Failed to fetch recent activity.");
+    }
+}
