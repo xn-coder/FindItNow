@@ -59,9 +59,22 @@ export default function SettingsPage() {
                             <p>New Enquiry Notification</p>
                             <Button variant="outline" size="sm"><Edit className="mr-2 h-4 w-4"/>Edit</Button>
                         </div>
+                         <div className="flex items-center justify-between p-3 bg-muted/50 rounded-md">
+                            <p>User Verification OTP</p>
+                            <Button variant="outline" size="sm"><Edit className="mr-2 h-4 w-4"/>Edit</Button>
+                        </div>
+                         <div className="flex items-center justify-between p-3 bg-muted/50 rounded-md">
+                            <p>Partner Verification OTP</p>
+                            <Button variant="outline" size="sm"><Edit className="mr-2 h-4 w-4"/>Edit</Button>
+                        </div>
+                         <div className="flex items-center justify-between p-3 bg-muted/50 rounded-md">
+                            <p>Password Reset OTP</p>
+                            <Button variant="outline" size="sm"><Edit className="mr-2 h-4 w-4"/>Edit</Button>
+                        </div>
                     </div>
                 </CardContent>
             </Card>
         </div>
     );
 }
+
