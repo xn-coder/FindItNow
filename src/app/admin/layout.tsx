@@ -1,10 +1,11 @@
+
 "use client";
 
 import { useContext, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { AuthContext } from '@/context/auth-context';
-import { Home, Users, Package, Shield, FileText, Settings, Sprout } from 'lucide-react';
+import { Home, Users, Package, Shield, FileText, Settings, Sprout, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetTrigger, SheetContent } from '@/components/ui/sheet';
 import { Menu } from 'lucide-react';
@@ -48,9 +49,24 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { user, loading } = useContext(AuthContext);
+  const { user, loading, logout } = useContext(AuthContext);
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+
+   const languages = [
+    { code: 'de', name: 'DE' },
+    { code: 'en', name: 'EN' },
+    { code: 'fr', name: 'FR' },
+  ]
+
+  const changeLanguage = (lang: string) => {
+    i18n.changeLanguage(lang);
+  }
+
+  const handleLogout = () => {
+    logout();
+    router.push('/');
+  }
 
   useEffect(() => {
     if (!loading && !user?.isAdmin) {
@@ -100,12 +116,53 @@ export default function AdminLayout({
                 <div className="p-4">
                     <AdminSidebar />
                 </div>
+                 <div className="mt-auto p-4 border-t">
+                    <div className="flex justify-around items-center p-2 mb-4 bg-muted rounded-md">
+                        {languages.map((lang) => (
+                            <Button
+                                key={lang.code}
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => changeLanguage(lang.code)}
+                                className={cn(
+                                    "text-base",
+                                    i18n.language === lang.code ? "text-primary font-bold" : "text-foreground/70"
+                                )}
+                            >
+                                {lang.name}
+                            </Button>
+                        ))}
+                    </div>
+                    <Button variant="ghost" className="flex items-center gap-3 w-full" onClick={handleLogout}>
+                        <LogOut className="h-5 w-5" />
+                        {t('logout')}
+                    </Button>
+                </div>
             </SheetContent>
           </Sheet>
           <div className="w-full flex-1">
             {/* Can add search or other header elements here */}
           </div>
-          {/* User dropdown can be added here */}
+           <div className="flex items-center gap-4">
+               <div className="flex gap-2 text-sm font-medium">
+                    {languages.map((lang) => (
+                        <button
+                            key={lang.code}
+                            onClick={() => changeLanguage(lang.code)}
+                            className={cn(
+                                "hover:text-primary",
+                                i18n.language === lang.code ? "text-primary font-bold underline underline-offset-4" : "text-foreground/70"
+                            )}
+                        >
+                            {lang.name}
+                        </button>
+                    ))}
+                </div>
+                <Button variant="outline" size="sm" onClick={handleLogout}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    {t('logout')}
+                </Button>
+           </div>
         </header>
         <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
           {children}
