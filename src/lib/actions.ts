@@ -564,27 +564,20 @@ export async function getDashboardAnalytics() {
             const end = endOfMonth(date);
             const monthName = format(date, 'MMMM');
 
-            const postedQuery = query(
+            const itemsQuery = query(
                 collection(db, "items"),
                 where("createdAt", ">=", start),
                 where("createdAt", "<=", end)
             );
-            const resolvedQuery = query(
-                collection(db, "items"),
-                where("status", "==", "resolved"),
-                where("createdAt", ">=", start),
-                where("createdAt", "<=", end)
-            );
-
-            const [postedSnapshot, resolvedSnapshot] = await Promise.all([
-                getDocs(postedQuery),
-                getDocs(resolvedQuery)
-            ]);
+            const itemsSnapshot = await getDocs(itemsQuery);
+            
+            const posted = itemsSnapshot.size;
+            const resolved = itemsSnapshot.docs.filter(doc => doc.data().status === 'resolved').length;
             
             monthlyStats.push({
                 month: monthName,
-                posted: postedSnapshot.size,
-                resolved: resolvedSnapshot.size,
+                posted: posted,
+                resolved: resolved,
             });
         }
 
