@@ -89,15 +89,15 @@ export default function ReportsPage() {
   const handleExport = () => {
     startExportTransition(async () => {
         try {
-            toast({ title: "Exporting...", description: "Generating your reports now." });
+            toast({ title: t('adminExporting'), description: t('adminExportingDesc') });
             const reports = await exportReports();
             triggerDownload('items.csv', reports.items);
             triggerDownload('claims.csv', reports.claims);
             triggerDownload('users.csv', reports.users);
             triggerDownload('partners.csv', reports.partners);
-            toast({ title: "Export Complete", description: "Your reports have been downloaded." });
+            toast({ title: t('adminExportComplete'), description: t('adminExportCompleteDesc') });
         } catch (error) {
-            toast({ variant: "destructive", title: "Export Failed", description: "Could not generate reports." });
+            toast({ variant: "destructive", title: t('adminExportFailed'), description: t('adminExportFailedDesc') });
         }
     })
   }
@@ -106,20 +106,20 @@ export default function ReportsPage() {
     <div className="space-y-6">
         <div className="flex items-center justify-between">
             <div>
-                <h1 className="text-2xl font-bold">Reports & Analytics</h1>
-                <p className="text-muted-foreground">View platform analytics and export reports.</p>
+                <h1 className="text-2xl font-bold">{t('adminReportsTitle')}</h1>
+                <p className="text-muted-foreground">{t('adminReportsDesc')}</p>
             </div>
             <Button variant="outline" onClick={handleExport} disabled={isExporting}>
                 {isExporting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FileDown className="mr-2 h-4 w-4" />}
-                Export
+                {t('export')}
             </Button>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
              <Card>
                 <CardHeader>
-                    <CardTitle>Items Posted vs. Resolved</CardTitle>
-                    <CardDescription>Last 6 months</CardDescription>
+                    <CardTitle>{t('adminChartTitleItems')}</CardTitle>
+                    <CardDescription>{t('adminChartDescMonths')}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   {loading ? (
@@ -146,7 +146,7 @@ export default function ReportsPage() {
             </Card>
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Active Users</CardTitle>
+                    <CardTitle className="text-sm font-medium">{t('adminChartTitleActiveUsers')}</CardTitle>
                     <Users className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
@@ -155,12 +155,12 @@ export default function ReportsPage() {
                     ) : (
                         <div className="text-2xl font-bold">{analytics?.activeUsersCount}</div>
                     )}
-                    <p className="text-xs text-muted-foreground">Users active in the last 30 days.</p>
+                    <p className="text-xs text-muted-foreground">{t('adminChartDescActiveUsers')}</p>
                 </CardContent>
             </Card>
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Partner Satisfaction</CardTitle>
+                    <CardTitle className="text-sm font-medium">{t('adminChartTitleSatisfaction')}</CardTitle>
                     <Star className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
@@ -169,7 +169,7 @@ export default function ReportsPage() {
                     ) : (
                         <div className="text-2xl font-bold">{analytics?.partnerSatisfaction} / 5</div>
                     )}
-                    <p className="text-xs text-muted-foreground">Average rating from resolved cases.</p>
+                    <p className="text-xs text-muted-foreground">{t('adminChartDescSatisfaction')}</p>
                 </CardContent>
             </Card>
         </div>

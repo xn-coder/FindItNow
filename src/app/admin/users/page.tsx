@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Search } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTranslation } from "react-i18next";
 
 type CombinedUser = {
   id: string;
@@ -22,6 +23,7 @@ export default function UserManagementPage() {
   const [users, setUsers] = useState<CombinedUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -72,15 +74,15 @@ export default function UserManagementPage() {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>User Management</CardTitle>
-          <CardDescription>View, search, and manage all users and partners on the platform.</CardDescription>
+          <CardTitle>{t('adminUsersTitle')}</CardTitle>
+          <CardDescription>{t('adminUsersDesc')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="relative mb-4">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="Search by name, email, or role..."
+              placeholder={t('adminUsersSearchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 w-full"
@@ -90,11 +92,11 @@ export default function UserManagementPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Role</TableHead>
-                  <TableHead>Registered On</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead>{t('adminUsersHeaderName')}</TableHead>
+                  <TableHead>{t('adminUsersHeaderEmail')}</TableHead>
+                  <TableHead>{t('adminUsersHeaderRole')}</TableHead>
+                  <TableHead>{t('adminUsersHeaderRegistered')}</TableHead>
+                  <TableHead className="text-right">{t('adminUsersHeaderActions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -114,7 +116,7 @@ export default function UserManagementPage() {
                       <TableCell className="font-medium">{user.name}</TableCell>
                       <TableCell>{user.email}</TableCell>
                       <TableCell>
-                        <Badge variant={user.role === 'Partner' ? 'secondary' : 'outline'}>{user.role}</Badge>
+                        <Badge variant={user.role === 'Partner' ? 'secondary' : 'outline'}>{t(user.role.toLowerCase())}</Badge>
                       </TableCell>
                       <TableCell>{user.createdAt.toLocaleDateString()}</TableCell>
                       <TableCell className="text-right">
@@ -124,7 +126,7 @@ export default function UserManagementPage() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center">No users found.</TableCell>
+                    <TableCell colSpan={5} className="text-center">{t('adminNoUsersFound')}</TableCell>
                   </TableRow>
                 )}
               </TableBody>

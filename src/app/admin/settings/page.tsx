@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { getEmailTemplates, getItemCategories, updateSettings } from "@/lib/actions";
 import type { Category, EmailTemplate } from "@/lib/types";
+import { useTranslation } from "react-i18next";
 
 export default function SettingsPage() {
     const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false);
@@ -24,6 +25,7 @@ export default function SettingsPage() {
     const [editedSubject, setEditedSubject] = useState("");
     const [editedMessage, setEditedMessage] = useState("");
     const [isPending, startTransition] = useTransition();
+    const { t } = useTranslation();
 
     const { toast } = useToast();
 
@@ -53,7 +55,7 @@ export default function SettingsPage() {
                 await updateSettings('categories', { list: updatedCategories });
                 setCategories(updatedCategories);
                 setNewCategoryName("");
-                toast({ title: "Category Added" });
+                toast({ title: t('adminCategoryAdded') });
             } catch (error) {
                 toast({ title: "Error", description: "Failed to add category.", variant: "destructive" });
             }
@@ -66,7 +68,7 @@ export default function SettingsPage() {
             try {
                 await updateSettings('categories', { list: updatedCategories });
                 setCategories(updatedCategories);
-                toast({ title: "Category Removed" });
+                toast({ title: t('adminCategoryRemoved') });
             } catch (error) {
                 toast({ title: "Error", description: "Failed to remove category.", variant: "destructive" });
             }
@@ -85,7 +87,7 @@ export default function SettingsPage() {
             try {
                 await updateSettings('emailTemplates', { list: updatedTemplates });
                 setEmailTemplates(updatedTemplates);
-                toast({ title: "Template Saved" });
+                toast({ title: t('adminTemplateSaved') });
                 setIsTemplateDialogOpen(false);
             } catch (error) {
                 toast({ title: "Error", description: "Failed to save template.", variant: "destructive" });
@@ -103,25 +105,25 @@ export default function SettingsPage() {
     return (
         <Dialog open={isTemplateDialogOpen} onOpenChange={setIsTemplateDialogOpen}>
             <div className="space-y-8">
-                <h1 className="text-3xl font-bold font-headline">Settings</h1>
+                <h1 className="text-3xl font-bold font-headline">{t('settings')}</h1>
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Category Management</CardTitle>
-                        <CardDescription>Add, edit, or remove item categories used across the platform.</CardDescription>
+                        <CardTitle>{t('adminCategoryTitle')}</CardTitle>
+                        <CardDescription>{t('adminCategoryDesc')}</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4">
                             <div className="flex items-center gap-2">
                                 <Input
-                                    placeholder="New category name..."
+                                    placeholder={t('adminNewCategoryPlaceholder')}
                                     className="max-w-xs"
                                     value={newCategoryName}
                                     onChange={(e) => setNewCategoryName(e.target.value)}
                                 />
                                 <Button onClick={handleAddCategory} disabled={isPending}>
                                     {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <PlusCircle className="mr-2 h-4 w-4" />}
-                                    Add Category
+                                    {t('adminAddCategory')}
                                 </Button>
                             </div>
                             <Separator />
@@ -145,8 +147,8 @@ export default function SettingsPage() {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Email Templates</CardTitle>
-                        <CardDescription>Customize the content of automated emails sent to users.</CardDescription>
+                        <CardTitle>{t('adminEmailTitle')}</CardTitle>
+                        <CardDescription>{t('adminEmailDesc')}</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-3">
@@ -154,7 +156,7 @@ export default function SettingsPage() {
                                 <DialogTrigger key={template.id} asChild onClick={() => handleOpenDialog(template)}>
                                     <div className="flex items-center justify-between p-3 bg-muted/50 rounded-md cursor-pointer hover:bg-muted">
                                         <p>{template.name}</p>
-                                        <Button variant="outline" size="sm"><Edit className="mr-2 h-4 w-4" />Edit</Button>
+                                        <Button variant="outline" size="sm"><Edit className="mr-2 h-4 w-4" />{t('edit')}</Button>
                                     </div>
                                 </DialogTrigger>
                             ))}
@@ -166,14 +168,14 @@ export default function SettingsPage() {
             {currentTemplate && (
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Edit Template: {currentTemplate.name}</DialogTitle>
+                        <DialogTitle>{t('adminEditTemplateTitle')}: {currentTemplate.name}</DialogTitle>
                         <DialogDescription>
-                            Make changes to the email template. Use placeholders like `{'{{'}name{'}}'}` where appropriate.
+                           {t('adminEditTemplateDesc')}
                         </DialogDescription>
                     </DialogHeader>
                     <div className="py-4 space-y-4">
                         <div className="space-y-2">
-                            <Label htmlFor="subject">Subject</Label>
+                            <Label htmlFor="subject">{t('contactSubjectLabel')}</Label>
                             <Input
                                 id="subject"
                                 value={editedSubject}
@@ -181,7 +183,7 @@ export default function SettingsPage() {
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="message">Message</Label>
+                            <Label htmlFor="message">{t('contactMessageLabel')}</Label>
                             <Textarea
                                 id="message"
                                 rows={10}
@@ -192,11 +194,11 @@ export default function SettingsPage() {
                     </div>
                     <DialogFooter>
                         <DialogClose asChild>
-                            <Button type="button" variant="outline" disabled={isPending}>Cancel</Button>
+                            <Button type="button" variant="outline" disabled={isPending}>{t('cancel')}</Button>
                         </DialogClose>
                         <Button type="button" onClick={handleSaveTemplate} disabled={isPending}>
                             {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            Save Changes
+                            {t('adminSaveChanges')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

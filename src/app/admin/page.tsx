@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
+import { useTranslation } from "react-i18next";
 
 type DashboardStats = {
     totalItems: number;
@@ -43,6 +44,8 @@ function StatCard({ title, value, icon, description, loading }: { title: string,
 }
 
 function ActivityFeed({ activity, loading }: { activity: ActivityItem[], loading: boolean }) {
+    const { t } = useTranslation();
+    
     if (loading) {
         return (
             <div className="space-y-4">
@@ -60,17 +63,17 @@ function ActivityFeed({ activity, loading }: { activity: ActivityItem[], loading
     }
 
     if (activity.length === 0) {
-        return <p className="text-muted-foreground text-center">No recent activity.</p>
+        return <p className="text-muted-foreground text-center">{t('adminNoRecentActivity')}</p>
     }
 
     const renderActivityText = (item: ActivityItem) => {
         if (item.type === 'item') {
-            return <>A new <strong>{item.type}</strong> item was reported: <Link href={`/browse?item=${item.id}`} className="font-semibold text-primary hover:underline">{item.name}</Link></>
+            return <>{t('adminActivityItem', { name: '' })}<Link href={`/browse?item=${item.id}`} className="font-semibold text-primary hover:underline">{item.name}</Link></>
         }
         if (item.type === 'claim') {
-            return <>A new <strong>{item.type}</strong> was submitted by {item.fullName} for item: <Link href={`/browse?item=${item.itemId}`} className="font-semibold text-primary hover:underline">{item.itemName}</Link></>
+            return <>{t('adminActivityClaim', { name: item.fullName, itemName: '' })}<Link href={`/browse?item=${item.itemId}`} className="font-semibold text-primary hover:underline">{item.itemName}</Link></>
         }
-        return 'An unknown activity occurred.';
+        return t('adminActivityUnknown');
     }
 
     const getActivityIcon = (type: 'item' | 'claim') => {
@@ -104,6 +107,7 @@ export default function AdminDashboardPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [activity, setActivity] = useState<ActivityItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -128,31 +132,31 @@ export default function AdminDashboardPage() {
     <div className="space-y-6">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             <StatCard 
-                title="Total Items"
+                title={t('adminStatTotalItems')}
                 value={stats?.totalItems ?? 0}
                 icon={<Package className="h-4 w-4 text-muted-foreground" />}
-                description={`${stats?.totalLost ?? 0} Lost vs. ${stats?.totalFound ?? 0} Found`}
+                description={t('adminStatTotalItemsDesc', { lost: stats?.totalLost ?? 0, found: stats?.totalFound ?? 0 })}
                 loading={loading}
             />
              <StatCard 
-                title="Active Claims"
+                title={t('adminStatActiveClaims')}
                 value={stats?.activeClaims ?? 0}
                 icon={<ShieldCheck className="h-4 w-4 text-muted-foreground" />}
-                description="Claims awaiting resolution"
+                description={t('adminStatActiveClaimsDesc')}
                 loading={loading}
             />
              <StatCard 
-                title="Resolved Cases"
+                title={t('adminStatResolvedCases')}
                 value={stats?.resolvedCases ?? 0}
                 icon={<Handshake className="h-4 w-4 text-muted-foreground" />}
-                description="Successful reunions"
+                description={t('adminStatResolvedCasesDesc')}
                 loading={loading}
             />
              <StatCard 
-                title="Partner Contributions"
+                title={t('adminStatPartnerContributions')}
                 value={stats?.partnerContributions ?? 0}
                 icon={<Users className="h-4 w-4 text-muted-foreground" />}
-                description="Items posted by partners"
+                description={t('adminStatPartnerContributionsDesc')}
                 loading={loading}
             />
         </div>
@@ -160,9 +164,9 @@ export default function AdminDashboardPage() {
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                     <Activity className="h-5 w-5" />
-                    Recent Activity
+                    {t('adminRecentActivity')}
                 </CardTitle>
-                <CardDescription>A log of the latest items and claims on the platform.</CardDescription>
+                <CardDescription>{t('adminRecentActivityDesc')}</CardDescription>
             </CardHeader>
             <CardContent>
                 <ActivityFeed activity={activity} loading={loading} />

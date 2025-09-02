@@ -16,12 +16,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
 import { AdminChatViewer } from "@/components/admin-chat-viewer";
+import { useTranslation } from "react-i18next";
 
 export default function ClaimManagementPage() {
   const [claims, setClaims] = useState<Claim[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const fetchClaims = async () => {
     setLoading(true);
@@ -68,15 +70,15 @@ export default function ClaimManagementPage() {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Claims & Verification</CardTitle>
-          <CardDescription>View, manage, and verify all claims submitted on the platform.</CardDescription>
+          <CardTitle>{t('adminClaimsTitle')}</CardTitle>
+          <CardDescription>{t('adminClaimsDesc')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="relative mb-4">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="Search by item, claimant, email, or status..."
+              placeholder={t('adminClaimsSearchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 w-full"
@@ -99,9 +101,9 @@ export default function ClaimManagementPage() {
                  <div className="flex justify-between items-start">
                     <div>
                         <CardTitle className="text-lg">{claim.itemName}</CardTitle>
-                        <CardDescription>Claim ID: #{claim.id.substring(0, 6)}</CardDescription>
+                        <CardDescription>{t('adminClaimId')}: #{claim.id.substring(0, 6)}</CardDescription>
                     </div>
-                    <Badge variant={getStatusVariant(claim.status)} className="capitalize">{claim.status}</Badge>
+                    <Badge variant={getStatusVariant(claim.status)} className="capitalize">{t(claim.status as any)}</Badge>
                  </div>
               </CardHeader>
               <CardContent className="space-y-4 flex-grow">
@@ -111,24 +113,24 @@ export default function ClaimManagementPage() {
                     <div className="flex items-center gap-3"><Mail className="h-4 w-4 text-muted-foreground"/><span>{claim.email}</span></div>
                     <div className="flex items-center gap-3"><Calendar className="h-4 w-4 text-muted-foreground"/><span>{new Date(claim.submittedAt as Date).toLocaleString()}</span></div>
                      <div className="flex items-center gap-3"><Package className="h-4 w-4 text-muted-foreground"/>
-                        <Link href={`/browse?item=${claim.itemId}`} className="text-primary hover:underline">View Item</Link>
+                        <Link href={`/browse?item=${claim.itemId}`} className="text-primary hover:underline">{t('adminViewItem')}</Link>
                      </div>
                 </div>
                 <Separator />
                  <Dialog>
                     <DialogTrigger asChild>
-                        <Button variant="outline" className="w-full"><Eye className="mr-2 h-4 w-4" />View Proof</Button>
+                        <Button variant="outline" className="w-full"><Eye className="mr-2 h-4 w-4" />{t('adminViewProof')}</Button>
                     </DialogTrigger>
                     <DialogContent>
                         <DialogHeader>
-                            <DialogTitle>Proof of Ownership</DialogTitle>
-                            <DialogDescription>Submitted by {claim.fullName}</DialogDescription>
+                            <DialogTitle>{t('adminProofTitle')}</DialogTitle>
+                            <DialogDescription>{t('adminProofDesc', { name: claim.fullName })}</DialogDescription>
                         </DialogHeader>
                         <div className="space-y-4 max-h-[60vh] overflow-y-auto p-1">
                             <p className="text-sm text-muted-foreground bg-slate-50 p-3 rounded-md mt-1 border">{claim.proof}</p>
                             {claim.proofImageUrl && (
                                 <div>
-                                    <p className="font-semibold mb-2">Attached Image:</p>
+                                    <p className="font-semibold mb-2">{t('adminProofImage')}</p>
                                     <div className="relative aspect-video w-full">
                                         <Image src={claim.proofImageUrl} alt="Proof Image" layout="fill" objectFit="contain" className="rounded-md border"/>
                                     </div>
@@ -142,14 +144,14 @@ export default function ClaimManagementPage() {
                  <Dialog>
                     <DialogTrigger asChild>
                       <Button size="sm" variant="secondary" className="flex-1">
-                        <MessageSquare className="mr-2 h-4 w-4"/>View Chat
+                        <MessageSquare className="mr-2 h-4 w-4"/>{t('adminViewChat')}
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="max-w-2xl">
                       <DialogHeader>
-                        <DialogTitle>Chat Log</DialogTitle>
+                        <DialogTitle>{t('adminChatLogTitle')}</DialogTitle>
                         <DialogDescription>
-                          Viewing chat for claim #{claim.id.substring(0,6)}
+                          {t('adminChatLogDesc', { id: claim.id.substring(0,6) })}
                         </DialogDescription>
                       </DialogHeader>
                       <AdminChatViewer chatId={claim.chatId} />
@@ -162,7 +164,7 @@ export default function ClaimManagementPage() {
       ) : (
         <Card>
             <CardContent className="p-10 text-center">
-                 <p>No claims found matching your criteria.</p>
+                 <p>{t('adminNoClaimsFound')}</p>
             </CardContent>
         </Card>
       )}

@@ -7,6 +7,9 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import en from '../../public/locales/en/common.json';
 import de from '../../public/locales/de/common.json';
 import fr from '../../public/locales/fr/common.json';
+import admin_en from '../../public/locales/en/admin.json';
+import admin_de from '../../public/locales/de/admin.json';
+import admin_fr from '../../public/locales/fr/admin.json';
 
 i18n
   .use(LanguageDetector)
@@ -19,13 +22,13 @@ i18n
     },
     resources: {
       en: {
-        translation: en,
+        translation: { ...en, ...admin_en },
       },
       de: {
-        translation: de,
+        translation: { ...de, ...admin_de },
       },
       fr: {
-        translation: fr,
+        translation: { ...fr, ...admin_fr },
       },
     },
      detection: {
