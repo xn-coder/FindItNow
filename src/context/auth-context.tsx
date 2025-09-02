@@ -12,13 +12,13 @@ export type AuthUser = {
     isPartner?: boolean;
     isAdmin?: boolean;
     businessName?: string;
-    // You can add other user properties here
+    status?: 'active' | 'suspended' | 'banned';
 };
 
 type AuthContextType = {
   user: AuthUser | null;
   loading: boolean;
-  login: (user: AuthUser) => AuthUser;
+  login: (user: AuthUser, isSuspended?: boolean) => AuthUser;
   logout: () => void;
 };
 
@@ -71,7 +71,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     initializeAuth();
   }, []);
 
-  const login = (userData: AuthUser) => {
+  const login = (userData: AuthUser, isSuspended = false) => {
     const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
     const userWithAdminCheck = {
       ...userData,
@@ -80,12 +80,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
     localStorage.setItem('finditnow_user', JSON.stringify(userWithAdminCheck));
     setUser(userWithAdminCheck);
     
-    // Asynchronously update lastActivity without blocking the login flow
-    const collectionName = userWithAdminCheck.isPartner ? 'partners' : 'users';
-    const userRef = doc(db, collectionName, userWithAdminCheck.id);
-    updateDoc(userRef, { lastActivity: new Date() }).catch(err => {
-        console.error("Failed to update last activity:", err);
-    });
+    if (!isSuspended) {
+        // Asynchronously update lastActivity without blocking the login flow
+        const collectionName = userWithAdminCheck.isPartner ? 'partners' : 'users';
+        const userRef = doc(db, collectionName, userWithAdminCheck.id);
+        updateDoc(userRef, { lastActivity: new Date() }).catch(err => {
+            console.error("Failed to update last activity:", err);
+        });
+    }
 
     return userWithAdminCheck;
   };

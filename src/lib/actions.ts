@@ -86,6 +86,7 @@ export async function createUser(userData: z.infer<typeof UserSchema>) {
     password: hashedPassword,
     createdAt: new Date(),
     lastActivity: new Date(),
+    status: 'active',
   };
 
   const docRef = await addDoc(collection(db, 'users'), userToStore);
@@ -144,12 +145,17 @@ export async function loginUser(credentials: z.infer<typeof LoginSchema>) {
         throw new Error('Invalid password.');
     }
     
+    const { password, ...userWithoutPassword } = user;
+
+    if (user.status === 'suspended') {
+        return { status: 'suspended', user: userWithoutPassword };
+    }
+    
     // Update last activity on login
     const userRef = doc(db, 'users', user.id);
     await updateDoc(userRef, { lastActivity: new Date() });
 
-    const { password, ...userWithoutPassword } = user;
-    return userWithoutPassword;
+    return { status: 'success', user: userWithoutPassword };
 }
 
 
@@ -173,6 +179,7 @@ export async function createPartner(partnerData: z.infer<typeof PartnerSchema>) 
     businessType: validatedData.businessType,
     createdAt: new Date(),
     lastActivity: new Date(),
+    status: 'active',
   };
 
   const docRef = await addDoc(collection(db, 'partners'), partnerToStore);
@@ -210,7 +217,6 @@ export async function getPartnerByEmail(email: string) {
 
 /**
  * Authenticates a partner by checking their email and password.
- * @param credentials - The partner's login credentials.
  */
 export async function loginPartner(credentials: z.infer<typeof PartnerLoginSchema>) {
     const validatedData = PartnerLoginSchema.parse(credentials);
@@ -497,6 +503,16 @@ export async function updateClaimStatus(claimId: string, status: 'accepted' | 'r
   const claimRef = doc(db, 'claims', claimId);
   await updateDoc(claimRef, { status });
   return { success: true };
+}
+
+export async function updateUserStatus(userId: string, status: 'active' | 'suspended' | 'banned', role: 'User' | 'Partner') {
+    if (!userId || !status) {
+        throw new Error("User ID and status are required.");
+    }
+    const collectionName = role === 'Partner' ? 'partners' : 'users';
+    const userRef = doc(db, collectionName, userId);
+    await updateDoc(userRef, { status });
+    return { success: true };
 }
 
 

@@ -40,8 +40,21 @@ export default function LoginPage() {
   async function onSubmit(values: z.infer<typeof loginSchema>) {
     setIsLoading(true);
     try {
-      const user = await loginUser(values);
-      const loggedInUser = login(user as AuthUser);
+      const result = await loginUser(values);
+
+      if (result.status === 'suspended') {
+        // Don't fully log in, but store minimal info for the suspended page
+        login({ id: result.user.id, email: result.user.email, status: 'suspended' }, true);
+        router.push('/suspended');
+        toast({
+          variant: "destructive",
+          title: t('toastAccountSuspendedTitle'),
+          description: t('toastAccountSuspendedDesc'),
+        });
+        return;
+      }
+      
+      const loggedInUser = login(result.user as AuthUser);
       toast({
         title: "Login Successful",
         description: "Welcome back!",
