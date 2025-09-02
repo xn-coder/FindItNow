@@ -95,7 +95,7 @@ export default function SettingsPage() {
                 <DialogHeader>
                     <DialogTitle>Edit Template: {currentTemplate?.name}</DialogTitle>
                     <DialogDescription>
-                        Make changes to the email template. Use placeholders like `{{'{'}}{'{'}name{'}'}{'}'}` where appropriate.
+                        Make changes to the email template. Use placeholders like `{'{{'}name{'}}'}` where appropriate.
                     </DialogDescription>
                 </DialogHeader>
                 <div className="py-4 space-y-4">
