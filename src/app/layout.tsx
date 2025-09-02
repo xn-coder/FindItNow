@@ -1,3 +1,4 @@
+
 "use client";
 
 import './globals.css';
@@ -7,7 +8,6 @@ import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/context/auth-context';
 import { I18nProvider } from '@/components/providers';
 import { Suspense } from 'react';
-import { MaintenanceWrapper } from '@/components/maintenance-wrapper';
 import { usePathname } from 'next/navigation';
 
 function SiteLayout({ children }: { children: React.ReactNode }) {
@@ -49,12 +49,10 @@ export default function RootLayout({
         <Suspense fallback={<div>Loading...</div>}>
           <I18nProvider>
             <AuthProvider>
-              <MaintenanceWrapper>
-                  <SiteLayout>
-                    {children}
-                  </SiteLayout>
-                  <Toaster />
-              </MaintenanceWrapper>
+                <SiteLayout>
+                {children}
+                </SiteLayout>
+                <Toaster />
             </AuthProvider>
           </I18nProvider>
         </Suspense>

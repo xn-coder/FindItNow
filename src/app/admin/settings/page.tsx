@@ -1,161 +1,19 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { itemCategories as defaultCategories } from "@/lib/data";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Edit, PlusCircle, Save, Trash2, Wrench } from "lucide-react";
-import { maintenanceDb } from "@/lib/maintenance-firebase";
-import { ref, onValue, set, get } from "firebase/database";
-import { useToast } from "@/hooks/use-toast";
-import { Skeleton } from "@/components/ui/skeleton";
-
-type MaintenanceConfig = {
-    isEnabled: boolean;
-    message: string;
-};
-
-const defaultConfig = { 
-    isEnabled: false, 
-    message: 'We are currently down for maintenance. Please check back later.' 
-};
+import { Edit, PlusCircle, Trash2 } from "lucide-react";
 
 export default function SettingsPage() {
-    const { toast } = useToast();
-    const [maintenanceConfig, setMaintenanceConfig] = useState<MaintenanceConfig | null>(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const configRef = ref(maintenanceDb, '/Lost&Found');
-
-        const initializeAndListen = async () => {
-             const snapshot = await get(configRef);
-             if (!snapshot.exists() || !snapshot.val()?.hasOwnProperty('isEnabled')) {
-                await set(configRef, defaultConfig);
-             }
-
-             const unsubscribe = onValue(configRef, (snapshot) => {
-                if (snapshot.exists()) {
-                    setMaintenanceConfig(snapshot.val());
-                } else {
-                    setMaintenanceConfig(defaultConfig);
-                }
-                setLoading(false);
-            });
-
-            return unsubscribe;
-        }
-        
-        const unsubscribePromise = initializeAndListen();
-
-        return () => {
-            unsubscribePromise.then(unsubscribe => {
-                if (unsubscribe) unsubscribe();
-            })
-        };
-    }, []);
-
-    const handleMaintenanceToggle = (isEnabled: boolean) => {
-        if (maintenanceConfig) {
-            const newConfig = { ...maintenanceConfig, isEnabled };
-            set(ref(maintenanceDb, '/Lost&Found'), newConfig)
-                .then(() => {
-                    setMaintenanceConfig(newConfig); // Optimistically update state
-                    toast({
-                        title: "Settings Updated",
-                        description: `Maintenance mode has been ${isEnabled ? 'enabled' : 'disabled'}.`,
-                    });
-                })
-                .catch(error => {
-                     toast({
-                        variant: "destructive",
-                        title: "Error",
-                        description: "Failed to update maintenance settings.",
-                    });
-                });
-        }
-    };
-
-     const handleMaintenanceMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (maintenanceConfig) {
-            setMaintenanceConfig({ ...maintenanceConfig, message: e.target.value });
-        }
-    };
-
-    const handleSaveMessage = () => {
-         if (maintenanceConfig) {
-            set(ref(maintenanceDb, '/Lost&Found/message'), maintenanceConfig.message)
-                .then(() => {
-                    toast({
-                        title: "Message Updated",
-                        description: "Maintenance message has been saved.",
-                    });
-                })
-                 .catch(error => {
-                     toast({
-                        variant: "destructive",
-                        title: "Error",
-                        description: "Failed to save maintenance message.",
-                    });
-                });
-        }
-    }
-
     return (
         <div className="space-y-8">
             <h1 className="text-3xl font-bold font-headline">Settings</h1>
-
-            <Card>
-                <CardHeader>
-                    <div className="flex items-center gap-3">
-                        <Wrench className="h-6 w-6 text-primary"/>
-                        <CardTitle>Maintenance Mode</CardTitle>
-                    </div>
-                    <CardDescription>Control site-wide access for maintenance or updates.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    {loading ? (
-                        <div className="space-y-4">
-                            <Skeleton className="h-8 w-1/4" />
-                            <Skeleton className="h-10 w-full" />
-                            <Skeleton className="h-10 w-1/4" />
-                        </div>
-                    ) : maintenanceConfig ? (
-                        <div className="space-y-4">
-                            <div className="flex items-center space-x-2">
-                                <Switch
-                                    id="maintenance-mode"
-                                    checked={maintenanceConfig.isEnabled}
-                                    onCheckedChange={handleMaintenanceToggle}
-                                />
-                                <Label htmlFor="maintenance-mode">
-                                    {maintenanceConfig.isEnabled ? "Maintenance Mode is ON" : "Maintenance Mode is OFF"}
-                                </Label>
-                            </div>
-                             <div className="space-y-2">
-                                <Label htmlFor="maintenance-message">Custom Maintenance Message</Label>
-                                <div className="flex gap-2">
-                                    <Input
-                                        id="maintenance-message"
-                                        value={maintenanceConfig.message}
-                                        onChange={handleMaintenanceMessageChange}
-                                        placeholder="E.g., We'll be back shortly!"
-                                    />
-                                    <Button onClick={handleSaveMessage}><Save className="mr-2 h-4 w-4"/>Save</Button>
-                                </div>
-                            </div>
-                        </div>
-                    ) : (
-                         <p className="text-muted-foreground">Could not load maintenance settings.</p>
-                    )}
-                </CardContent>
-            </Card>
 
             <Card>
                 <CardHeader>
