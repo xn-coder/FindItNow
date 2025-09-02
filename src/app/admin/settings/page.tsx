@@ -35,9 +35,14 @@ export default function SettingsPage() {
         });
         setIsTemplateDialogOpen(false);
     };
+    
+    const handleOpenDialog = (template: {id: string, name: string}) => {
+        setCurrentTemplate(template);
+        setIsTemplateDialogOpen(true);
+    };
 
     return (
-        <>
+        <Dialog open={isTemplateDialogOpen} onOpenChange={setIsTemplateDialogOpen}>
             <div className="space-y-8">
                 <h1 className="text-3xl font-bold font-headline">Settings</h1>
 
@@ -74,20 +79,12 @@ export default function SettingsPage() {
                     <CardContent>
                         <div className="space-y-3">
                            {emailTemplates.map((template) => (
-                             <Dialog key={template.id} open={isTemplateDialogOpen && currentTemplate?.id === template.id} onOpenChange={(isOpen) => {
-                                 setIsTemplateDialogOpen(isOpen);
-                                 if (!isOpen) setCurrentTemplate(null);
-                             }}>
-                                <DialogTrigger asChild onClick={() => {
-                                    setCurrentTemplate(template);
-                                    setIsTemplateDialogOpen(true);
-                                }}>
+                                <DialogTrigger key={template.id} asChild onClick={() => handleOpenDialog(template)}>
                                     <div className="flex items-center justify-between p-3 bg-muted/50 rounded-md cursor-pointer hover:bg-muted">
                                         <p>{template.name}</p>
-                                        <Button variant="outline" size="sm" className="pointer-events-none"><Edit className="mr-2 h-4 w-4"/>Edit</Button>
+                                        <Button variant="outline" size="sm"><Edit className="mr-2 h-4 w-4"/>Edit</Button>
                                     </div>
                                 </DialogTrigger>
-                             </Dialog>
                            ))}
                         </div>
                     </CardContent>
@@ -118,6 +115,6 @@ export default function SettingsPage() {
                     <Button type="button" onClick={handleSaveTemplate}>Save Changes</Button>
                 </DialogFooter>
             </DialogContent>
-        </>
+        </Dialog>
     );
 }
