@@ -7,6 +7,7 @@ import { collection, addDoc, getDocs, query, where, Timestamp, limit, orderBy, s
 import bcrypt from 'bcryptjs';
 import type { Notification, Claim, Category, EmailTemplate } from './types';
 import { emailTemplates as defaultEmailTemplates, templateContents as defaultTemplateContents } from './email-templates';
+import { subMonths, startOfMonth, endOfMonth, format, subDays } from 'date-fns';
 
 
 // Schema for new user creation
@@ -84,6 +85,7 @@ export async function createUser(userData: z.infer<typeof UserSchema>) {
     email: validatedData.email,
     password: hashedPassword,
     createdAt: new Date(),
+    lastActivity: new Date(),
   };
 
   const docRef = await addDoc(collection(db, 'users'), userToStore);
@@ -118,7 +120,6 @@ export async function getUserByEmail(email: string) {
 
 /**
  * Authenticates a user by checking their email and password.
- * @param credentials - The user's login credentials.
  */
 export async function loginUser(credentials: z.infer<typeof LoginSchema>) {
     const validatedData = LoginSchema.parse(credentials);
@@ -139,8 +140,10 @@ export async function loginUser(credentials: z.infer<typeof LoginSchema>) {
         throw new Error('Invalid password.');
     }
     
-    // Here you would typically create a session, set a cookie, or return a JWT.
-    // For now, we just return the user data (excluding password).
+    // Update last activity on login
+    const userRef = doc(db, 'users', user.id);
+    await updateDoc(userRef, { lastActivity: new Date() });
+
     const { password, ...userWithoutPassword } = user;
     return userWithoutPassword;
 }
@@ -165,6 +168,7 @@ export async function createPartner(partnerData: z.infer<typeof PartnerSchema>) 
     businessName: validatedData.businessName,
     businessType: validatedData.businessType,
     createdAt: new Date(),
+    lastActivity: new Date(),
   };
 
   const docRef = await addDoc(collection(db, 'partners'), partnerToStore);
@@ -218,6 +222,10 @@ export async function loginPartner(credentials: z.infer<typeof PartnerLoginSchem
         return { error: 'Invalid credentials.' };
     }
     
+    // Update last activity on login
+    const partnerRef = doc(db, 'partners', partner.id);
+    await updateDoc(partnerRef, { lastActivity: new Date() });
+
     const { password, ...partnerWithoutPassword } = partner;
     return { success: partnerWithoutPassword };
 }
@@ -540,5 +548,78 @@ export async function initializeDefaultSettings() {
             ...defaultTemplateContents[t.id],
         }));
         await updateSettings('emailTemplates', { list: templatesToStore });
+    }
+}
+
+
+// Analytics Actions
+export async function getDashboardAnalytics() {
+    try {
+        // 1. Items Posted vs Resolved for the last 6 months
+        const monthlyStats: { month: string; posted: number; resolved: number }[] = [];
+        const today = new Date();
+        for (let i = 5; i >= 0; i--) {
+            const date = subMonths(today, i);
+            const start = startOfMonth(date);
+            const end = endOfMonth(date);
+            const monthName = format(date, 'MMMM');
+
+            const postedQuery = query(
+                collection(db, "items"),
+                where("createdAt", ">=", start),
+                where("createdAt", "<=", end)
+            );
+            const resolvedQuery = query(
+                collection(db, "items"),
+                where("status", "==", "resolved"),
+                where("createdAt", ">=", start),
+                where("createdAt", "<=", end)
+            );
+
+            const [postedSnapshot, resolvedSnapshot] = await Promise.all([
+                getDocs(postedQuery),
+                getDocs(resolvedQuery)
+            ]);
+            
+            monthlyStats.push({
+                month: monthName,
+                posted: postedSnapshot.size,
+                resolved: resolvedSnapshot.size,
+            });
+        }
+
+        // 2. Active Users (active in the last 30 days)
+        const thirtyDaysAgo = subDays(today, 30);
+        const activeUsersQuery = query(
+            collection(db, "users"),
+            where("lastActivity", ">=", thirtyDaysAgo)
+        );
+        const activeUsersSnapshot = await getDocs(activeUsersQuery);
+        const activeUsersCount = activeUsersSnapshot.size;
+
+        // 3. Partner Satisfaction
+        const feedbackQuery = query(collection(db, "feedback"));
+        const feedbackSnapshot = await getDocs(feedbackQuery);
+        let totalRating = 0;
+        let ratingCount = 0;
+        feedbackSnapshot.forEach(doc => {
+            const data = doc.data();
+            if (data.rating) {
+                totalRating += data.rating;
+                ratingCount++;
+            }
+        });
+        const partnerSatisfaction = ratingCount > 0 ? (totalRating / ratingCount).toFixed(1) : "0.0";
+
+
+        return {
+            monthlyStats,
+            activeUsersCount,
+            partnerSatisfaction,
+        };
+
+    } catch (error) {
+        console.error("Error fetching dashboard analytics: ", error);
+        throw new Error("Failed to fetch analytics data.");
     }
 }

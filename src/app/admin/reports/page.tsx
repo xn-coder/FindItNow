@@ -24,17 +24,11 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart"
 import { Button } from "@/components/ui/button"
-import { FileDown } from "lucide-react"
+import { FileDown, Users, Star } from "lucide-react"
 import { useTranslation } from "react-i18next"
-
-const chartData = [
-  { month: "January", posted: 186, resolved: 80 },
-  { month: "February", posted: 305, resolved: 200 },
-  { month: "March", posted: 237, resolved: 120 },
-  { month: "April", posted: 273, resolved: 190 },
-  { month: "May", posted: 209, resolved: 130 },
-  { month: "June", posted: 214, resolved: 140 },
-]
+import { useEffect, useState } from "react"
+import { getDashboardAnalytics } from "@/lib/actions"
+import { Skeleton } from "@/components/ui/skeleton"
 
 const chartConfig = {
   posted: {
@@ -47,8 +41,33 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
+type AnalyticsData = {
+    monthlyStats: { month: string; posted: number; resolved: number }[];
+    activeUsersCount: number;
+    partnerSatisfaction: string;
+};
+
 export default function ReportsPage() {
   const { t } = useTranslation();
+  const [loading, setLoading] = useState(true);
+  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+        setLoading(true);
+        try {
+            const data = await getDashboardAnalytics();
+            setAnalytics(data);
+        } catch (error) {
+            console.error("Failed to fetch analytics", error);
+            // Optionally, show a toast message here
+        } finally {
+            setLoading(false);
+        }
+    };
+    fetchData();
+  }, []);
+
   return (
     <div className="space-y-6">
         <div className="flex items-center justify-between">
@@ -56,21 +75,24 @@ export default function ReportsPage() {
                 <h1 className="text-2xl font-bold">Reports & Analytics</h1>
                 <p className="text-muted-foreground">View platform analytics and export reports.</p>
             </div>
-            <Button variant="outline">
+            <Button variant="outline" disabled>
                 <FileDown className="mr-2 h-4 w-4" />
                 Export
             </Button>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
              <Card>
                 <CardHeader>
                     <CardTitle>Items Posted vs. Resolved</CardTitle>
-                    <CardDescription>January - June 2024</CardDescription>
+                    <CardDescription>Last 6 months</CardDescription>
                 </CardHeader>
                 <CardContent>
+                  {loading ? (
+                    <Skeleton className="h-[200px] w-full" />
+                  ) : (
                     <ChartContainer config={chartConfig} className="h-[200px] w-full">
-                        <BarChart accessibilityLayer data={chartData}>
+                        <BarChart accessibilityLayer data={analytics?.monthlyStats}>
                             <CartesianGrid vertical={false} />
                             <XAxis
                             dataKey="month"
@@ -85,24 +107,35 @@ export default function ReportsPage() {
                             <Bar dataKey="resolved" fill="var(--color-resolved)" radius={4} />
                         </BarChart>
                     </ChartContainer>
+                  )}
                 </CardContent>
             </Card>
             <Card>
-                <CardHeader>
-                    <CardTitle>Active Users</CardTitle>
-                    <CardDescription>Users who have been active in the last 30 days.</CardDescription>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Active Users</CardTitle>
+                    <Users className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-4xl font-bold">5,231</div>
+                    {loading ? (
+                       <Skeleton className="h-8 w-1/2 mt-2"/>
+                    ) : (
+                        <div className="text-2xl font-bold">{analytics?.activeUsersCount}</div>
+                    )}
+                    <p className="text-xs text-muted-foreground">Users active in the last 30 days.</p>
                 </CardContent>
             </Card>
             <Card>
-                <CardHeader>
-                    <CardTitle>Partner Satisfaction</CardTitle>
-                    <CardDescription>Average rating from resolved cases.</CardDescription>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Partner Satisfaction</CardTitle>
+                    <Star className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-4xl font-bold">4.8 / 5</div>
+                     {loading ? (
+                        <Skeleton className="h-8 w-1/2 mt-2"/>
+                    ) : (
+                        <div className="text-2xl font-bold">{analytics?.partnerSatisfaction} / 5</div>
+                    )}
+                    <p className="text-xs text-muted-foreground">Average rating from resolved cases.</p>
                 </CardContent>
             </Card>
         </div>

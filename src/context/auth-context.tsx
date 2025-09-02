@@ -3,6 +3,8 @@
 
 import { createContext, useState, useEffect, ReactNode } from 'react';
 import { createUser, getUserByEmail, initializeDefaultSettings } from '@/lib/actions';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 export type AuthUser = {
     id: string;
@@ -77,6 +79,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
     };
     localStorage.setItem('finditnow_user', JSON.stringify(userWithAdminCheck));
     setUser(userWithAdminCheck);
+    
+    // Asynchronously update lastActivity without blocking the login flow
+    const collectionName = userWithAdminCheck.isPartner ? 'partners' : 'users';
+    const userRef = doc(db, collectionName, userWithAdminCheck.id);
+    updateDoc(userRef, { lastActivity: new Date() }).catch(err => {
+        console.error("Failed to update last activity:", err);
+    });
+
     return userWithAdminCheck;
   };
 
