@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { db } from '@/lib/firebase';
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 import type { Message } from '@/lib/types';
@@ -53,6 +53,17 @@ export function AdminChatViewer({ chatId }: AdminChatViewerProps) {
     return () => unsubscribe();
   }, [chatId]);
 
+  const participantIds = useMemo(() => {
+    const ids = new Set<string>();
+    messages.forEach(msg => {
+        if (msg.senderId !== 'system') {
+            ids.add(msg.senderId);
+        }
+    });
+    return Array.from(ids);
+  }, [messages]);
+
+
   if (loading) {
     return (
       <div className="space-y-4 p-4">
@@ -82,14 +93,13 @@ export function AdminChatViewer({ chatId }: AdminChatViewerProps) {
               </div>
             )
            }
+           const isFirstParticipant = message.senderId === participantIds[0];
            return (
               <div
                 key={message.id}
                 className={cn(
                   'flex items-end gap-2 max-w-[75%]',
-                  // To make it consistent, we'll assign one side to owner and one to claimant
-                  // This is a simplification and might not reflect the actual users perfectly
-                  message.senderId.charCodeAt(0) % 2 === 0 ? 'ml-auto flex-row-reverse' : 'mr-auto'
+                   isFirstParticipant ? 'mr-auto' : 'ml-auto flex-row-reverse'
                 )}
               >
                 <Avatar className="h-8 w-8">
@@ -98,7 +108,7 @@ export function AdminChatViewer({ chatId }: AdminChatViewerProps) {
                 <div
                   className={cn(
                     'rounded-lg px-4 py-2',
-                    message.senderId.charCodeAt(0) % 2 === 0
+                    !isFirstParticipant
                       ? 'bg-primary text-primary-foreground'
                       : 'bg-muted'
                   )}
