@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -11,13 +12,18 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Edit, PlusCircle, Save, Trash2, Wrench } from "lucide-react";
 import { maintenanceDb } from "@/lib/maintenance-firebase";
-import { ref, onValue, set } from "firebase/database";
+import { ref, onValue, set, get } from "firebase/database";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 
 type MaintenanceConfig = {
     isEnabled: boolean;
     message: string;
+};
+
+const defaultConfig = { 
+    isEnabled: false, 
+    message: 'We are currently down for maintenance. Please check back later.' 
 };
 
 export default function SettingsPage() {
@@ -27,14 +33,32 @@ export default function SettingsPage() {
 
     useEffect(() => {
         const configRef = ref(maintenanceDb, '/Lost&Found');
-        const unsubscribe = onValue(configRef, (snapshot) => {
-            if (snapshot.exists()) {
-                setMaintenanceConfig(snapshot.val());
-            }
-            setLoading(false);
-        });
 
-        return () => unsubscribe();
+        const initializeAndListen = async () => {
+             const snapshot = await get(configRef);
+             if (!snapshot.exists() || !snapshot.val()?.hasOwnProperty('isEnabled')) {
+                await set(configRef, defaultConfig);
+             }
+
+             const unsubscribe = onValue(configRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    setMaintenanceConfig(snapshot.val());
+                } else {
+                    setMaintenanceConfig(defaultConfig);
+                }
+                setLoading(false);
+            });
+
+            return unsubscribe;
+        }
+        
+        const unsubscribePromise = initializeAndListen();
+
+        return () => {
+            unsubscribePromise.then(unsubscribe => {
+                if (unsubscribe) unsubscribe();
+            })
+        };
     }, []);
 
     const handleMaintenanceToggle = (isEnabled: boolean) => {
@@ -42,6 +66,7 @@ export default function SettingsPage() {
             const newConfig = { ...maintenanceConfig, isEnabled };
             set(ref(maintenanceDb, '/Lost&Found'), newConfig)
                 .then(() => {
+                    setMaintenanceConfig(newConfig); // Optimistically update state
                     toast({
                         title: "Settings Updated",
                         description: `Maintenance mode has been ${isEnabled ? 'enabled' : 'disabled'}.`,
@@ -57,7 +82,7 @@ export default function SettingsPage() {
         }
     };
 
-     const handleMaintenanceMessageChange = (e: React.ChangeEvent<Input>) => {
+     const handleMaintenanceMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (maintenanceConfig) {
             setMaintenanceConfig({ ...maintenanceConfig, message: e.target.value });
         }
