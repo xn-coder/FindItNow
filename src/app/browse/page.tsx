@@ -8,8 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ItemCard } from '@/components/item-card';
 import { ItemDetail } from '@/components/item-detail';
-import { itemCategories } from '@/lib/data';
-import type { Item } from '@/lib/types';
+import type { Item, Category } from '@/lib/types';
 import { ListFilter, Search } from 'lucide-react';
 import { db } from '@/lib/firebase';
 import { collection, getDocs, doc, getDoc, query, where, orderBy } from "firebase/firestore";
@@ -19,15 +18,25 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Separator } from "@/components/ui/separator";
 import { useTranslation } from 'react-i18next';
 import { translateText } from '@/ai/translate-flow';
+import { getItemCategories } from '@/lib/actions';
 
 
 function ItemBrowser() {
   const [items, setItems] = useState<Item[]>([]);
+  const [itemCategories, setItemCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [category, setCategory] = useState('all');
   const [itemType, setItemType] = useState('all');
   const { t, i18n } = useTranslation();
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+        const categories = await getItemCategories();
+        setItemCategories(categories);
+    };
+    fetchCategories();
+  }, []);
 
   const fetchAndTranslateItems = async (language: string) => {
     setLoading(true);
@@ -122,8 +131,8 @@ function ItemBrowser() {
             <SelectContent>
                 <SelectItem value="all">{t('allcategories')}</SelectItem>
                 {itemCategories.map((cat) => (
-                <SelectItem key={cat} value={cat}>
-                    {t(cat as any)}
+                <SelectItem key={cat.id} value={cat.name}>
+                    {t(cat.name as any)}
                 </SelectItem>
                 ))}
             </SelectContent>

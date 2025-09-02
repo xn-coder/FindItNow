@@ -2,7 +2,7 @@
 "use client";
 
 import { createContext, useState, useEffect, ReactNode } from 'react';
-import { createUser, getUserByEmail } from '@/lib/actions';
+import { createUser, getUserByEmail, initializeDefaultSettings } from '@/lib/actions';
 
 export type AuthUser = {
     id: string;
@@ -40,7 +40,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // Try to load user from localStorage on initial render
       if (typeof window !== 'undefined') {
           try {
-              // Auto-create admin user if they don't exist
+              // Auto-create admin user and default settings if they don't exist
+              await initializeDefaultSettings();
               const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
               if (adminEmail) {
                   const adminUser = await getUserByEmail(adminEmail);

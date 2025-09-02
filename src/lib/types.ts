@@ -84,3 +84,15 @@ export type Notification = {
     read: boolean;
     type: 'new_enquiry' | 'claim_accepted' | 'item_resolved';
 };
+
+export type Category = {
+    id: string;
+    name: string;
+};
+
+export type EmailTemplate = {
+    id: string;
+    name: string;
+    subject: string;
+    message: string;
+};

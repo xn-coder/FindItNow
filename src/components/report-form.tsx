@@ -23,18 +23,17 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { enUS, de, fr } from "date-fns/locale";
 import { CalendarIcon, Loader2, X } from "lucide-react";
-import { itemCategories } from "@/lib/data";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useContext, useEffect, useRef } from "react";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp, doc, updateDoc } from "firebase/firestore";
 import { sendEmail } from "@/lib/email";
-import { getUserByEmail, createUser, addGalleryImage } from "@/lib/actions";
+import { getUserByEmail, createUser, addGalleryImage, getItemCategories } from "@/lib/actions";
 import { OtpDialog } from "./otp-dialog";
 import { AuthContext, AuthUser } from "@/context/auth-context";
 import { useRouter } from "next/navigation";
-import type { Item } from "@/lib/types";
+import type { Item, Category } from "@/lib/types";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
 
@@ -100,8 +99,17 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
   const { user: authUser, login } = useContext(AuthContext);
   const { t, i18n } = useTranslation();
   const router = useRouter();
+  const [itemCategories, setItemCategories] = useState<Category[]>([]);
 
   const isEditMode = existingItem !== null;
+  
+  useEffect(() => {
+    const fetchCategories = async () => {
+        const categories = await getItemCategories();
+        setItemCategories(categories);
+    };
+    fetchCategories();
+  }, []);
 
   const reportFormSchema = z.object({
     name: z.string().min(3, t('validation.itemNameMin')).max(50),
@@ -460,8 +468,8 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
                         </FormControl>
                         <SelectContent>
                           {itemCategories.map(cat => (
-                            <SelectItem key={cat} value={cat}>
-                              {t(cat as any)}
+                            <SelectItem key={cat.id} value={cat.name}>
+                              {t(cat.name as any)}
                             </SelectItem>
                           ))}
                         </SelectContent>

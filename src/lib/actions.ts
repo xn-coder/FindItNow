@@ -3,9 +3,10 @@
 
 import { z } from 'zod';
 import { db } from './firebase';
-import { collection, addDoc, getDocs, query, where, Timestamp, limit, orderBy, serverTimestamp, doc, updateDoc, writeBatch, deleteDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, where, Timestamp, limit, orderBy, serverTimestamp, doc, updateDoc, writeBatch, deleteDoc, getDoc, setDoc } from 'firebase/firestore';
 import bcrypt from 'bcryptjs';
-import type { Notification, Claim } from './types';
+import type { Notification, Claim, Category, EmailTemplate } from './types';
+import { emailTemplates as defaultEmailTemplates, templateContents as defaultTemplateContents } from './email-templates';
 
 
 // Schema for new user creation
@@ -477,4 +478,67 @@ export async function updateClaimStatus(claimId: string, status: 'accepted' | 'r
   const claimRef = doc(db, 'claims', claimId);
   await updateDoc(claimRef, { status });
   return { success: true };
+}
+
+
+// SETTINGS ACTIONS
+
+/**
+ * Retrieves a settings document from Firestore.
+ * @param settingId - The ID of the setting document (e.g., 'categories').
+ */
+export async function getSettings(settingId: string) {
+    const docRef = doc(db, 'settings', settingId);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+        return docSnap.data();
+    }
+    return null;
+}
+
+/**
+ * Updates a settings document in Firestore.
+ * @param settingId - The ID of the setting document.
+ * @param data - The data to set.
+ */
+export async function updateSettings(settingId: string, data: any) {
+    const docRef = doc(db, 'settings', settingId);
+    await setDoc(docRef, data, { merge: true });
+    return { success: true };
+}
+
+export async function getItemCategories(): Promise<Category[]> {
+    const settings = await getSettings('categories');
+    return settings?.list || [];
+}
+
+export async function getEmailTemplates(): Promise<EmailTemplate[]> {
+    const settings = await getSettings('emailTemplates');
+    return settings?.list || [];
+}
+
+
+const defaultCategories = [
+    "electronics", "wallets", "keys", "accessories", "bags", "clothing",
+    "bottles", "toys", "documents", "other"
+].map((name, index) => ({ id: (index + 1).toString(), name }));
+
+export async function initializeDefaultSettings() {
+    // Initialize Categories
+    const categoriesDoc = await getSettings('categories');
+    if (!categoriesDoc) {
+        console.log("Initializing default categories in Firestore...");
+        await updateSettings('categories', { list: defaultCategories });
+    }
+
+    // Initialize Email Templates
+    const emailTemplatesDoc = await getSettings('emailTemplates');
+    if (!emailTemplatesDoc) {
+        console.log("Initializing default email templates in Firestore...");
+        const templatesToStore = defaultEmailTemplates.map(t => ({
+            ...t,
+            ...defaultTemplateContents[t.id],
+        }));
+        await updateSettings('emailTemplates', { list: templatesToStore });
+    }
 }
