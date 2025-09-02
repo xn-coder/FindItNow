@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { db } from './firebase';
 import { collection, addDoc, getDocs, query, where, Timestamp, limit, orderBy, serverTimestamp, doc, updateDoc, writeBatch, deleteDoc, getDoc, setDoc } from 'firebase/firestore';
 import bcrypt from 'bcryptjs';
-import type { Notification, Claim, Category, EmailTemplate } from './types';
+import type { Notification, Claim, Category, EmailTemplate, Item } from './types';
 import { emailTemplates as defaultEmailTemplates, templateContents as defaultTemplateContents } from './email-templates';
 import { subMonths, startOfMonth, endOfMonth, format, subDays } from 'date-fns';
 
@@ -423,7 +423,7 @@ export async function getAllPartners() {
 /**
  * Retrieves all items from Firestore, sorted by creation date.
  */
-export async function getAllItems() {
+export async function getAllItems(): Promise<Item[]> {
   const q = query(collection(db, 'items'), orderBy('createdAt', 'desc'));
   const querySnapshot = await getDocs(q);
 
@@ -434,7 +434,7 @@ export async function getAllItems() {
       ...data,
       date: (data.date as Timestamp)?.toDate() || new Date(),
       createdAt: (data.createdAt as Timestamp)?.toDate() || new Date(),
-    };
+    } as Item;
   });
 }
 
@@ -621,5 +621,48 @@ export async function getDashboardAnalytics() {
     } catch (error) {
         console.error("Error fetching dashboard analytics: ", error);
         throw new Error("Failed to fetch analytics data.");
+    }
+}
+
+// Helper function to escape CSV values
+const escapeCsvValue = (value: any): string => {
+    const stringValue = String(value === null || value === undefined ? '' : value);
+    if (/[",\n]/.test(stringValue)) {
+        return `"${stringValue.replace(/"/g, '""')}"`;
+    }
+    return stringValue;
+};
+
+// Helper function to convert an array of objects to a CSV string
+const convertToCsv = (data: any[], headers: string[]): string => {
+    const headerRow = headers.map(escapeCsvValue).join(',');
+    const bodyRows = data.map(row => 
+        headers.map(header => escapeCsvValue(row[header.toLowerCase().replace(/ /g, '')] ?? row[header])).join(',')
+    );
+    return [headerRow, ...bodyRows].join('\n');
+};
+
+export async function exportReports() {
+    try {
+        const items = await getAllItems();
+        const claims = await getAllClaims();
+        const users = await getAllUsers();
+        const partners = await getAllPartners();
+
+        const itemsCsv = convertToCsv(items, ['ID', 'Name', 'Type', 'Category', 'Status', 'Location', 'Date Reported']);
+        const claimsCsv = convertToCsv(claims, ['ID', 'Item Name', 'Claimant', 'Email', 'Status', 'Date Submitted']);
+        const usersCsv = convertToCsv(users, ['ID', 'Email', 'Registered On']);
+        const partnersCsv = convertToCsv(partners, ['ID', 'Business Name', 'Email', 'Type', 'Registered On']);
+        
+        return {
+            items: itemsCsv,
+            claims: claimsCsv,
+            users: usersCsv,
+            partners: partnersCsv,
+        }
+
+    } catch (error) {
+        console.error("Error exporting reports:", error);
+        throw new Error("Failed to export data.");
     }
 }

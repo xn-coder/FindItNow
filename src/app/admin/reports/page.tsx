@@ -24,11 +24,12 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart"
 import { Button } from "@/components/ui/button"
-import { FileDown, Users, Star } from "lucide-react"
+import { FileDown, Users, Star, Loader2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { useEffect, useState } from "react"
-import { getDashboardAnalytics } from "@/lib/actions"
+import { useEffect, useState, useTransition } from "react"
+import { getDashboardAnalytics, exportReports } from "@/lib/actions"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useToast } from "@/hooks/use-toast"
 
 const chartConfig = {
   posted: {
@@ -49,8 +50,10 @@ type AnalyticsData = {
 
 export default function ReportsPage() {
   const { t } = useTranslation();
+  const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
+  const [isExporting, startExportTransition] = useTransition();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -68,6 +71,37 @@ export default function ReportsPage() {
     fetchData();
   }, []);
 
+  const triggerDownload = (filename: string, content: string) => {
+    const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', filename);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
+
+  const handleExport = () => {
+    startExportTransition(async () => {
+        try {
+            toast({ title: "Exporting...", description: "Generating your reports now." });
+            const reports = await exportReports();
+            triggerDownload('items.csv', reports.items);
+            triggerDownload('claims.csv', reports.claims);
+            triggerDownload('users.csv', reports.users);
+            triggerDownload('partners.csv', reports.partners);
+            toast({ title: "Export Complete", description: "Your reports have been downloaded." });
+        } catch (error) {
+            toast({ variant: "destructive", title: "Export Failed", description: "Could not generate reports." });
+        }
+    })
+  }
+
   return (
     <div className="space-y-6">
         <div className="flex items-center justify-between">
@@ -75,8 +109,8 @@ export default function ReportsPage() {
                 <h1 className="text-2xl font-bold">Reports & Analytics</h1>
                 <p className="text-muted-foreground">View platform analytics and export reports.</p>
             </div>
-            <Button variant="outline" disabled>
-                <FileDown className="mr-2 h-4 w-4" />
+            <Button variant="outline" onClick={handleExport} disabled={isExporting}>
+                {isExporting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FileDown className="mr-2 h-4 w-4" />}
                 Export
             </Button>
         </div>
