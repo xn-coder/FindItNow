@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Users, Package, ShieldCheck, Handshake, Briefcase, UserCheck, Activity, Link as LinkIcon, FileText } from "lucide-react";
 import { getAdminDashboardStats, getRecentActivity } from "@/lib/actions";
 import { Skeleton } from "@/components/ui/skeleton";
