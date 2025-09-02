@@ -23,6 +23,34 @@ const emailTemplates = [
     { id: "password-otp", name: "Password Reset OTP" },
 ];
 
+const templateContents: Record<string, { subject: string, message: string }> = {
+    "claim-approval": {
+        subject: "Your claim for {{itemName}} has been approved!",
+        message: "Hello {{name}},\n\nGood news! Your claim for the item \"{{itemName}}\" has been approved by the owner. You can now proceed to chat with them to arrange the pickup.\n\nThank you,\nThe FindItNow Team"
+    },
+    "password-reset": {
+        subject: "Your FindItNow Password Reset Request",
+        message: "Hello {{name}},\n\nWe received a request to reset your password. Please use the link below to proceed.\n\nIf you did not request this, you can safely ignore this email.\n\nThank you,\nThe FindItNow Team"
+    },
+    "new-enquiry": {
+        subject: "New Enquiry for your item: {{itemName}}",
+        message: "Hello {{name}},\n\nYou have received a new enquiry about your item \"{{itemName}}\". Please log in to your account to view the details and respond.\n\nThank you,\nThe FindItNow Team"
+    },
+    "user-otp": {
+        subject: "Your FindItNow Verification Code",
+        message: "Hello,\n\nYour one-time password (OTP) for verifying your account is: {{otp}}\n\nThis code will expire in 10 minutes.\n\nThank you,\nThe FindItNow Team"
+    },
+    "partner-otp": {
+        subject: "Your FindItNow Partner Verification Code",
+        message: "Hello,\n\nYour one-time password (OTP) for verifying your partner account is: {{otp}}\n\nThis code will expire in 10 minutes.\n\nThank you,\nThe FindItNow Team"
+    },
+    "password-otp": {
+        subject: "Your FindItNow Password Reset Code",
+        message: "Hello,\n\nYour one-time password (OTP) for resetting your password is: {{otp}}\n\nIf you did not request this, please ignore this email.\n\nThank you,\nThe FindItNow Team"
+    }
+};
+
+
 export default function SettingsPage() {
     const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false);
     const [currentTemplate, setCurrentTemplate] = useState<{id: string, name: string} | null>(null);
@@ -40,6 +68,8 @@ export default function SettingsPage() {
         setCurrentTemplate(template);
         setIsTemplateDialogOpen(true);
     };
+
+    const currentContent = currentTemplate ? templateContents[currentTemplate.id] : null;
 
     return (
         <Dialog open={isTemplateDialogOpen} onOpenChange={setIsTemplateDialogOpen}>
@@ -90,31 +120,33 @@ export default function SettingsPage() {
                     </CardContent>
                 </Card>
             </div>
-
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Edit Template: {currentTemplate?.name}</DialogTitle>
-                    <DialogDescription>
-                        Make changes to the email template. Use placeholders like `{'{{'}name{'}}'}` where appropriate.
-                    </DialogDescription>
-                </DialogHeader>
-                <div className="py-4 space-y-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="subject">Subject</Label>
-                        <Input id="subject" defaultValue={`Regarding your item on FindItNow`} />
+            
+            {currentTemplate && currentContent && (
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Edit Template: {currentTemplate.name}</DialogTitle>
+                        <DialogDescription>
+                            Make changes to the email template. Use placeholders like `{'{{'}name{'}}'}` where appropriate.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="py-4 space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="subject">Subject</Label>
+                            <Input id="subject" defaultValue={currentContent.subject} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="message">Message</Label>
+                            <Textarea id="message" rows={10} defaultValue={currentContent.message} />
+                        </div>
                     </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="message">Message</Label>
-                        <Textarea id="message" rows={10} defaultValue={`Hello {{name}},\n\nThis is a notification regarding your recent activity on FindItNow.\n\nThank you,\nThe FindItNow Team`} />
-                    </div>
-                </div>
-                <DialogFooter>
-                    <DialogClose asChild>
-                        <Button type="button" variant="outline">Cancel</Button>
-                    </DialogClose>
-                    <Button type="button" onClick={handleSaveTemplate}>Save Changes</Button>
-                </DialogFooter>
-            </DialogContent>
+                    <DialogFooter>
+                        <DialogClose asChild>
+                            <Button type="button" variant="outline">Cancel</Button>
+                        </DialogClose>
+                        <Button type="button" onClick={handleSaveTemplate}>Save Changes</Button>
+                    </DialogFooter>
+                </DialogContent>
+            )}
         </Dialog>
     );
 }
