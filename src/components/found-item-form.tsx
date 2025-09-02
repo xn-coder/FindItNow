@@ -112,26 +112,16 @@ export function FoundItemForm({ item }: FoundItemFormProps) {
         setUserExists(!!user);
         setFormValues(values);
 
-        const emailJsEnabled = process.env.NEXT_PUBLIC_EMAILJS_ENABLED !== 'false';
-        let generatedOtp;
-        if (emailJsEnabled) {
-            generatedOtp = generateOtp();
-            await sendEmail({
-                to_email: values.finderEmail,
-                subject: "Your FindItNow Verification Code",
-                message: `Your one-time password is: ${generatedOtp}`,
-            });
-            toast({
-                title: "Verification Required",
-                description: "We've sent a one-time password to your email.",
-            });
-        } else {
-            generatedOtp = "123456";
-            toast({
-                title: "Verification Required (Dev Mode)",
-                description: "Enter the default OTP to proceed.",
-            });
-        }
+        const generatedOtp = generateOtp();
+        await sendEmail({
+            to_email: values.finderEmail,
+            templateId: "user-otp",
+            variables: { otp: generatedOtp },
+        });
+        toast({
+            title: "Verification Required",
+            description: "We've sent a one-time password to your email.",
+        });
         
         setOtp(generatedOtp);
         setIsOtpOpen(true);
@@ -194,29 +184,19 @@ export function FoundItemForm({ item }: FoundItemFormProps) {
 
   async function submitMessage(values: FormValues, userId: string) {
     try {
-        const emailJsEnabled = process.env.NEXT_PUBLIC_EMAILJS_ENABLED !== 'false';
-        if (emailJsEnabled) {
-          await sendEmail({
-              to_email: item.contact,
-              subject: `Someone may have found your item: "${item.name}"`,
-              message: `
-                A person has reported finding your item. Here are their details:
-                <br><br>
-                <b>Finder's Name:</b> ${values.finderName}
-                <br>
-                <b>Finder's Email:</b> ${values.finderEmail}
-                <br>
-                <b>Found Location:</b> ${values.location}
-                <br>
-                <b>Found Date:</b> ${format(values.date, "PPP")}
-                <br><br>
-                <b>Message:</b>
-                <p>${values.message}</p>
-                <br>
-                Please reply to ${values.finderEmail} to coordinate the return.
-              `,
-          });
-        }
+        await sendEmail({
+            to_email: item.contact,
+            templateId: "new-enquiry",
+            variables: {
+                finderName: values.finderName,
+                finderEmail: values.finderEmail,
+                location: values.location,
+                date: format(values.date, "PPP"),
+                message: values.message,
+                itemName: item.name,
+                name: item.contact, // The recipient's name
+            }
+        });
 
 
         // Save the enquiry to the 'claims' collection

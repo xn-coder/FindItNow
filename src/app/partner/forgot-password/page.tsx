@@ -53,8 +53,8 @@ export default function PartnerForgotPasswordPage() {
       const generatedOtp = generateOtp();
       await sendEmail({
           to_email: values.email,
-          subject: "Your FindItNow Partner Password Reset Code",
-          message: `Your one-time password is: ${generatedOtp}`,
+          templateId: "password-otp",
+          variables: { otp: generatedOtp }
       });
       
       setOtp(generatedOtp);

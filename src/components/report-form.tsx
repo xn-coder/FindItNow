@@ -232,27 +232,16 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
         setUserExists(!!user);
         setFormValues(values);
 
-        const emailJsEnabled = process.env.NEXT_PUBLIC_EMAILJS_ENABLED !== 'false';
-        let generatedOtp;
-
-        if (emailJsEnabled) {
-          generatedOtp = generateOtp();
-          await sendEmail({
+        const generatedOtp = generateOtp();
+        await sendEmail({
             to_email: values.contact,
-            subject: "Your FindItNow Verification Code",
-            message: `Your one-time password is: ${generatedOtp}`,
-          });
-           toast({
-              title: "Verification Required",
-              description: "We've sent a one-time password to your email.",
-          });
-        } else {
-          generatedOtp = "123456";
-           toast({
-              title: "Verification Required (Dev Mode)",
-              description: "Enter the default OTP to proceed.",
-          });
-        }
+            templateId: 'user-otp',
+            variables: { otp: generatedOtp },
+        });
+        toast({
+            title: "Verification Required",
+            description: "We've sent a one-time password to your email.",
+        });
         
         setOtp(generatedOtp);
         setIsOtpOpen(true);
@@ -405,14 +394,18 @@ export function ReportForm({ itemType, existingItem = null }: ReportFormProps) {
             description: `Your ${itemType} item report has been successfully submitted.`,
         });
 
-        const emailJsEnabled = process.env.NEXT_PUBLIC_EMAILJS_ENABLED !== 'false';
-        if(emailJsEnabled) {
-          await sendEmail({
+        await sendEmail({
             to_email: values.contact,
-            subject: `Your ${itemType.charAt(0).toUpperCase() + itemType.slice(1)} Item Report Confirmation`,
-            message: `Hello,\n\nThis is a confirmation that your report for the following item has been submitted:\n\nItem Name: ${values.name}\nCategory: ${values.category}\nLocation: ${values.location}\nDate: ${format(values.date, "PPP")}\n\nYou can view your submission here: ${window.location.origin}/browse?item=${itemDocRef.id}\n\nThank you for using FindItNow.`,
-          });
-        }
+            templateId: "report-confirmation",
+            variables: {
+                itemType: itemType,
+                itemName: values.name,
+                category: values.category,
+                location: values.location,
+                date: format(values.date, "PPP"),
+                link: `${window.location.origin}/browse?item=${itemDocRef.id}`
+            },
+        });
         
         if (userToLogin) login(userToLogin);
 

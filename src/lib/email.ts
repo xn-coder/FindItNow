@@ -1,5 +1,7 @@
 
 import emailjs from '@emailjs/browser';
+import { templateContents, type TemplateId } from './email-templates';
+
 
 const SERVICE_ID = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || '';
 const TEMPLATE_ID = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || '';
@@ -14,15 +16,38 @@ if (EMAILJS_ENABLED && (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY)) {
 
 export type EmailTemplateParams = {
   to_email: string;
-  subject: string;
-  message: string;// Allow other string properties
+  templateId: TemplateId;
+  variables: Record<string, string>;
 };
 
-export const sendEmail = async (templateParams: EmailTemplateParams): Promise<void> => {
+const compileTemplate = (templateString: string, variables: Record<string, string>) => {
+    return templateString.replace(/\{\{(\w+)\}\}/g, (placeholder, key) => {
+        return variables[key] || placeholder;
+    });
+};
+
+export const sendEmail = async ({ to_email, templateId, variables }: EmailTemplateParams): Promise<void> => {
+  const template = templateContents[templateId];
+
+  if (!template) {
+    console.error(`Email template with ID "${templateId}" not found.`);
+    throw new Error(`Email template with ID "${templateId}" not found.`);
+  }
+
+  const subject = compileTemplate(template.subject, variables);
+  const message = compileTemplate(template.message, variables);
+
+  const finalParams = {
+    to_email,
+    subject,
+    message,
+    ...variables, // Pass all variables to the EmailJS template as well
+  };
+
   if (!EMAILJS_ENABLED) {
     console.log('Email sending is disabled. Skipping email send.');
     // Log the email content for debugging purposes during development
-    console.log('Email content:', templateParams);
+    console.log('Email content:', finalParams);
     return;
   }
   
@@ -32,7 +57,7 @@ export const sendEmail = async (templateParams: EmailTemplateParams): Promise<vo
   }
   
   try {
-    await emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams, PUBLIC_KEY);
+    await emailjs.send(SERVICE_ID, TEMPLATE_ID, finalParams as any, PUBLIC_KEY);
     console.log('Email sent successfully!');
   } catch (error) {
     console.error('Failed to send email:', error);

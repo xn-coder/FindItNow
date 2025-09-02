@@ -13,58 +13,22 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-
-const emailTemplates = [
-    { id: "claim-approval", name: "Claim Approval" },
-    { id: "password-reset", name: "Password Reset" },
-    { id: "new-enquiry", name: "New Enquiry Notification" },
-    { id: "user-otp", name: "User Verification OTP" },
-    { id: "partner-otp", name: "Partner Verification OTP" },
-    { id: "password-otp", name: "Password Reset OTP" },
-];
-
-const templateContents: Record<string, { subject: string, message: string }> = {
-    "claim-approval": {
-        subject: "Your claim for {{itemName}} has been approved!",
-        message: "Hello {{name}},\n\nGood news! Your claim for the item \"{{itemName}}\" has been approved by the owner. You can now proceed to chat with them to arrange the pickup.\n\nThank you,\nThe FindItNow Team"
-    },
-    "password-reset": {
-        subject: "Your FindItNow Password Reset Request",
-        message: "Hello {{name}},\n\nWe received a request to reset your password. Please use the link below to proceed.\n\nIf you did not request this, you can safely ignore this email.\n\nThank you,\nThe FindItNow Team"
-    },
-    "new-enquiry": {
-        subject: "New Enquiry for your item: {{itemName}}",
-        message: "Hello {{name}},\n\nYou have received a new enquiry about your item \"{{itemName}}\". Please log in to your account to view the details and respond.\n\nThank you,\nThe FindItNow Team"
-    },
-    "user-otp": {
-        subject: "Your FindItNow Verification Code",
-        message: "Hello,\n\nYour one-time password (OTP) for verifying your account is: {{otp}}\n\nThis code will expire in 10 minutes.\n\nThank you,\nThe FindItNow Team"
-    },
-    "partner-otp": {
-        subject: "Your FindItNow Partner Verification Code",
-        message: "Hello,\n\nYour one-time password (OTP) for verifying your partner account is: {{otp}}\n\nThis code will expire in 10 minutes.\n\nThank you,\nThe FindItNow Team"
-    },
-    "password-otp": {
-        subject: "Your FindItNow Password Reset Code",
-        message: "Hello,\n\nYour one-time password (OTP) for resetting your password is: {{otp}}\n\nIf you did not request this, please ignore this email.\n\nThank you,\nThe FindItNow Team"
-    }
-};
-
+import { emailTemplates, templateContents, TemplateId } from "@/lib/email-templates";
 
 export default function SettingsPage() {
     const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false);
-    const [currentTemplate, setCurrentTemplate] = useState<{id: string, name: string} | null>(null);
+    const [currentTemplate, setCurrentTemplate] = useState<{id: TemplateId, name: string} | null>(null);
     const { toast } = useToast();
 
     const handleSaveTemplate = () => {
         toast({
             title: "Template Saved",
-            description: `Changes to the "${currentTemplate?.name}" template have been saved.`,
+            description: `Changes to the "${currentTemplate?.name}" template have been saved. (This is a mock-up)`,
         });
         setIsTemplateDialogOpen(false);
     };
     
-    const handleOpenDialog = (template: {id: string, name: string}) => {
+    const handleOpenDialog = (template: {id: TemplateId, name: string}) => {
         setCurrentTemplate(template);
         setIsTemplateDialogOpen(true);
     };

@@ -48,25 +48,41 @@ export default function ContactPage() {
     async function onSubmit(values: z.infer<typeof contactFormSchema>) {
         setIsLoading(true);
         try {
+             const messageBody = `
+                You have received a new message from your website contact form.
+                <br><br>
+                <b>Name:</b> ${values.name}
+                <br>
+                <b>Email:</b> ${values.email}
+                <br><br>
+                <b>Message:</b>
+                <p>${values.message}</p>
+            `;
+
+            // Note: Contact form might not fit the new template model perfectly.
+            // For now, we'll construct the subject and message here and pass them
+            // as variables to a generic template if one existed, or just send directly.
+            // This part of the code is left as-is because it doesn't use a template.
             const emailJsEnabled = process.env.NEXT_PUBLIC_EMAILJS_ENABLED !== 'false';
             if (emailJsEnabled) {
-                await sendEmail({
-                    to_email: process.env.NEXT_PUBLIC_CONTACT_FORM_RECEIVER_EMAIL || "your_support_email@example.com",
-                    subject: `Contact Form: ${values.subject}`,
-                    message: `
-                        You have received a new message from your website contact form.
-                        <br><br>
-                        <b>Name:</b> ${values.name}
-                        <br>
-                        <b>Email:</b> ${values.email}
-                        <br><br>
-                        <b>Message:</b>
-                        <p>${values.message}</p>
-                    `,
-                    from_name: values.name,
-                    from_email: values.email
-                });
+                // This is a custom email, not using the new template system.
+                // To adapt, you might create a 'contact-form' template and pass variables.
+                // For now, keeping the original logic.
+                const emailjs = (await import('@emailjs/browser')).default;
+                await emailjs.send(
+                    process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
+                    process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!,
+                    {
+                        to_email: process.env.NEXT_PUBLIC_CONTACT_FORM_RECEIVER_EMAIL || "your_support_email@example.com",
+                        subject: `Contact Form: ${values.subject}`,
+                        message: messageBody,
+                        from_name: values.name,
+                        from_email: values.email
+                    },
+                    process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!
+                );
             }
+
 
             toast({
                 title: t('contactToastSuccessTitle'),

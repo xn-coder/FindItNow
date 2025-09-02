@@ -78,18 +78,12 @@ export default function PartnerRegisterPage() {
 
             setFormValues(values);
             
-            const emailJsEnabled = process.env.NEXT_PUBLIC_EMAILJS_ENABLED !== 'false';
-            let generatedOtp;
-            if (emailJsEnabled) {
-                generatedOtp = generateOtp();
-                await sendEmail({
-                    to_email: values.email,
-                    subject: "Your FindItNow Partner Verification Code",
-                    message: `Your one-time password is: ${generatedOtp}`,
-                });
-            } else {
-                generatedOtp = "123456";
-            }
+            const generatedOtp = generateOtp();
+            await sendEmail({
+                to_email: values.email,
+                templateId: "partner-otp",
+                variables: { otp: generatedOtp },
+            });
 
             setOtp(generatedOtp);
             setIsOtpOpen(true);
