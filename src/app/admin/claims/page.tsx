@@ -154,16 +154,6 @@ export default function ClaimManagementPage() {
                 <Button asChild size="sm" variant="secondary" className="flex-1">
                   <Link href={`/chat/${claim.chatId}`} target="_blank"><MessageSquare className="mr-2 h-4 w-4"/>Chat</Link>
                 </Button>
-                {claim.status === 'open' && (
-                  <>
-                    <Button size="sm" variant="outline" className="flex-1" onClick={() => handleStatusUpdate(claim.id, 'accepted')} disabled={isPending}>
-                      {isPending ? <Loader2 className="h-4 w-4 animate-spin"/> : <ThumbsUp className="mr-2 h-4 w-4"/>} Accept
-                    </Button>
-                    <Button size="sm" variant="destructive" className="flex-1" onClick={() => handleStatusUpdate(claim.id, 'rejected')} disabled={isPending}>
-                       {isPending ? <Loader2 className="h-4 w-4 animate-spin"/> : <ThumbsDown className="mr-2 h-4 w-4"/>} Reject
-                    </Button>
-                  </>
-                )}
               </CardFooter>
             </Card>
           ))}
