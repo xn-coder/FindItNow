@@ -1,27 +1,27 @@
 
 "use client";
 
-import { useEffect, useMemo, useState, useTransition } from "react";
-import { getAllClaims, updateClaimStatus } from "@/lib/actions";
+import { useEffect, useMemo, useState } from "react";
+import { getAllClaims } from "@/lib/actions";
 import type { Claim } from "@/lib/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search, ThumbsUp, ThumbsDown, MessageSquare, Eye, Loader2, User, Mail, Package, Calendar } from "lucide-react";
+import { Search, MessageSquare, Eye, User, Mail, Package, Calendar } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import Image from "next/image";
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
+import { AdminChatViewer } from "@/components/admin-chat-viewer";
 
 export default function ClaimManagementPage() {
   const [claims, setClaims] = useState<Claim[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
-  const [isPending, startTransition] = useTransition();
 
   const fetchClaims = async () => {
     setLoading(true);
@@ -51,18 +51,6 @@ export default function ClaimManagementPage() {
         );
     });
   }, [claims, searchTerm]);
-
-  const handleStatusUpdate = (claimId: string, status: 'accepted' | 'rejected' | 'resolved') => {
-    startTransition(async () => {
-      try {
-        await updateClaimStatus(claimId, status);
-        toast({ title: "Claim Updated", description: `The claim has been marked as ${status}.` });
-        await fetchClaims();
-      } catch (error) {
-        toast({ variant: "destructive", title: "Error", description: "Failed to update the claim." });
-      }
-    });
-  };
 
   const getStatusVariant = (status: Claim['status']) => {
     switch (status) {
@@ -151,9 +139,22 @@ export default function ClaimManagementPage() {
                 </Dialog>
               </CardContent>
               <CardFooter className="bg-muted/50 p-2 flex gap-2">
-                <Button asChild size="sm" variant="secondary" className="flex-1">
-                  <Link href={`/chat/${claim.chatId}`} target="_blank"><MessageSquare className="mr-2 h-4 w-4"/>Chat</Link>
-                </Button>
+                 <Dialog>
+                    <DialogTrigger asChild>
+                      <Button size="sm" variant="secondary" className="flex-1">
+                        <MessageSquare className="mr-2 h-4 w-4"/>View Chat
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl">
+                      <DialogHeader>
+                        <DialogTitle>Chat Log</DialogTitle>
+                        <DialogDescription>
+                          Viewing chat for claim #{claim.id.substring(0,6)}
+                        </DialogDescription>
+                      </DialogHeader>
+                      <AdminChatViewer chatId={claim.chatId} />
+                    </DialogContent>
+                 </Dialog>
               </CardFooter>
             </Card>
           ))}
