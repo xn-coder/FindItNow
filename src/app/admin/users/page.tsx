@@ -56,9 +56,12 @@ export default function UserManagementPage() {
           })),
         ];
 
-        combined.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+        const filteredCombined = combined.filter(user => user.email !== adminEmail);
 
-        setUsers(combined);
+        filteredCombined.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+        setUsers(filteredCombined);
       } catch (error) {
         console.error("Failed to fetch users:", error);
       } finally {
