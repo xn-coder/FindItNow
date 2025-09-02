@@ -1,15 +1,18 @@
 
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { getAllUsers, getAllPartners } from "@/lib/actions";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Search } from "lucide-react";
+import { Search, MoreHorizontal, Ban, UserX, Loader2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "react-i18next";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 type CombinedUser = {
   id: string;
@@ -24,6 +27,8 @@ export default function UserManagementPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const { t } = useTranslation();
+  const [isPending, startTransition] = useTransition();
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -70,6 +75,22 @@ export default function UserManagementPage() {
     );
   }, [users, searchTerm]);
 
+  const handleSuspend = (user: CombinedUser) => {
+    startTransition(() => {
+        // Placeholder for actual suspend logic
+        console.log(`Suspending user: ${user.email}`);
+        toast({ title: t('adminUserSuspended'), description: t('adminUserSuspendedDesc', { email: user.email }) });
+    });
+  }
+
+  const handleBan = (user: CombinedUser) => {
+      startTransition(() => {
+        // Placeholder for actual ban logic
+        console.log(`Banning user: ${user.email}`);
+        toast({ title: t('adminUserBanned'), description: t('adminUserBannedDesc', { email: user.email }), variant: "destructive" });
+    });
+  }
+
   return (
     <div className="space-y-6">
       <Card>
@@ -107,7 +128,7 @@ export default function UserManagementPage() {
                       <TableCell><Skeleton className="h-5 w-32" /></TableCell>
                       <TableCell><Skeleton className="h-5 w-16" /></TableCell>
                       <TableCell><Skeleton className="h-5 w-20" /></TableCell>
-                      <TableCell className="text-right"><Skeleton className="h-5 w-12" /></TableCell>
+                      <TableCell className="text-right"><Skeleton className="h-8 w-8" /></TableCell>
                     </TableRow>
                   ))
                 ) : filteredUsers.length > 0 ? (
@@ -120,7 +141,28 @@ export default function UserManagementPage() {
                       </TableCell>
                       <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
                       <TableCell className="text-right">
-                        {/* Action buttons will go here */}
+                         <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" className="h-8 w-8 p-0" disabled={isPending}>
+                                <span className="sr-only">Open menu</span>
+                                 {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <MoreHorizontal className="h-4 w-4" />}
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuLabel>{t('adminUsersHeaderActions')}</DropdownMenuLabel>
+                                <DropdownMenuItem onClick={() => handleSuspend(user)}>
+                                  <Ban className="mr-2 h-4 w-4" />
+                                  {t('adminSuspendUser')}
+                                </DropdownMenuItem>
+                              <DropdownMenuItem
+                                className="text-destructive"
+                                onClick={() => handleBan(user)}
+                              >
+                                <UserX className="mr-2 h-4 w-4" />
+                                {t('adminBanUser')}
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                       </TableCell>
                     </TableRow>
                   ))
@@ -137,3 +179,4 @@ export default function UserManagementPage() {
     </div>
   );
 }
+
