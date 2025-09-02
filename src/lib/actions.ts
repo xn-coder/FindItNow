@@ -712,18 +712,18 @@ export async function getRecentActivity() {
             id: doc.id,
             type: 'item',
             ...doc.data(),
-            timestamp: (doc.data().createdAt as Timestamp).toDate()
+            timestamp: (doc.data().createdAt as Timestamp).toDate().toISOString(),
         }));
 
         const recentClaims = claimsSnapshot.docs.map(doc => ({
             id: doc.id,
             type: 'claim',
             ...doc.data(),
-            timestamp: (doc.data().submittedAt as Timestamp).toDate()
+            timestamp: (doc.data().submittedAt as Timestamp).toDate().toISOString(),
         }));
         
         const combinedActivity = [...recentItems, ...recentClaims]
-            .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
+            .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
             .slice(0, 10);
 
         return combinedActivity;

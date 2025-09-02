@@ -23,7 +23,7 @@ type DashboardStats = {
 type ActivityItem = {
     id: string;
     type: 'item' | 'claim';
-    timestamp: Date;
+    timestamp: string;
     [key: string]: any;
 };
 
