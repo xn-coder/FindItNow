@@ -111,10 +111,11 @@ export async function getUserByEmail(email: string) {
   const userDoc = querySnapshot.docs[0];
   const userData = userDoc.data();
   
-  const { createdAt, lastActivity, ...rest } = userData;
+  const { password, createdAt, lastActivity, ...rest } = userData;
 
   return { 
-    id: userDoc.id, 
+    id: userDoc.id,
+    password: password, 
     ...rest, 
     createdAt: (createdAt as Timestamp)?.toDate() || new Date(),
     lastActivity: (lastActivity as Timestamp)?.toDate() || new Date()
@@ -195,10 +196,11 @@ export async function getPartnerByEmail(email: string) {
   const partnerDoc = querySnapshot.docs[0];
   const partnerData = partnerDoc.data();
 
-  const { createdAt, lastActivity, ...rest } = partnerData;
+  const { password, createdAt, lastActivity, ...rest } = partnerData;
 
   return { 
-      id: partnerDoc.id, 
+      id: partnerDoc.id,
+      password, 
       ...rest, 
       createdAt: (createdAt as Timestamp)?.toDate() || new Date(),
       lastActivity: (lastActivity as Timestamp)?.toDate() || new Date()
@@ -626,6 +628,9 @@ export async function getDashboardAnalytics() {
 
 // Helper function to escape CSV values
 const escapeCsvValue = (value: any): string => {
+    if (value instanceof Date) {
+        return value.toISOString();
+    }
     const stringValue = String(value === null || value === undefined ? '' : value);
     if (/[",\n]/.test(stringValue)) {
         return `"${stringValue.replace(/"/g, '""')}"`;
@@ -637,7 +642,14 @@ const escapeCsvValue = (value: any): string => {
 const convertToCsv = (data: any[], headers: string[]): string => {
     const headerRow = headers.map(escapeCsvValue).join(',');
     const bodyRows = data.map(row => 
-        headers.map(header => escapeCsvValue(row[header.toLowerCase().replace(/ /g, '')] ?? row[header])).join(',')
+        headers.map(header => {
+            const key = header.toLowerCase().replace(/ /g, '');
+            if (key === 'claimant') return escapeCsvValue(row.fullName);
+            if (key === 'datesubmitted') return escapeCsvValue(row.submittedAt);
+            if (key === 'registeredon') return escapeCsvValue(row.createdAt);
+            if (key === 'datereported') return escapeCsvValue(row.createdAt);
+            return escapeCsvValue(row[key] ?? row[header]);
+        }).join(',')
     );
     return [headerRow, ...bodyRows].join('\n');
 };
@@ -708,19 +720,27 @@ export async function getRecentActivity() {
             getDocs(claimsQuery)
         ]);
 
-        const recentItems = itemsSnapshot.docs.map(doc => ({
-            id: doc.id,
-            type: 'item',
-            ...doc.data(),
-            timestamp: (doc.data().createdAt as Timestamp).toDate().toISOString(),
-        }));
-
-        const recentClaims = claimsSnapshot.docs.map(doc => ({
-            id: doc.id,
-            type: 'claim',
-            ...doc.data(),
-            timestamp: (doc.data().submittedAt as Timestamp).toDate().toISOString(),
-        }));
+        const recentItems = itemsSnapshot.docs.map(doc => {
+            const data = doc.data();
+            return {
+                id: doc.id,
+                type: 'item',
+                name: data.name,
+                timestamp: (data.createdAt as Timestamp).toDate().toISOString(),
+            }
+        });
+        
+        const recentClaims = claimsSnapshot.docs.map(doc => {
+            const data = doc.data();
+            return {
+                id: doc.id,
+                type: 'claim',
+                fullName: data.fullName,
+                itemName: data.itemName,
+                itemId: data.itemId,
+                timestamp: (data.submittedAt as Timestamp).toDate().toISOString(),
+            }
+        });
         
         const combinedActivity = [...recentItems, ...recentClaims]
             .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
