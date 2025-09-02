@@ -130,7 +130,7 @@ export default function SettingsPage() {
                             <div className="flex flex-wrap gap-2">
                                 {categories.map(category => (
                                     <Badge key={category.id} variant="secondary" className="text-sm py-1 px-3 capitalize">
-                                        {category.name}
+                                        {t(category.name)}
                                         <button
                                             className="ml-2 rounded-full p-0.5 hover:bg-muted-foreground/20"
                                             onClick={() => handleDeleteCategory(category.id)}
@@ -155,7 +155,7 @@ export default function SettingsPage() {
                             {emailTemplates.map((template) => (
                                 <DialogTrigger key={template.id} asChild onClick={() => handleOpenDialog(template)}>
                                     <div className="flex items-center justify-between p-3 bg-muted/50 rounded-md cursor-pointer hover:bg-muted">
-                                        <p>{template.name}</p>
+                                        <p>{t(template.id as any)}</p>
                                         <Button variant="outline" size="sm"><Edit className="mr-2 h-4 w-4" />{t('edit')}</Button>
                                     </div>
                                 </DialogTrigger>
@@ -168,7 +168,7 @@ export default function SettingsPage() {
             {currentTemplate && (
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>{t('adminEditTemplateTitle')}: {currentTemplate.name}</DialogTitle>
+                        <DialogTitle>{t('adminEditTemplateTitle')}: {t(currentTemplate.id as any)}</DialogTitle>
                         <DialogDescription>
                            {t('adminEditTemplateDesc')}
                         </DialogDescription>
