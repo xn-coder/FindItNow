@@ -111,11 +111,14 @@ export async function getUserByEmail(email: string) {
   const userDoc = querySnapshot.docs[0];
   const userData = userDoc.data();
   
-  // Convert Timestamp to a plain object
-  const { createdAt, ...rest } = userData;
-  const serializedCreatedAt = createdAt instanceof Timestamp ? createdAt.toJSON() : createdAt;
+  const { createdAt, lastActivity, ...rest } = userData;
 
-  return { id: userDoc.id, ...rest, createdAt: serializedCreatedAt };
+  return { 
+    id: userDoc.id, 
+    ...rest, 
+    createdAt: (createdAt as Timestamp)?.toDate() || new Date(),
+    lastActivity: (lastActivity as Timestamp)?.toDate() || new Date()
+  };
 }
 
 /**
@@ -192,10 +195,14 @@ export async function getPartnerByEmail(email: string) {
   const partnerDoc = querySnapshot.docs[0];
   const partnerData = partnerDoc.data();
 
-  const { createdAt, ...rest } = partnerData;
-  const serializedCreatedAt = createdAt instanceof Timestamp ? createdAt.toJSON() : createdAt;
+  const { createdAt, lastActivity, ...rest } = partnerData;
 
-  return { id: partnerDoc.id, ...rest, createdAt: serializedCreatedAt };
+  return { 
+      id: partnerDoc.id, 
+      ...rest, 
+      createdAt: (createdAt as Timestamp)?.toDate() || new Date(),
+      lastActivity: (lastActivity as Timestamp)?.toDate() || new Date()
+    };
 }
 
 
