@@ -726,7 +726,7 @@ export async function getRecentActivity() {
                 id: doc.id,
                 type: 'item',
                 name: data.name,
-                timestamp: (data.createdAt as Timestamp).toDate().toISOString(),
+                timestamp: ((data.createdAt as Timestamp)?.toDate() || new Date()).toISOString(),
             }
         });
         
@@ -738,7 +738,7 @@ export async function getRecentActivity() {
                 fullName: data.fullName,
                 itemName: data.itemName,
                 itemId: data.itemId,
-                timestamp: (data.submittedAt as Timestamp).toDate().toISOString(),
+                timestamp: ((data.submittedAt as Timestamp)?.toDate() || new Date()).toISOString(),
             }
         });
         
