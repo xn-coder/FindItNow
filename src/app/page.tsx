@@ -18,30 +18,39 @@ import { translateText } from '@/ai/translate-flow';
 
 export default function Home() {
   const { t, i18n } = useTranslation();
-  const [feedback, setFeedback] = useState<Feedback[]>([]);
+  const [originalFeedback, setOriginalFeedback] = useState<Feedback[]>([]);
+  const [translatedFeedback, setTranslatedFeedback] = useState<Feedback[]>([]);
   const [loadingFeedback, setLoadingFeedback] = useState(true);
 
-  const fetchAndTranslateFeedback = async (language: string) => {
-    setLoadingFeedback(true);
-    const recentFeedback = await getRecentFeedback();
-
-    if (language !== 'en') {
-      const translatedFeedback = await Promise.all(
-        recentFeedback.map(async (fb) => {
-          const translatedStory = await translateText(fb.story, language);
-          return { ...fb, story: translatedStory };
-        })
-      );
-      setFeedback(translatedFeedback);
-    } else {
-      setFeedback(recentFeedback);
-    }
-    setLoadingFeedback(false);
-  };
+  useEffect(() => {
+    const fetchFeedback = async () => {
+        setLoadingFeedback(true);
+        const recentFeedback = await getRecentFeedback();
+        setOriginalFeedback(recentFeedback);
+        setTranslatedFeedback(recentFeedback);
+        setLoadingFeedback(false);
+    };
+    fetchFeedback();
+  }, []);
 
   useEffect(() => {
-    fetchAndTranslateFeedback(i18n.language);
-  }, [i18n.language]);
+    const translateFeedback = async () => {
+        if (i18n.language === 'en') {
+            setTranslatedFeedback(originalFeedback);
+            return;
+        }
+        if (originalFeedback.length === 0) return;
+
+        const translated = await Promise.all(
+            originalFeedback.map(async (fb) => {
+            const translatedStory = await translateText(fb.story, i18n.language);
+            return { ...fb, story: translatedStory };
+            })
+        );
+        setTranslatedFeedback(translated);
+    };
+    translateFeedback();
+  }, [i18n.language, originalFeedback]);
 
 
   return (
@@ -224,8 +233,8 @@ export default function Home() {
                     </CardFooter>
                   </Card>
                ))
-            ) : feedback.length > 0 ? (
-                feedback.map((fb) => (
+            ) : translatedFeedback.length > 0 ? (
+                translatedFeedback.map((fb) => (
                   <Card key={fb.id} className="flex flex-col bg-background transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
                     <CardContent className="p-6 flex-grow space-y-4">
                       <Quote className="h-6 w-6 text-primary/70" />

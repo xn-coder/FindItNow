@@ -24,7 +24,8 @@ export default function PartnerEnquiriesPage() {
     const router = useRouter();
     const { toast } = useToast();
     const { t, i18n } = useTranslation();
-    const [enquiries, setEnquiries] = useState<Claim[]>([]);
+    const [originalEnquiries, setOriginalEnquiries] = useState<Claim[]>([]);
+    const [translatedEnquiries, setTranslatedEnquiries] = useState<Claim[]>([]);
     const [loadingEnquiries, setLoadingEnquiries] = useState(true);
     const [relatedItems, setRelatedItems] = useState<Record<string, Item>>({});
     const [isPending, startTransition] = useTransition();
@@ -56,21 +57,9 @@ export default function PartnerEnquiriesPage() {
                 } as Claim
             });
 
-            if (i18n.language !== 'en') {
-                const translatedEnquiries = await Promise.all(
-                    enquiriesData.map(async (enquiry) => {
-                        const [translatedItemName, translatedProof] = await Promise.all([
-                            translateText(enquiry.itemName, i18n.language),
-                            translateText(enquiry.proof, i18n.language),
-                        ]);
-                        return { ...enquiry, itemName: translatedItemName, proof: translatedProof };
-                    })
-                );
-                setEnquiries(translatedEnquiries);
-            } else {
-                 setEnquiries(enquiriesData);
-            }
-
+            setOriginalEnquiries(enquiriesData);
+            setTranslatedEnquiries(enquiriesData);
+            
             const itemIds = [...new Set(enquiriesData.map(enquiry => enquiry.itemId))];
             const items: Record<string, Item> = {};
 
@@ -98,7 +87,29 @@ export default function PartnerEnquiriesPage() {
         if (user?.isPartner) {
             fetchEnquiries();
         }
-    }, [user, i18n.language]);
+    }, [user]);
+
+    useEffect(() => {
+        const translateEnquiries = async () => {
+            if (i18n.language === 'en') {
+                setTranslatedEnquiries(originalEnquiries);
+                return;
+            }
+            if (originalEnquiries.length === 0) return;
+
+            const translated = await Promise.all(
+                originalEnquiries.map(async (enquiry) => {
+                    const [translatedItemName, translatedProof] = await Promise.all([
+                        translateText(enquiry.itemName, i18n.language),
+                        translateText(enquiry.proof, i18n.language),
+                    ]);
+                    return { ...enquiry, itemName: translatedItemName, proof: translatedProof };
+                })
+            );
+            setTranslatedEnquiries(translated);
+        };
+        translateEnquiries();
+    }, [i18n.language, originalEnquiries]);
 
      const handleAcceptClaim = (claim: Claim) => {
         startTransition(async () => {
@@ -106,7 +117,8 @@ export default function PartnerEnquiriesPage() {
                 const claimRef = doc(db, "claims", claim.id);
                 await updateDoc(claimRef, { status: 'accepted', chatId: claim.id });
 
-                setEnquiries(prev => prev.map(e => e.id === claim.id ? { ...e, status: 'accepted', chatId: claim.id } : e));
+                setOriginalEnquiries(prev => prev.map(e => e.id === claim.id ? { ...e, status: 'accepted', chatId: claim.id } : e));
+                setTranslatedEnquiries(prev => prev.map(e => e.id === claim.id ? { ...e, status: 'accepted', chatId: claim.id } : e));
                 toast({
                     title: t('toastClaimAcceptedTitle'),
                     description: t('toastClaimAcceptedDesc'),
@@ -124,8 +136,9 @@ export default function PartnerEnquiriesPage() {
                  // Set the current claim to 'resolving'
                 const claimRef = doc(db, "claims", claim.id);
                 await updateDoc(claimRef, { status: 'resolving' });
-
-                setEnquiries(prev => prev.map(e => e.id === claim.id ? { ...e, status: 'resolving' } : e));
+                
+                setOriginalEnquiries(prev => prev.map(e => e.id === claim.id ? { ...e, status: 'resolving' } : e));
+                setTranslatedEnquiries(prev => prev.map(e => e.id === claim.id ? { ...e, status: 'resolving' } : e));
                 
                 toast({
                     title: t('toastEnquiryResolvingTitle'),
@@ -173,9 +186,9 @@ export default function PartnerEnquiriesPage() {
                             <Card key={i}><CardContent className="p-6"><Skeleton className="h-32 w-full" /></CardContent></Card>
                         ))}
                     </div>
-                ) : enquiries.length > 0 ? (
+                ) : translatedEnquiries.length > 0 ? (
                     <div className="space-y-6">
-                        {enquiries.map((enquiry) => {
+                        {translatedEnquiries.map((enquiry) => {
                             const item = relatedItems[enquiry.itemId];
                             if (!item) return null;
                             

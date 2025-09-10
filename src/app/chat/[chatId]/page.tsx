@@ -24,7 +24,8 @@ export default function ChatPage() {
     const { chatId } = useParams();
     const { user, loading: authLoading } = useContext(AuthContext);
     const { t, i18n } = useTranslation();
-    const [messages, setMessages] = useState<Message[]>([]);
+    const [originalMessages, setOriginalMessages] = useState<Message[]>([]);
+    const [translatedMessages, setTranslatedMessages] = useState<Message[]>([]);
     const [newMessage, setNewMessage] = useState('');
     const [claim, setClaim] = useState<Claim | null>(null);
     const [item, setItem] = useState<Item | null>(null);
@@ -40,20 +41,27 @@ export default function ChatPage() {
 
     useEffect(() => {
         scrollToBottom();
-    }, [messages]);
+    }, [translatedMessages]);
 
-    const translateMessages = useCallback(async (msgs: Message[], language: string) => {
-        if (language === 'en') {
-            return msgs;
-        }
-        return Promise.all(
-            msgs.map(async (msg) => {
-                if (msg.senderId === 'system') return msg;
-                const translatedText = await translateText(msg.text, language);
-                return { ...msg, text: translatedText };
-            })
-        );
-    }, []);
+    useEffect(() => {
+        const translateExistingMessages = async () => {
+            if (i18n.language === 'en') {
+                setTranslatedMessages(originalMessages);
+                return;
+            }
+            if (originalMessages.length === 0) return;
+
+            const translated = await Promise.all(
+                originalMessages.map(async (msg) => {
+                    if (msg.senderId === 'system') return msg;
+                    const translatedText = await translateText(msg.text, i18n.language);
+                    return { ...msg, text: translatedText };
+                })
+            );
+            setTranslatedMessages(translated);
+        };
+        translateExistingMessages();
+    }, [i18n.language, originalMessages]);
 
     useEffect(() => {
         if (!chatId || !user) return;
@@ -91,16 +99,15 @@ export default function ChatPage() {
                 ...doc.data(),
                 createdAt: doc.data().createdAt?.toDate() || new Date(),
             } as Message));
-
-            const translatedMsgs = await translateMessages(msgs, i18n.language);
-            setMessages(translatedMsgs);
+            setOriginalMessages(msgs);
+            setTranslatedMessages(msgs); // Start with original
         });
 
         return () => {
             claimUnsubscribe();
             messagesUnsubscribe();
         };
-    }, [chatId, user, i18n.language, translateMessages]);
+    }, [chatId, user]);
 
     const handleSendMessage = async (e: FormEvent) => {
         e.preventDefault();
@@ -176,7 +183,7 @@ export default function ChatPage() {
             </Card>
             <Card className="flex-1 flex flex-col">
                  <CardContent ref={scrollContainerRef} className="flex-1 p-6 space-y-4 overflow-y-auto max-h-[50vh]">
-                    {messages.map((message) => (
+                    {translatedMessages.map((message) => (
                         <div
                             key={message.id}
                             className={cn(

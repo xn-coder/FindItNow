@@ -22,7 +22,8 @@ import { getItemCategories } from '@/lib/actions';
 
 
 function ItemBrowser() {
-  const [items, setItems] = useState<Item[]>([]);
+  const [originalItems, setOriginalItems] = useState<Item[]>([]);
+  const [translatedItems, setTranslatedItems] = useState<Item[]>([]);
   const [itemCategories, setItemCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -37,46 +38,56 @@ function ItemBrowser() {
     };
     fetchCategories();
   }, []);
-
-  const fetchAndTranslateItems = async (language: string) => {
-    setLoading(true);
-    const q = query(
-      collection(db, "items"),
-      where("status", "==", "open"),
-      orderBy("createdAt", "desc")
-    );
-    const querySnapshot = await getDocs(q);
-    const itemsData = querySnapshot.docs.map(doc => {
-      const data = doc.data();
-      const date = data.date instanceof Timestamp ? data.date.toDate() : new Date(data.date);
-      const createdAt = data.createdAt instanceof Timestamp ? data.createdAt.toDate() : new Date();
-      return { id: doc.id, ...data, date, createdAt } as Item;
-    });
-
-    if (language !== 'en') {
-        const translatedItems = await Promise.all(
-            itemsData.map(async (item) => {
-                const [translatedName, translatedDescription] = await Promise.all([
-                    translateText(item.name, language),
-                    translateText(item.description, language)
-                ]);
-                return { ...item, name: translatedName, description: translatedDescription };
-            })
-        );
-        setItems(translatedItems);
-    } else {
-        setItems(itemsData);
-    }
-    setLoading(false);
-  };
   
   useEffect(() => {
-    fetchAndTranslateItems(i18n.language);
-  }, [i18n.language]);
+    const fetchItems = async () => {
+        setLoading(true);
+        const q = query(
+        collection(db, "items"),
+        where("status", "==", "open"),
+        orderBy("createdAt", "desc")
+        );
+        const querySnapshot = await getDocs(q);
+        const itemsData = querySnapshot.docs.map(doc => {
+        const data = doc.data();
+        const date = data.date instanceof Timestamp ? data.date.toDate() : new Date(data.date);
+        const createdAt = data.createdAt instanceof Timestamp ? data.createdAt.toDate() : new Date();
+        return { id: doc.id, ...data, date, createdAt } as Item;
+        });
+        setOriginalItems(itemsData);
+        setTranslatedItems(itemsData); // Initially, translated is same as original
+        setLoading(false);
+    };
+    fetchItems();
+  }, []);
+
+  useEffect(() => {
+    const translateItems = async () => {
+        if (i18n.language === 'en') {
+            setTranslatedItems(originalItems);
+            return;
+        }
+
+        if (originalItems.length === 0) return;
+
+        const translated = await Promise.all(
+            originalItems.map(async (item) => {
+                const [translatedName, translatedDescription, translatedLocation] = await Promise.all([
+                    translateText(item.name, i18n.language),
+                    translateText(item.description, i18n.language),
+                    translateText(item.location, i18n.language),
+                ]);
+                return { ...item, name: translatedName, description: translatedDescription, location: translatedLocation };
+            })
+        );
+        setTranslatedItems(translated);
+    }
+    translateItems();
+  }, [i18n.language, originalItems])
 
 
   const filteredItems = useMemo(() => {
-    return items.filter((item) => {
+    return translatedItems.filter((item) => {
       const lowerSearchTerm = searchTerm.toLowerCase();
 
       const matchesSearch =
@@ -89,7 +100,7 @@ function ItemBrowser() {
 
       return matchesSearch && matchesCategory && matchesType;
     });
-  }, [items, searchTerm, category, itemType]);
+  }, [translatedItems, searchTerm, category, itemType]);
 
   return (
     <div className="space-y-8">
@@ -180,12 +191,13 @@ function ItemBrowser() {
 export default function BrowsePage() {
   const searchParams = useSearchParams();
   const itemId = searchParams.get('item');
-  const [item, setItem] = useState<Item | null | undefined>(null);
+  const [originalItem, setOriginalItem] = useState<Item | null | undefined>(null);
+  const [translatedItem, setTranslatedItem] = useState<Item | null | undefined>(null);
   const [loading, setLoading] = useState(true);
   const { t, i18n } = useTranslation();
 
   useEffect(() => {
-    const fetchAndTranslateItem = async () => {
+    const fetchItem = async () => {
       if (itemId) {
         setLoading(true);
         const docRef = doc(db, "items", itemId);
@@ -195,34 +207,45 @@ export default function BrowsePage() {
           const data = docSnap.data();
           const date = data.date instanceof Timestamp ? data.date.toDate() : new Date(data.date);
           let fetchedItem = { id: docSnap.id, ...data, date } as Item;
-          
-          if (i18n.language !== 'en') {
-             const [translatedName, translatedDescription, translatedLocation] = await Promise.all([
-                translateText(fetchedItem.name, i18n.language),
-                translateText(fetchedItem.description, i18n.language),
-                translateText(fetchedItem.location, i18n.language)
-            ]);
-            fetchedItem = { ...fetchedItem, name: translatedName, description: translatedDescription, location: translatedLocation };
-          }
-          setItem(fetchedItem);
-
+          setOriginalItem(fetchedItem);
+          setTranslatedItem(fetchedItem); // Set initial
         } else {
-          setItem(undefined); // Not found
+          setOriginalItem(undefined); // Not found
+          setTranslatedItem(undefined); // Not found
         }
         setLoading(false);
       }
     };
     if (itemId) {
-        fetchAndTranslateItem();
+        fetchItem();
     }
-  }, [itemId, i18n.language]);
+  }, [itemId]);
+
+  useEffect(() => {
+      const translateItem = async () => {
+        if (!originalItem) return;
+
+        if (i18n.language === 'en') {
+            setTranslatedItem(originalItem);
+            return;
+        }
+
+        const [translatedName, translatedDescription, translatedLocation] = await Promise.all([
+            translateText(originalItem.name, i18n.language),
+            translateText(originalItem.description, i18n.language),
+            translateText(originalItem.location, i18n.language)
+        ]);
+        setTranslatedItem({ ...originalItem, name: translatedName, description: translatedDescription, location: translatedLocation });
+      }
+      translateItem();
+  }, [i18n.language, originalItem])
 
   if (itemId) {
-    if (loading || item === null) {
+    if (loading || translatedItem === null) {
       // Still loading
       return <div>{t('loading')}</div>;
     }
-    if (item === undefined) {
+    if (translatedItem === undefined) {
       return (
         <div className="text-center py-16">
           <h1 className="text-2xl font-bold">{t('browseItemNotFound')}</h1>
@@ -234,7 +257,7 @@ export default function BrowsePage() {
       )
     }
     
-    return <ItemDetail item={item} />;
+    return <ItemDetail item={translatedItem} />;
   }
 
   return <ItemBrowser />;

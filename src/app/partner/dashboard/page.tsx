@@ -23,7 +23,8 @@ export default function PartnerDashboardPage() {
 
     const [itemCount, setItemCount] = useState(0);
     const [claimCount, setClaimCount] = useState(0);
-    const [recentItems, setRecentItems] = useState<Item[]>([]);
+    const [originalItems, setOriginalItems] = useState<Item[]>([]);
+    const [translatedItems, setTranslatedItems] = useState<Item[]>([]);
     const [loadingStats, setLoadingStats] = useState(true);
 
      useEffect(() => {
@@ -54,20 +55,8 @@ export default function PartnerDashboardPage() {
                 } as Item;
             });
 
-            if (i18n.language !== 'en') {
-                const translatedItems = await Promise.all(
-                    itemsData.map(async (item) => {
-                        const [translatedName, translatedCategory] = await Promise.all([
-                            translateText(item.name, i18n.language),
-                            translateText(item.category, i18n.language),
-                        ]);
-                        return { ...item, name: translatedName, category: translatedCategory };
-                    })
-                );
-                setRecentItems(translatedItems);
-            } else {
-                 setRecentItems(itemsData);
-            }
+            setOriginalItems(itemsData);
+            setTranslatedItems(itemsData);
             
             const claimsQuery = query(collection(db, "claims"), where("itemOwnerId", "==", user.id), where("status", "==", "open"));
             const claimsSnapshot = await getDocs(claimsQuery);
@@ -79,7 +68,30 @@ export default function PartnerDashboardPage() {
         if (user?.isPartner) {
             fetchDashboardData();
         }
-    }, [user, i18n.language]);
+    }, [user]);
+
+     useEffect(() => {
+        const translateItems = async () => {
+            if (i18n.language === 'en') {
+                setTranslatedItems(originalItems);
+                return;
+            }
+            if (originalItems.length === 0) return;
+
+            const translated = await Promise.all(
+                originalItems.map(async (item) => {
+                    const [translatedName, translatedCategory] = await Promise.all([
+                        translateText(item.name, i18n.language),
+                        translateText(item.category, i18n.language),
+                    ]);
+                    return { ...item, name: translatedName, category: translatedCategory };
+                })
+            );
+            setTranslatedItems(translated);
+        };
+        translateItems();
+    }, [i18n.language, originalItems]);
+
 
     if (authLoading || !user) {
         return <div>Loading...</div>
@@ -153,8 +165,8 @@ export default function PartnerDashboardPage() {
                         <TableBody>
                             {loadingStats ? (
                                 <TableRow><TableCell colSpan={4}>Loading...</TableCell></TableRow>
-                            ) : recentItems.length > 0 ? (
-                                recentItems.map((item) => (
+                            ) : translatedItems.length > 0 ? (
+                                translatedItems.map((item) => (
                                     <TableRow key={item.id} onClick={() => router.push(`/browse?item=${item.id}`)} className="cursor-pointer">
                                         <TableCell className="font-medium">{item.name}</TableCell>
                                         <TableCell>{t(item.category as any)}</TableCell>
