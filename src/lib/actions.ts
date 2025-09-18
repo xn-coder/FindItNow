@@ -147,8 +147,8 @@ export async function loginUser(credentials: z.infer<typeof LoginSchema>) {
     
     const { password, ...userWithoutPassword } = user;
 
-    if (user.status === 'suspended') {
-        return { status: 'suspended', user: userWithoutPassword };
+    if (user.status === 'suspended' || user.status === 'banned') {
+        return { status: user.status, user: userWithoutPassword };
     }
     
     // Update last activity on login
@@ -229,6 +229,10 @@ export async function loginPartner(credentials: z.infer<typeof PartnerLoginSchem
 
     if (!partner.password) {
         return { error: 'This partner account does not have a password.' };
+    }
+    
+    if (partner.status === 'suspended' || partner.status === 'banned') {
+        return { error: `This account has been ${partner.status}.` };
     }
 
     const passwordsMatch = await bcrypt.compare(validatedData.password, partner.password as string);
@@ -770,4 +774,45 @@ export async function getRecentActivity() {
         console.error("Error fetching recent activity:", error);
         throw new Error("Failed to fetch recent activity.");
     }
+}
+
+/**
+ * Deletes a user or partner from Firestore.
+ */
+export async function deleteUser(userId: string, role: 'User' | 'Partner') {
+  if (!userId) {
+    throw new Error('User ID is required.');
+  }
+  const collectionName = role === 'Partner' ? 'partners' : 'users';
+  const userRef = doc(db, collectionName, userId);
+  await deleteDoc(userRef);
+  return { success: true };
+}
+
+/**
+ * Updates a user or partner's details.
+ */
+export async function updateUser(userId: string, role: 'User' | 'Partner', data: { name: string }) {
+    if (!userId) {
+        throw new Error("User ID is required.");
+    }
+    const collectionName = role === 'Partner' ? 'partners' : 'users';
+    const userRef = doc(db, collectionName, userId);
+
+    const updateData = role === 'Partner' ? { businessName: data.name } : { name: data.name };
+    
+    // Note: Firestore doesn't have a 'name' field for regular users by default in this schema.
+    // This action assumes you might add one or it's for partners.
+    // Let's adjust to update what's available. For partners, it's businessName.
+    // For users, let's assume we can add a 'name' field.
+    if (role === 'User') {
+      // For a regular user, there is no `name` field in the schema.
+      // This is a no-op for now unless the schema is updated.
+      // We could add a 'name' field here if needed.
+       await updateDoc(userRef, { name: data.name });
+    } else {
+      await updateDoc(userRef, { businessName: data.name });
+    }
+
+    return { success: true };
 }
