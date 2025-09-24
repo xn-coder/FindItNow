@@ -10,7 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, Search, Trash2, CheckCircle, Loader2 } from "lucide-react";
+import { MoreHorizontal, Search, Trash2, CheckCircle, Loader2, Edit } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -24,6 +24,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useTranslation } from "react-i18next";
+import Link from "next/link";
 
 export default function ItemManagementPage() {
   const [items, setItems] = useState<Item[]>([]);
@@ -165,6 +166,12 @@ export default function ItemManagementPage() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                               <DropdownMenuLabel>{t('adminItemsHeaderActions')}</DropdownMenuLabel>
+                              <DropdownMenuItem asChild>
+                                <Link href={`/edit-item/${item.id}`}>
+                                  <Edit className="mr-2 h-4 w-4" />
+                                  {t('edit')}
+                                </Link>
+                              </DropdownMenuItem>
                               {item.status === 'open' && (
                                 <DropdownMenuItem onClick={() => handleResolve(item)}>
                                   <CheckCircle className="mr-2 h-4 w-4" />
@@ -218,5 +225,3 @@ export default function ItemManagementPage() {
     </>
   );
 }
-
-    

@@ -20,7 +20,12 @@ export default function EditItemPage() {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!id || !user) return;
+        if (!id || authLoading) return;
+        if (!user) {
+            setError("You must be logged in to edit an item.");
+            setLoading(false);
+            return;
+        }
 
         const fetchItem = async () => {
             setLoading(true);
@@ -31,8 +36,9 @@ export default function EditItemPage() {
                 if (docSnap.exists()) {
                     const data = docSnap.data();
                     
-                    if (data.userId !== user.id) {
+                    if (!user.isAdmin && data.userId !== user.id) {
                          setError("You are not authorized to edit this item.");
+                         setLoading(false);
                          return;
                     }
 
@@ -53,7 +59,7 @@ export default function EditItemPage() {
         };
 
         fetchItem();
-    }, [id, user]);
+    }, [id, user, authLoading]);
 
     if (loading || authLoading) {
         return (
@@ -94,4 +100,3 @@ export default function EditItemPage() {
         </div>
     );
 }
-
