@@ -27,7 +27,6 @@ const mainNavLinks = [
 ];
 
 const moreNavLinksRaw = [
-  { href: "/map", label: "Map View", icon: MapPin },
   { href: "/contact", label: "Contact", icon: Phone },
 ];
 

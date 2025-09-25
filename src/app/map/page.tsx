@@ -1,124 +1,70 @@
-"use client";
-
-import { useState } from "react";
-import { APIProvider, Map, AdvancedMarker, InfoWindow, useMap } from "@vis.gl/react-google-maps";
-import { mockItems } from "@/lib/data";
-import type { Item } from "@/lib/types";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { AlertCircle, MapOff } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-
-function ItemMarker({ item, onSelect }: { item: Item, onSelect: (item: Item) => void }) {
-    return (
-        <AdvancedMarker
-            position={{ lat: item.lat, lng: item.lng }}
-            onClick={() => onSelect(item)}
-            title={item.name}
-        >
-            <div
-                className={`w-4 h-4 rounded-full border-2 border-white shadow-md
-                ${item.type === 'lost' ? 'bg-destructive' : 'bg-primary'}
-                `}
-            />
-        </AdvancedMarker>
-    );
-}
-
-function MapView() {
-    const [selectedItem, setSelectedItem] = useState<Item | null>(null);
-    const map = useMap();
-
-    const handleMarkerClick = (item: Item) => {
-        setSelectedItem(item);
-        if(map) {
-            map.panTo({lat: item.lat, lng: item.lng});
-        }
-    }
-
-    return (
-        <>
-            <div className="w-full h-[600px] rounded-lg overflow-hidden border shadow-md">
-                <Map
-                    defaultCenter={{ lat: 40.7580, lng: -73.9855 }} // Centered on Times Square
-                    defaultZoom={12}
-                    gestureHandling={'greedy'}
-                    disableDefaultUI={true}
-                    mapId="finditnow_map"
-                >
-                    {mockItems.map((item) => (
-                        <ItemMarker key={item.id} item={item} onSelect={handleMarkerClick} />
-                    ))}
-                    {selectedItem && (
-                        <InfoWindow
-                            position={{ lat: selectedItem.lat, lng: selectedItem.lng }}
-                            onCloseClick={() => setSelectedItem(null)}
-                            pixelOffset={[0, -30]}
-                        >
-                            <div className="p-1 max-w-xs">
-                                <h3 className="font-bold">{selectedItem.name}</h3>
-                                <Badge variant={selectedItem.type === "lost" ? "destructive" : "default"}>{selectedItem.type}</Badge>
-                                <p className="text-sm text-muted-foreground">{selectedItem.location}</p>
-                                <Button asChild variant="link" size="sm" className="p-0 h-auto mt-1">
-                                    <Link href={`/browse?item=${selectedItem.id}`}>View Details</Link>
-                                </Button>
-                            </div>
-                        </InfoWindow>
-                    )}
-                </Map>
-            </div>
-             <div className="mt-4 flex justify-center items-center gap-4 text-sm text-muted-foreground">
-                <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-primary"></div>Found Item</div>
-                <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-destructive"></div>Lost Item</div>
-            </div>
-        </>
-    );
-}
-
-
-export default function MapPage() {
-  const isMapEnabled = process.env.NEXT_PUBLIC_MAP_ENABLED !== 'false';
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-
-  if (!isMapEnabled) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full text-center">
-        <MapOff className="h-16 w-16 text-muted-foreground" />
-        <h1 className="text-2xl font-bold mt-4">Map Feature Disabled</h1>
-        <p className="text-muted-foreground mt-2">
-          The map functionality is currently turned off by the administrator.
-        </p>
-      </div>
-    );
+{
+  "name": "nextn",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack -p 9002",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@emailjs/browser": "^4.4.1",
+    "@firebase/database": "^1.0.4",
+    "@genkit-ai/googleai": "^1.1.2",
+    "@hookform/resolvers": "^4.1.3",
+    "@radix-ui/react-accordion": "^1.2.3",
+    "@radix-ui/react-alert-dialog": "^1.1.6",
+    "@radix-ui/react-avatar": "^1.1.3",
+    "@radix-ui/react-checkbox": "^1.1.4",
+    "@radix-ui/react-collapsible": "^1.1.11",
+    "@radix-ui/react-dialog": "^1.1.6",
+    "@radix-ui/react-dropdown-menu": "^2.1.6",
+    "@radix-ui/react-label": "^2.1.2",
+    "@radix-ui/react-menubar": "^1.1.6",
+    "@radix-ui/react-popover": "^1.1.6",
+    "@radix-ui/react-progress": "^1.1.2",
+    "@radix-ui/react-radio-group": "^1.2.3",
+    "@radix-ui/react-scroll-area": "^1.2.3",
+    "@radix-ui/react-select": "^2.1.6",
+    "@radix-ui/react-separator": "^1.1.2",
+    "@radix-ui/react-slider": "^1.2.3",
+    "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-switch": "^1.1.3",
+    "@radix-ui/react-tabs": "^1.1.3",
+    "@radix-ui/react-toast": "^1.2.6",
+    "@radix-ui/react-tooltip": "^1.1.8",
+    "bcryptjs": "^2.4.3",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "date-fns": "^3.6.0",
+    "dotenv": "^16.5.0",
+    "embla-carousel-react": "^8.6.0",
+    "firebase": "^10.12.2",
+    "genkit": "^1.1.2",
+    "i18next": "^23.12.2",
+    "i18next-browser-languagedetector": "^7.2.1",
+    "lucide-react": "^0.475.0",
+    "next": "15.3.3",
+    "patch-package": "^8.0.0",
+    "react": "^18.3.1",
+    "react-day-picker": "^8.10.1",
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.54.2",
+    "react-i18next": "^15.0.0",
+    "recharts": "^2.15.1",
+    "tailwind-merge": "^3.0.1",
+    "tailwindcss-animate": "^1.0.7",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
   }
-
-  if (!apiKey) {
-    return (
-      <div className="flex items-center justify-center h-full">
-         <Alert variant="destructive" className="max-w-lg">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Google Maps API Key Missing</AlertTitle>
-            <AlertDescription>
-              To view the map, please provide a Google Maps API key. Add it as `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` to your environment variables.
-            </AlertDescription>
-        </Alert>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-8">
-        <div className="text-center">
-            <h1 className="text-4xl font-bold font-headline">Browse by Location</h1>
-            <p className="mt-2 text-lg text-muted-foreground">
-            Explore lost and found items visually on the map.
-            </p>
-        </div>
-        <APIProvider apiKey={apiKey}>
-           <MapView />
-        </APIProvider>
-    </div>
-  );
 }
