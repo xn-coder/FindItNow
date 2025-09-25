@@ -5,14 +5,22 @@ import './globals.css';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
 import { Toaster } from '@/components/ui/toaster';
-import { AuthProvider } from '@/context/auth-context';
+import { AuthProvider, AuthContext } from '@/context/auth-context';
+import { Suspense, useContext, useEffect } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import { I18nProvider } from '@/components/providers';
-import { Suspense } from 'react';
-import { usePathname } from 'next/navigation';
 
 function SiteLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
+    const router = useRouter();
+    const { user, loading } = useContext(AuthContext);
     const isAdminPage = pathname.startsWith('/admin');
+
+    useEffect(() => {
+        if (!loading && user?.isAdmin && !isAdminPage) {
+            router.push('/admin');
+        }
+    }, [user, loading, isAdminPage, pathname, router]);
     
     return (
         <div className="flex flex-col min-h-screen">

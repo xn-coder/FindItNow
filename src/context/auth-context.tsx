@@ -80,7 +80,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     localStorage.setItem('finditnow_user', JSON.stringify(userWithAdminCheck));
     setUser(userWithAdminCheck);
     
-    if (!isSuspended) {
+    if (!isSuspended && userWithAdminCheck.id) {
         // Asynchronously update lastActivity without blocking the login flow
         const collectionName = userWithAdminCheck.isPartner ? 'partners' : 'users';
         const userRef = doc(db, collectionName, userWithAdminCheck.id);
@@ -104,5 +104,5 @@ export function AuthProvider({ children }: AuthProviderProps) {
     logout,
   };
 
-  return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
